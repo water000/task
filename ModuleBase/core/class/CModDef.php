@@ -30,14 +30,15 @@ abstract class CModDef {
 	CONST TAG = 'tag'; // define tags for using
 	
 	CONST PAGES    = 'pages';  // the pages in the module.
-	CONST PAGE_ARG = 'page_arg';
-	CONST PARG_TYP = 'type';    // the arg's type what appears in gettype(). default is 'string'
-	CONST PARG_REQ = 'required';// the arg MUST be required in the page. default is 1
-	CONST PARG_DEP = 'depend'; // the arg which appears in the same page. default is null
-	CONST PARG_EMP = 'empty';  // allow emmpty on the arg(default is 0). NOTICE: the empty validation only check the length of the trimed arg
-	CONST PARG_TRI = 'trim';   // ignore triming on the arg if set to 0. default is 1(trim).
-	CONST PARG_RNG = 'range'; // the range of the arg's length. split by comma, like [5,12)
-	CONST PAGE_MGR = 'page_mgr'; // indicate wether the page is a managment page
+	CONST P_ARG = 'page_arg';
+	CONST PA_TYP = 'type';    // the arg's type what appears in gettype(). default is 'string'
+	CONST PA_REQ = 'required';// the arg MUST be required in the page. default is 1
+	CONST PA_DEP = 'depend'; // the arg which appears in the same page. default is null
+	CONST PA_EMP = 'empty';  // allow emmpty on the arg(default is 0). NOTICE: the empty validation only check the length of the trimed arg
+	CONST PA_TRI = 'trim';   // ignore triming on the arg if set to 0. default is 1(trim).
+	CONST PA_RNG = 'range'; // the range of the arg's length. split by comma, like [5,12)
+	CONST P_MGR = 'page_mgr'; // indicate wether the page is a managment page
+	CONST P_OUT = 'out'; // output something like json format to mobile app
 	
 	CONST TBDEF  = 'table_def';
 	CONST LTN    = 'listener';
@@ -62,11 +63,15 @@ abstract class CModDef {
 	 *   ),
 	 *   self::PAGES => array(
 	 *   	'a' => array( // CAN NOT append file suffix like 'a.php'
-	 *      	self::PAGE_ARG => array(
+	 *      	self::P_ARG => array(
      *   			'arg1' => array('type'=>'int', required=>true, 'range'=>'5,12'),
 	 *   			'arg2' => array('type'=>'int', required=>true, depend=>'arg1')
 	 *  		),
-	 *			self::MGR => true,
+	 *			self::P_MGR => true,
+	 *			self::P_OUT => '{
+	 *				'error': 'message if error happened or empty else',
+	 *				'gift_id' : '100',
+	 *			}'
 	 *      )
 	 *   ),
 	 * 	 self::TBDEF => array(
