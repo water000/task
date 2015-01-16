@@ -29,7 +29,7 @@ class CAppEnvironment{
 	);
 	
 	private function __construct(){
-		$this->env['app_root'] = dirname(__FILE__);
+		$this->env['app_root'] = dirname(__FILE__).'/';
 		$this->env['web_root'] = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')+1);
 		$this->env['client_ip'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] 
 			: (isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] 
@@ -59,8 +59,8 @@ class CAppEnvironment{
 		return $this->getPath($mod, self::FT_CLASS.'/'.$classname.$this->env['class_file_suffix']);
 	}
 	
-	function getActionPath($mod, $filename){
-		return $this->getPath($mod, self::FT_ACTION.'/'.$filename);
+	function getActionPath($mod, $action){
+		return $this->getPath($mod, self::FT_ACTION.'/'.$action.'.php');
 	}
 	
 	function toURL($mod, $action='index', $args=array()){
@@ -70,7 +70,7 @@ class CAppEnvironment{
 	}
 	
 	function fromURL($url=''){
-		parse_str(empty($url) ? $_SERVER['query_string'] : $url, $arr);
+		parse_str(empty($url) ? $_SERVER['QUERY_STRING'] : $url, $arr);
 		if(isset($arr['m']) && isset($arr['a'])){
 			$arr2 = array($arr['m'], $arr['a']);
 			unset($arr['m'], $arr['a']);
@@ -93,6 +93,23 @@ class CAppEnvironment{
 	
 	function formatTableName($name){
 		return empty($this->env['table_prefix']) ? $name : $this->env['table_prefix'].'_'.$name;
+	}
+	
+	function getModList(){
+		$list = array();
+		
+		if ($dh = opendir($this->env['app_root'])) {
+			while (($file = readdir($dh)) !== false) {
+				if($file[0] != '.' && is_dir($this->env['app_root'].$file)){
+					$list[] = $file;
+				}
+			}
+			closedir($dh);
+			
+			sort($list);
+		}
+		
+		return $list;
 	}
 
 }

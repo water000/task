@@ -10,7 +10,7 @@ error_reporting(RTM_DEBUG ? E_ALL : 0);
 	
 define('IN_INDEX', 1); //ref file: install.php, CModule.php
 
-function mbs_error_handle(int $errno , string $errstr , string $errfile , int $errline , array $errcontext ){
+function mbs_error_handle($errno , $errstr , $errfile , $errline , $errcontext ){
 	static $MSG_SEP = '';
 	static $ERR_MSG = array(
 		E_USER_ERROR   => 'ERROR',
@@ -27,20 +27,25 @@ function mbs_error_handle(int $errno , string $errstr , string $errfile , int $e
 		return;
 	}
 	
+	$line_break = '';
 	if(false !== strpos(PHP_SAPI, 'cli')){
 		$error_format = "[%s]\nerrstr: %s\nerfile: %s(%d)\nervars: %s\netrace: -------";
 		$MSG_SEP = "\n\n";
-		$errcontext = var_export($errcontext, true);
+		//$errcontext = var_export($errcontext, true);
+		$line_break = "\n";
 	}else{
 		$error_format = '<p><b>%s</b></p><p>errstr: %s</p><p>erfile: %s(%d)</p><p>ervars: %s</p><p>etrace: -------</p>';
 		$MSG_SEP = '<hr />';
-		$errstr = htmlspecialchars($errstr);
-		$errcontext = htmlspecialchars(var_export($errcontext, true));
+		$errstr = str_replace(array("\n", ' ', "\t"), array('<br/>', '&nbsp;', '&nbsp;&nbsp;'), htmlspecialchars($errstr));
+		//$errcontext = str_replace(array("\n", ' ', "\t"), array('<br/>', '&nbsp;', '&nbsp;&nbsp;'), htmlspecialchars(var_export($errcontext, true)));
+		$line_break = '<br/>';
 	}
 	
 	$level = isset($ERR_MSG[$errno]) ? $ERR_MSG[$errno] : 'UNKNOWN('.$errno.')';
 	echo sprintf($error_format, $level, $errstr, $errfile, $errline, $errcontext);
-	debug_print_backtrace();
+	foreach(debug_backtrace() as $n => $trace){
+		echo '#',$n, ' ', $trace['function'], '() called at ', $trace['file'], ':', $trace['line'], $line_break;
+	}
 	echo $MSG_SEP;
 	
 	if(E_USER_ERROR == $errno){
@@ -51,7 +56,7 @@ function mbs_error_handle(int $errno , string $errstr , string $errfile , int $e
 	return true;
 	
 }
-set_error_handler(mbs_error_handle);
+set_error_handler('mbs_error_handle');
 
 //env and conf init;there are two kinds of const in the system.
 //one start with 'RTM_' what means 'run-time' defined;the other start
@@ -64,7 +69,7 @@ function mbs_import($mod, $class){
 	global $mbs_appenv;
 	$args = func_get_args();
 	$numargs = func_num_args();
-	for($i=2; $i<$numargs; ++$i){
+	for($i=1; $i<$numargs; ++$i){
 		$c = $args[$i];
 		$path = $mbs_appenv->getClassPath($mod, $c);
 		require_once $path;
@@ -76,9 +81,9 @@ function mbs_import($mod, $class){
 
 mbs_import('core', 'CModDef');
 
-mbs_import('common', 'CDbPool.php', 'CMemcachedPool.php', 'CSession.php', 'CStrTools.php');
+mbs_import('common', 'CDbPool', 'CMemcachedPool', 'CSession', 'CStrTools');
 if(!class_exists('Memcached', false))
-	mbs_import('common', 'Memcached.php');
+	mbs_import('common', 'Memcached');
 
 
 function mbs_moddef($mod){
@@ -93,7 +98,7 @@ function mbs_moddef($mod){
 	list($class, $path) = $mbs_appenv->getModDefInfo($mod);
 	if(file_exists($path)){
 		require_once $path;
-		$obj = new $class($this);
+		$obj = new $class($mbs_appenv);
 		if(! $obj instanceof CModDef){
 			$obj = null;
 			trigger_error($class.' not instance of CModDef', E_USER_WARNING);
@@ -158,17 +163,16 @@ if(empty($action)){
 	trigger_error('Invalid action', E_USER_ERROR);
 }
 
-define('RTM_APPENV', $mbs_appenv);
-define('RTM_MOD',    $mod);
-define('RTM_ACTION', $action);
+define('RTM_MOD',         $mod);
+define('RTM_ACTION',      $action);
 define('RTM_ACTION_PATH', $mbs_appenv->getActionPath($mod, $action));
 
 if(!file_exists(RTM_ACTION_PATH)){
 	trigger_error('Invalid request: '.$mod.'.'.$action, E_USER_ERROR);
 }
 
-$moddef = mbs_moddef($mod);
-if(empty($moddef)){
+$mbs_cur_moddef = mbs_moddef($mod);
+if(empty($mbs_cur_moddef)){
 	trigger_error('no such module: '.$mod, E_USER_ERROR);
 }
 
@@ -183,7 +187,7 @@ if(RTM_DEBUG){
 }
 
 //do filter checking
-if(!$moddef->loadFilters()){
+if(!$mbs_cur_moddef->loadFilters()){
 	exit(1);
 }
 
@@ -193,8 +197,6 @@ require RTM_ACTION_PATH;
 if(function_exists('fastcgi_finish_request'))
 	fastcgi_finish_request();
 	
-CCore::runListeners();
-
 if(RTM_DEBUG){
 	CDbPool::getInstance()->html(); 
 	CMemcachedPool::getInstance()->html();

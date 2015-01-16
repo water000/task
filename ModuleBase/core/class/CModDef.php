@@ -20,35 +20,64 @@ abstract class CModDef {
 	//an valid identifier([_a-zA-Z][_a-zA-Z0-9]*)
 	CONST G_NM = 'name';
 	CONST G_CS = 'class';
+	CONST G_TL = 'title'; // the page's title where displayed in <title></title>
 	CONST G_DC = 'desc';
 	
 	CONST MOD  = 'module';
 	CONST M_CS = 'charset';
-	CONST M_TR = 'introduce';
 	
 	CONST FTR = 'filter'; // define filters for using
 	CONST TAG = 'tag'; // define tags for using
 	
-	CONST PAGES    = 'pages';  // the pages in the module.
-	CONST P_ARG = 'page_arg';
-	CONST PA_TYP = 'type';    // the arg's type what appears in gettype(). default is 'string'
-	CONST PA_REQ = 'required';// the arg MUST be required in the page. default is 1
-	CONST PA_DEP = 'depend'; // the arg which appears in the same page. default is null
-	CONST PA_EMP = 'empty';  // allow emmpty on the arg(default is 0). NOTICE: the empty validation only check the length of the trimed arg
-	CONST PA_TRI = 'trim';   // ignore triming on the arg if set to 0. default is 1(trim).
-	CONST PA_RNG = 'range'; // the range of the arg's length. split by comma, like [5,12)
-	CONST P_MGR = 'page_mgr'; // indicate wether the page is a managment page
-	CONST P_OUT = 'out'; // output something like json format to mobile app
+	CONST PAGES  = 'pages';  // the pages in the module.
+	CONST P_TLE  = 'p_title'; // the page's title where displayed in <title></title>
+	CONST P_MGR  = 'p_mgr'; // indicate wether the page is a managment page
+	CONST P_OUT  = 'p_out'; // output something like json format to mobile app
+	CONST P_ARGS = 'p_args'; // the page's arguments appeared in $_REQUEST, $args, $_FILES
+	CONST PA_TYP = 'pa_type';    // the arg's type what appears in gettype(). default is 'string'
+	CONST PA_REQ = 'pa_required';// the arg MUST be required in the page. default is 1
+	CONST PA_DEP = 'pa_depend'; // the arg which appears in the same page. default is null
+	CONST PA_EMP = 'pa_empty';  // allow emmpty on the arg(default is 0). NOTICE: the empty validation only check the length of the trimed arg
+	CONST PA_TRI = 'pa_trim';   // ignore triming on the arg if set to 0. default is 1(trim).
+	CONST PA_RNG = 'pa_range'; // the range of the arg's length. split by comma, like [5,12)
 	
 	CONST TBDEF  = 'table_def';
 	CONST LTN    = 'listener';
 	CONST MGR    = 'mgrpage';
 	CONST LD_FTR = 'load_filter'; // do filter checking on each script in the module
-	CONST DEPEXT = 'depend_extension'; // checking wether the current environment include the extension. = array(ext1, ext2, ...)
+	CONST DEPEXT = 'dependent'; // checking wether the current environment included the extension or function. = array(ext1, ext2, ...)
+	
+	protected static  $lang_dict = array(
+		self::G_NM   => '名称',
+		self::G_CS   => '类名',
+		self::G_TL   => '标题',
+		self::G_DC   => '描述',
+		self::MOD    => '模块',
+		self::M_CS   => '字符集',
+		self::FTR    => '过滤器',
+		self::TAG    => '标签',
+		self::TBDEF  => '表定义',
+		self::LTN    => '监听器',
+		self::LD_FTR => '加载过滤器',
+		self::DEPEXT => '依赖库/方法',
+		self::PAGES  => '请求/页面',
+		self::P_TLE  => '标题',
+		self::P_MGR  => '是否管理',
+		self::P_ARGS => '输入参数',
+		self::P_OUT  => '输出',
+		self::PA_TYP => '参数类型',
+		self::PA_REQ => '必要参数',
+		self::PA_EMP => '是否为空',
+		self::PA_TRI => '是否trim',
+		self::PA_RNG => '参数范围',
+	);
 	
 	private static $appenv = null;
 	private $desc = null;
 	
+	static function lang($item){
+		return isset(self::$lang_dict[$item]) ? self::$lang_dict[$item] : $item;
+	}
 	
 	/**
 	 * @return array(
@@ -63,9 +92,12 @@ abstract class CModDef {
 	 *   ),
 	 *   self::PAGES => array(
 	 *   	'a' => array( // CAN NOT append file suffix like 'a.php'
-	 *      	self::P_ARG => array(
+	 *   		self::P_TLE => '标题',
+	 *   		self::G_DC  => '这是一个页面的描述',
+	 *      	self::P_ARGS => array(
      *   			'arg1' => array('type'=>'int', required=>true, 'range'=>'5,12'),
-	 *   			'arg2' => array('type'=>'int', required=>true, depend=>'arg1')
+	 *   			'arg2' => array('type'=>'int', required=>true, depend=>'arg1'),
+	 *   			'sign' => array('type'=>'string', required=>true, depend=>'arg1', desc=>'md5(arg1+arg2)'),
 	 *  		),
 	 *			self::P_MGR => true,
 	 *			self::P_OUT => '{
@@ -98,11 +130,18 @@ abstract class CModDef {
 	}
 	
 	function item($key, $subkey=''){
-		if(empty($subkey)){
-			return isset($this->desc[$key]) ? $this->desc[$key] : null;
-		}else{
-			return isset($this->desc[$key][$subkey]) ? $this->desc[$key][$subkey] : null;
+		$num = func_num_args();
+		$args = func_get_args();
+		
+		$ctx = $this->desc;
+		for($i=0; $i<$num; ++$i){
+			if(!isset($ctx[$args[$i]])){
+				$ctx = null;
+				break;
+			}
+			$ctx = $ctx[$args[$i]];
 		}
+		return $ctx;
 	}
 	
 	
@@ -330,11 +369,10 @@ abstract class CModDef {
 		}
 		
 		foreach($depext as $dep){
-			if(!extension_loaded($dep)){
+			if(!extension_loaded($dep) && !function_exists($dep)){
 				$error[] = sprintf('unloaded %s extension', $dep);
 			}
 		}
-		
 	}
 	
 	private static function _checkpages($pages, $mod, &$error, &$warning){
@@ -392,73 +430,84 @@ abstract class CModDef {
 		$error = array();
 		if(isset($this->desc[self::PAGES][$action][self::PAGE_ARG])){
 			$defopts = array(
-	 			CModDef::PARG_REQ => 1, 
-	 			CModDef::PARG_DEP => null, 
-	 			CModDef::PARG_EMP => 0, 
-	 			CModDef::PARG_TRI => 1
+	 			self::PA_REQ => 1, 
+	 			self::PA_DEP => null, 
+	 			self::PA_EMP => 0, 
+	 			self::PA_TRI => 1,
+				self::PA_TYP => '',
+				self::PA_DEP => ''
 	 		);
-	 		$pargs = $this->desc[CModDef::PAGES][$action][self::PAGE_ARG];
+	 		$pargs = $this->desc[CModDef::PAGES][$action][self::P_ARGS];
 	 		foreach($pargs as $name => $opts){
-	 			if(empty($opts))
-	 				$opts = $defopts;
-	 			else
-	 				$opts = array_merge($defopts, $opts);
+	 			$opts = empty($opts) ? $defopts : array_merge($defopts, $opts);
 	 				
-	 			$appear = $success = true;
-	 			if(isset($opts[CModDef::PARG_DEP]) && 
-	 				!empty($opts[CModDef::PARG_DEP]))
+	 			if(!empty($opts[CModDef::PA_DEP]))
  				{
- 					$dep = $opts[CModDef::PARG_DEP];
+ 					$dep = $opts[CModDef::PA_DEP];
  					if(isset($pargs[$dep])){
- 						$appear = isset($_REQUEST[$dep]);
- 						if(isset($_REQUEST[$name]) && !$appear)
- 							$error[] = sprintf($error_desc['no_such_depend_arg_appeared'], $name, $dep);
- 					}else $error[] = sprintf($error_desc['no_such_depend_arg_defined'], $name, $dep);
+ 						if(isset($_REQUEST[$name]) && !isset($_REQUEST[$dep])){
+ 							$error[$name] = sprintf($error_desc['no_such_depend_arg_appeared'], $name, $dep);
+ 							continue;
+ 						}
+ 					}else {
+ 						$error[$name] = sprintf($error_desc['no_such_depend_arg_defined'], $name, $dep);
+ 						continue;
+ 					}
  				}
 	 			
- 				if($appear){
- 					if(isset($opts[CModDef::PARG_REQ]) && 1 == $opts[CModDef::PARG_REQ]){
- 						if(!isset($_REQUEST[$name])){
- 							$error[] = sprintf($error_desc['no_such_arg_appeared'], $name);
- 							$success = false;
- 						}
+ 				if($opts[CModDef::PA_REQ]){
+ 					if('file' == strtolower($opt[self::PA_TYP]) && !isset($_FILES[$opt[self::PA_TYP]])){
+ 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], $name);
+ 						continue;
+ 					}
+ 					else if(!isset($_REQUEST[$name])){
+ 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], $name);
+ 						continue;
  					}
  				}
  				
- 				if($success){
- 					if(isset($opts[CModDef::PARG_TRI]) && 0 == $opts[CModDef::PARG_TRI])
- 						;
- 					else{
- 						if(isset($_REQUEST[$name]))
- 							$_REQUEST[$name] = trim($_REQUEST[$name]);
- 					}
+				if($opts[CModDef::PA_TRI] && isset($_REQUEST[$name]))
+					$_REQUEST[$name] = trim($_REQUEST[$name]);
  					
- 					if(isset($opts[CModDef::PARG_EMP]) && 1 == $opts[CModDef::PARG_EMP])
- 						;
- 					else{
- 						if(isset($_REQUEST[$name]) && 0 == strlen($_REQUEST[$name])){
- 							$success = false;
- 							$error[] = sprintf($error_desc['arg_cannot_be_empty'], $name);
- 						}
- 					}
- 					
- 					if($success){
- 						if(isset($opts[CModDef::PARG_TYP]) && isset($_REQUEST[$name]) && 
- 							 !settype($_REQUEST[$name], $opts[CModDef::PARG_TYP]))
- 							$error[] = sprintf($error_desc['arg_type_invalid'], $name, 
-								gettype($_REQUEST[$name]), $opts[CModDef::PARG_TYP]);
-							
-						if(isset($opts[CModDef::PARG_RNG]) && isset($_REQUEST[$name])){
-							$len = strlen($_REQUEST[$name]);
-							list($s, $e) = explode(',', $opts[CModDef::PARG_RNG]);
-							if($len >= $s && $len < $e)
-								;
-							else
-								$error[] = sprintf($error_desc['arg_length_invalid'], 
-									$name, $len, $opts[CModDef::PARG_RNG] );
-						}
- 					}else break;
- 				}else break;
+				if(!$opts[CModDef::PA_EMP] && isset($_REQUEST[$name]) && empty($_REQUEST[$name])){
+					$error[$name] = sprintf($error_desc['arg_cannot_be_empty'], $name);
+					continue;
+				}
+ 				
+				if(!empty($opts[CModDef::PA_TYP]) 
+					&& strtolower($opts[CModDef::PA_TYP]) != 'file'
+					&& isset($_REQUEST[$name])
+					&& !settype($_REQUEST[$name], $opts[CModDef::PA_TYP]))
+				{
+					$error[$name] = sprintf($error_desc['arg_type_invalid'], $name,
+							gettype($_REQUEST[$name]), $opts[CModDef::PA_TYP]);
+					continue;
+				}
+				
+				if(!empty($opts[CModDef::PA_RNG]) && isset($_REQUEST[$name])){
+					if(is_string($_REQUEST[$name])){
+						$num = iconv_strlen($_REQUEST[$name], self::$appenv->item('charset'));
+					}
+					else if(is_numeric($_REQUEST[$name])){
+						$num = $_REQUEST[$name];
+					}
+					else if(is_array($_REQUEST[$name])){
+						$num = count($_REQUEST[$name]);
+					}
+					else{
+						trigger_error('type: '.gettype($_REQUEST[$name]).' can not be compared with integer', E_USER_ERROR);
+					}
+					
+					list($s, $e) = explode(',', $opts[CModDef::PA_RNG]);
+					$s = intval($s);
+					$e = empty($e) ? 0 : intval($e);
+					
+					if($num < $s || ($e !=0 && $num > $e)){
+						$error[$name] = sprintf($error_desc['arg_length_invalid'],
+								$name, $len, $opts[CModDef::PA_RNG] );
+						continue;
+					}
+				}
 	 		}
 		}
 		

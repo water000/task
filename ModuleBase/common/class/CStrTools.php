@@ -11,10 +11,10 @@ class CStrTools {
 		$i = 1;
 		$len = strlen($name);
 		for(; $i<$len; ++$i){
-			if(($name[$i] >= 'a' && $name[0]<='z')
-			|| ($name[$i]>='A' && $name[0]<='Z')
+			if(($name[$i] >= 'a' && $name[$i]<='z')
+			|| ($name[$i]>='A' && $name[$i]<='Z')
 			|| ($name[$i]>='0' && $name[$i]<='9')
-			|| '_' == $name[i]
+			|| '_' == $name[$i]
 			)
 				;
 			else
@@ -58,8 +58,8 @@ class CStrTools {
 	static function txt2html($str)
 	{
 		return str_replace(
-				array(' ', "\r\n", "\r", "\n"),
-				array('&nbsp;', '<br />', '<br />', '<br />'),
+				array(' ', "\r\n", "\r", "\n", "\t"),
+				array('&nbsp;', '<br />', '<br />', '<br />', '&nbsp;&nbsp;'),
 				$str
 		);
 	}
@@ -73,7 +73,7 @@ class CStrTools {
 		if($src < $dest)
 		{
 			$diff = ceil(($dest-$src)/86400);
-			$ret = 1 == $diff ? '×òÌì' : (2 == $diff ? 'Ç°Ìì' : date('mÔÂdÈÕ', $src));
+			$ret = 1 == $diff ? 'ï¿½ï¿½ï¿½ï¿½' : (2 == $diff ? 'Ç°ï¿½ï¿½' : date('mï¿½ï¿½dï¿½ï¿½', $src));
 		}
 		return $ret;
 	}
