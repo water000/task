@@ -20,22 +20,23 @@ body, p, td, ul{margin:0;padding:0;border:0;}
 .header{height: 60px;background: #252525; color:white;border-bottom: 1px solid #eee;}
 .footer{height: 60px;background: #fff;border-top: 1px solid #eee;clear:both;margin-top:50px;}
 .warpper{width:1000px;min-height:100%;margin:0 auto;font-size:12px;}
-.content{margin-top:30px;}
+.content{margin-top:30px;position:relative;}
 .left{width:170px;float:left;margin-top:80px;border:1px solid #bbb;border-top:3px solid #85BBEF;}
 .left p{font-size:12px; font-weight:bold; text-align:center;padding:6px 0; border-bottom:1px solid #ddd;}
 .left a{display:block;font-size:14px;text-decoration:none;padding:3px 8px;border-bottom:1px solid #e0e0e0;}
 .left a:hover{text-decoration:underline;}
 .left a.current{background-color:#e0e0e0;font-weight:bold;}
-.right{float:left;width:700px;padding:20px 30px;margin:0 30px;background-color: #F8F8F8}
+.right{float:left;width:700px;padding:20px 30px;margin:0 20px;border:1px solid #ccc;}
 h2{color:#555;margin:0;text-align:center;}
 table{width:100%;border:1px solid #aaa;margin-bottom:30px;}
+table , ul{background-color:#ddd;}
 .right p{font-size:16px; font-weight:bold;padding:8px 3px;color:#555;}
-tbody th, li.head{font-size:12px; font-weight:bold;text-align:center;padding:5px 0;width:180px;border-bottom:1px solid #aaa;background-color: #ccccff}
-tbody td, ul li{border-bottom:1px solid #aaa;padding:5px 3px;color:#333333;}
+tbody th, li.head{font-size:12px; font-weight:bold;text-align:center;padding:5px 0;width:180px;border-bottom:1px solid #888;background-color: #9999cc}
+tbody td, ul li{border-bottom:1px solid #888;padding:5px 3px;color:#333333;}
 ul{float:left;width:120px;overflow:hidden;}
 ul li{list-style-type:none;}
 li.head{width:120px;}
-.even{background-color:#F1F1F1}
+.even{background-color:#eee}
 </style>
 </head>
 <body>

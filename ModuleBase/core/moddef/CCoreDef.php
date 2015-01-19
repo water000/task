@@ -15,25 +15,23 @@ class CCoreDef extends CModDef{
 		    self::TAG => array(
 		   	 	'url' => array(self::G_CS => 'CFileURL', self::G_DC => '(,,mod,file,[type])'),
 		    ),
-		    self::P_ARGS => array(
-		    	'detail.php'      => array(
-		    		'mod'  => array(),
-		    		'type' => array(self::PA_DEP=>'file'),
-		    		'file' => array(self::PA_DEP=>'type'),
-		    		'tb_edit_name' => array(self::PA_DEP=>'tb_edit_text'),
-		    		'tb_edit_text' => array(self::PA_DEP=>'tb_edit_name')
-		    	),
-		    	'source_code.php' => array(
-		    		'mod'  => array(), 
-		    		'type' => array(),
-		    		'file' => array(),
-		    	),
-		    	'download.php'    => array(
-		    		'mod'  => array(), 
-		    		'type' => array(),
-		    		'file' => array(),
-		    	)
-		  	),
+			self::PAGES => array(
+				'mod_info' => array(
+					self::P_TLE => '模块信息',
+					self::G_DC  => '模块的基本信息，主要是定义在ModDef中的，也包括模块下面所有的文件',
+					self::P_ARGS => array(
+						'mod'   => array(self::PA_TYP=>'string', self::PA_REQ=>0, self::G_DC=>'查看指定模块下的action信息'),
+					)
+				),
+				'action_info' => array(
+						self::P_TLE => '页面信息',
+						self::G_DC  => '页面的基本信息，主要是定义在ModDef->PAGES中的，按照最后修改时间排序',
+						self::P_ARGS => array(
+							'mod' => array(self::PA_TYP=>'string', self::PA_REQ=>0, self::G_DC=>'可以查看指定模块'),
+							'otype' => array(self::PA_TYP=>'string', self::PA_REQ=>0, self::G_DC=>'查看指定输出类型的action，分为html,not_html(json,xml,...)'),
+						)
+				)
+			),
 		 	self::TBDEF => array(
 		  		'core_module_listenner' => "(
 		  			class_path varchar(255) CHARACTER SET latin1 not null default '',

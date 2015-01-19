@@ -1,6 +1,7 @@
 <?php
 class CStrTools {
 	const TO_JS_CHARS = "\f\r\n\t\v\"/";
+	
 	static function isModifier($name)
 	{
 		if(($name[0]>='a' && $name[0]<='z')
@@ -55,27 +56,13 @@ class CStrTools {
 		return $c;
 	}
 	
-	static function txt2html($str)
+	static function txt2html($str, $htmlspec=true)
 	{
 		return str_replace(
-				array(' ', "\r\n", "\r", "\n", "\t"),
-				array('&nbsp;', '<br />', '<br />', '<br />', '&nbsp;&nbsp;'),
-				$str
+			array(' ', "\r\n", "\r", "\n", "\t"),
+			array('&nbsp;', '<br />', '<br />', '<br />', '&nbsp;&nbsp;'),
+			$htmlspec ? htmlspecialchars($str) : $str
 		);
-	}
-	
-	static function getDate($src)
-	{
-		$ret = '';
-		static $dest = 0;
-		if(empty($dest))
-			$dest = mktime(0, 0, 0);
-		if($src < $dest)
-		{
-			$diff = ceil(($dest-$src)/86400);
-			$ret = 1 == $diff ? '����' : (2 == $diff ? 'ǰ��' : date('m��d��', $src));
-		}
-		return $ret;
 	}
 	
 	static function url2href($url)

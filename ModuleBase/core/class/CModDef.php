@@ -65,11 +65,11 @@ abstract class CModDef {
 		self::P_MGR  => '是否管理',
 		self::P_ARGS => '输入参数',
 		self::P_OUT  => '输出',
-		self::PA_TYP => '参数类型',
-		self::PA_REQ => '必要参数',
-		self::PA_EMP => '是否为空',
+		self::PA_TYP => '类型',
+		self::PA_REQ => '必须存在',
+		self::PA_EMP => '允许为空',
 		self::PA_TRI => '是否trim',
-		self::PA_RNG => '参数范围',
+		self::PA_RNG => '范围',
 	);
 	
 	private static $appenv = null;

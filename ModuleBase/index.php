@@ -10,54 +10,6 @@ error_reporting(RTM_DEBUG ? E_ALL : 0);
 	
 define('IN_INDEX', 1); //ref file: install.php, CModule.php
 
-function mbs_error_handle($errno , $errstr , $errfile , $errline , $errcontext ){
-	static $MSG_SEP = '';
-	static $ERR_MSG = array(
-		E_USER_ERROR   => 'ERROR',
-		E_USER_WARNING => 'WARNNING',
-		E_USER_NOTICE  => 'NOTICE'
-	);
-	
-	$report_level = error_reporting();
-	if(!($report_level & $errno)){
-		// This error code is not included in error_reporting
-		if(E_USER_ERROR == $errno){
-			exit(1);
-		}
-		return;
-	}
-	
-	$line_break = '';
-	if(false !== strpos(PHP_SAPI, 'cli')){
-		$error_format = "[%s]\nerrstr: %s\nerfile: %s(%d)\nervars: %s\netrace: -------";
-		$MSG_SEP = "\n\n";
-		//$errcontext = var_export($errcontext, true);
-		$line_break = "\n";
-	}else{
-		$error_format = '<p><b>%s</b></p><p>errstr: %s</p><p>erfile: %s(%d)</p><p>ervars: %s</p><p>etrace: -------</p>';
-		$MSG_SEP = '<hr />';
-		$errstr = str_replace(array("\n", ' ', "\t"), array('<br/>', '&nbsp;', '&nbsp;&nbsp;'), htmlspecialchars($errstr));
-		//$errcontext = str_replace(array("\n", ' ', "\t"), array('<br/>', '&nbsp;', '&nbsp;&nbsp;'), htmlspecialchars(var_export($errcontext, true)));
-		$line_break = '<br/>';
-	}
-	
-	$level = isset($ERR_MSG[$errno]) ? $ERR_MSG[$errno] : 'UNKNOWN('.$errno.')';
-	echo sprintf($error_format, $level, $errstr, $errfile, $errline, $errcontext);
-	foreach(debug_backtrace() as $n => $trace){
-		echo '#',$n, ' ', $trace['function'], '() called at ', $trace['file'], ':', $trace['line'], $line_break;
-	}
-	echo $MSG_SEP;
-	
-	if(E_USER_ERROR == $errno){
-		exit(1);
-	}
-	
-	/* Don't execute PHP internal error handler */
-	return true;
-	
-}
-set_error_handler('mbs_error_handle');
-
 //env and conf init;there are two kinds of const in the system.
 //one start with 'RTM_' what means 'run-time' defined;the other start
 //with 'CFG_' what means 'configuration(installing)' defined

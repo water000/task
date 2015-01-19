@@ -63,6 +63,11 @@ class CAppEnvironment{
 		return $this->getPath($mod, self::FT_ACTION.'/'.$action.'.php');
 	}
 	
+	//@file: a relative path in action dir
+	function file2action($file){
+		return ($pos = strrpos($file, '.php')) !== false ? substr($file, 0, $pos) : $file;
+	}
+	
 	function toURL($mod, $action='index', $args=array()){
 		$args['m'] = $mod;
 		$args['a'] = $action;
