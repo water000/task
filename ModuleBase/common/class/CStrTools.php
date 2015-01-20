@@ -5,7 +5,7 @@ class CStrTools {
 	static function isModifier($name)
 	{
 		if(($name[0]>='a' && $name[0]<='z')
-		|| ($name[0]>='A' && $name[0]<='Z'))
+		|| ($name[0]>='A' && $name[0]<='Z') || '_' == $name[0])
 			;
 		else
 			return false;
@@ -72,6 +72,11 @@ class CStrTools {
 				array(urlencode('"'), urlencode("'"), urlencode('<'), urlencode('>')),
 				$url
 		);
+	}
+	
+	static function cutstr($str, $maxlen, $charset, $suffix='...'){
+		return iconv_strlen($str, $charset) > $maxlen ? 
+			iconv_substr($str, 0, $maxlen, $charset).$suffix : $str; 
 	}
 }
 

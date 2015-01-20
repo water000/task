@@ -47,7 +47,7 @@ foreach($dest_mod_list as $mod){
 				$nofiles[] = $mod.'.'.$ac;
 			}
 		}
-	}	
+	}
 }
 usort($all_actions, create_function('$a, $b', 
 	'if($a["fmtime"] == $b["fmtime"]) return 0; return $a["fmtime"] > $b["fmtime"] ? 1 : -1;'));
@@ -60,11 +60,11 @@ $pageargs = array(CModDef::PA_TYP, CModDef::PA_REQ, CModDef::PA_EMP, CModDef::PA
 <style type="text/css">
 body{font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif"}
 body, p, td, ul{margin:0;padding:0;border:0;}
-.header{height: 60px;background: #252525; color:white;border-bottom: 1px solid #eee;}
+.header{height: 40px;background: #252525; color:white;border-bottom: 1px solid #eee;}
 .footer{height: 60px;background: #fff;border-top: 1px solid #eee;clear:both;margin-top:50px;}
-.warpper{width:1000px;min-height:100%;margin:0 auto;font-size:12px;}
+.warpper{width:100%;min-height:100%;background-color:#ddd;font-size:12px;}
 .content{margin-top:30px;}
-.left{width:170px;float:left;margin-top:80px;border:1px solid #bbb;border-top:3px solid #85BBEF;}
+.left{width:170px;float:left;margin-top:80px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
 .left p{font-size:12px; font-weight:bold; text-align:center;padding:6px 0; border-bottom:1px solid #ddd;}
 .left a{display:block;font-size:14px;text-decoration:none;padding:3px 8px;border-bottom:1px solid #e0e0e0;}
 .left a:hover{text-decoration:underline;}
@@ -80,43 +80,44 @@ ul li{list-style-type:none;}
 li.head{width:120px;}
 .even{background-color:#F1F1F1}
 
-.left{width:400px;margin-top:30px;}
+.warpper{width:100%;min-height:100%;background-color:#ddd;font-size:12px;}
+.content{margin:0 auto;width:1000px;min-height:800px;}
+.left{width:290px;margin:30px 0;background-color:#fff;float:left;}
 .left .action-item{font-size:12px;color:#333;position:relative;padding:3px 8px;border-bottom:1px solid #e0e0e0;cursor:pointer;}
 .left .action-item .title{font-weight:bold;}
 .left .action-item .date{float:right;}
 .left .action-item .desc{color:#888;padding:1px;}
-.right{width:0px;margin:auto 0px;background-color:#fff;}
+.right{width:630px;float:left;min-height:600px;margin:auto 0px;background-color:#fff;}
 .datediff{width:100px;margin: 0 auto;color:#555;}
 .datediff span{width:26px;height:1px;background-color:#ddd;display:inline-block;margin-top:10px;}
-.action{position:absolute;width:700px;top:-5px; left:401px;background-color:#E8E8A8;padding:10px 8px;}
-.action td, .action .pout{background-color:#fff;}
-.action .pout{padding: 3px 10px;}
-.left .action p{font-size:16px; font-weight:bold;color:#555;text-align:left;}
+.action{position:absolute;width:700px;min-height:600px;top:-26px; left:290px;background-color:#fff;padding:10px 8px;cursor:default;}
+.left .action p{font-size:14px; font-weight:bold;color:#555;text-align:left;}
 .left .action table{margin-bottom:20px;}
 .filter select, .filter span{float:right;margin-left:10px;}
+.even{background-color:#eee;}
 </style>
 </head>
 <body>
-<div class=header></div>
 <div class="warpper">
-	<h2 style="margin-top:30px;">Actions Info</h2>
-	<div class=filter>
-		<form action="<?=$mbs_appenv->toURL(RTM_MOD, RTM_ACTION)?>" method="get">
-			<select name=mod onchange="this.form.submit();">
-				<option value="">--all module--</option>
-			<?php foreach($mod_list as $mod){?><option value=<?=$mod?> <?=$mod==$_REQUEST['mod']?' selected':''?>><?=$mod?></option><?php }?>
-			</select>
-			<select name=otype onchange="this.form.submit();">
-				<option value="">--all output--</option>
-				<?php foreach($output_type as $type){?><option value=<?=$type?> <?=$type==$_REQUEST['otype']?' selected':''?>><?=$type?></option><?php }?>
-			</select>
-			<?php foreach($_GET as $k=>$v){ if('mod' == $k || 'otype' == $k) continue;?>
-			<input type="hidden" name="<?=$k?>" value="<?=$v?>" />
-			<?php }?>
-		</form>
-		<span>Filters: </span>
-	</div>
+	<div class=header></div>
 	<div class=content>
+		<h2 style="padding-top:15px;">Actions Info</h2>
+		<div class=filter>
+			<form action="<?=$mbs_appenv->toURL(RTM_MOD, RTM_ACTION)?>" method="get">
+				<select name=mod onchange="this.form.submit();">
+					<option value="">--all module--</option>
+				<?php foreach($mod_list as $mod){?><option value=<?=$mod?> <?=$mod==$_REQUEST['mod']?' selected':''?>><?=$mod?></option><?php }?>
+				</select>
+				<select name=otype onchange="this.form.submit();">
+					<option value="">--all output--</option>
+					<?php foreach($output_type as $type){?><option value=<?=$type?> <?=$type==$_REQUEST['otype']?' selected':''?>><?=$type?></option><?php }?>
+				</select>
+				<?php foreach($_GET as $k=>$v){ if('mod' == $k || 'otype' == $k) continue;?>
+				<input type="hidden" name="<?=$k?>" value="<?=$v?>" />
+				<?php }?>
+			</form>
+			<span>Filters: </span>
+		</div>
 		<div class=left id=IDD_LEFT>
 			<p>actions</p>
 <?php
@@ -141,37 +142,43 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 				<div>
 					<span class=title>[<?=$all_actions[$i]['_mod']?>.<?=$all_actions[$i]['_name']?>]
 						<?=CStrTools::txt2html($def[CModDef::P_TLE])?></span>
-					<span class=date><?=date('m-d H:i', $fmtime)?></span>
 				</div>
-				<div class=desc><?=$mbs_appenv->toURL($all_actions[$i]['_mod'], $all_actions[$i]['_name'])?></div>
-				<div class=desc><?=CStrTools::txt2html($def[CModDef::G_DC])?></div>
+				<div class=desc><?=CStrTools::txt2html(CStrTools::cutstr($def[CModDef::G_DC], 45, $mbs_appenv->item('charset')))?></div>
 				<div class="action" style="display: none;">
+					<p>Basic Info</p>
+					<table cellspacing=0>
+						<tr><th>URL</th><td><?=$mbs_appenv->toURL($all_actions[$i]['_mod'], $all_actions[$i]['_name'])?></td></tr>
+						<tr><th>Last Modify</th><td><?=date('m-d H:i', $fmtime)?></td></tr>
+						<tr><th>Desc</th><td><?=CStrTools::txt2html($def[CModDef::G_DC])?></td></tr>
+						<?php if(isset($def[CModDef::P_MGR])){?><tr><th>admin</th><td>yes</td></tr><?php }?>
+					</table>
 					<p><?=CModDef::lang(CModDef::P_ARGS)?></p>
 					<table cellspacing=0>
 						<tr><th><?=CModDef::lang(CModDef::G_NM)?></th>
 							<?php foreach($pageargs as $pa){?><th><?=CModDef::lang($pa)?></th><?php }?>
-							<th style="width: 20%;"><?=CModDef::lang(CModDef::G_DC)?></th>
+							<th style="width: 30%;"><?=CModDef::lang(CModDef::G_DC)?></th>
 						</tr>
-							<?php foreach($def[CModDef::P_ARGS] as $key => $args){?>
-							<tr>
+							<?php $n=1; foreach($def[CModDef::P_ARGS] as $key => $args){?>
+							<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
 							<td><?=$key?></td>
 							<?php next($pageargs); foreach($pageargs as $pa){ ?>
-							<td><?=isset($args[$pa])?CStrTools::txt2html($args[$pa]):''?></td>
+							<td><?=isset($args[$pa])?$args[$pa]:''?></td>
 							<?php } ?>
 							<td><?=CStrTools::txt2html($args[CModDef::G_DC])?></td>
 							</tr>
 							<?php } ?>
 					</table>
 					<p><?=CModDef::lang(CModDef::P_OUT)?></p>
-					<div class=pout><?=isset($def[CModDef::P_OUT]) ? CStrTools::txt2html($def[CModDef::P_OUT]) : 'empty'?></div>
+					<table><tr><td style="border:0;">
+						<?=isset($def[CModDef::P_OUT]) ? CStrTools::txt2html($def[CModDef::P_OUT]) : 'empty'?>
+					</td></tr></table>
 				</div>
 			</div>
 <?php } ?>
 		</div>
-		<div class=right>
-		</div>
 		<div style="clear: both"></div>
 	</div>
+	<div class=footer></div>
 </div>
 <script type="text/javascript">
 var g_curAction = null;
