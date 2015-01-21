@@ -23,7 +23,7 @@ function mbs_import($mod, $class){
 	$numargs = func_num_args();
 	for($i=1; $i<$numargs; ++$i){
 		$c = $args[$i];
-		$path = $mbs_appenv->getClassPath($mod, $c);
+		$path = $mbs_appenv->getClassPath($c, $mod);
 		require_once $path;
 		if(!class_exists($c) && !interface_exists($c)){
 			trigger_error('import class or interface "'.$c.'" not exists in: '.$path, E_USER_ERROR);
@@ -117,7 +117,7 @@ if(empty($action)){
 
 define('RTM_MOD',         $mod);
 define('RTM_ACTION',      $action);
-define('RTM_ACTION_PATH', $mbs_appenv->getActionPath($mod, $action));
+define('RTM_ACTION_PATH', $mbs_appenv->getActionPath($action, $mod));
 
 if(!file_exists(RTM_ACTION_PATH)){
 	trigger_error('Invalid request: '.$mod.'.'.$action, E_USER_ERROR);
@@ -150,9 +150,9 @@ if(function_exists('fastcgi_finish_request'))
 	fastcgi_finish_request();
 	
 if(RTM_DEBUG){
-	CDbPool::getInstance()->html(); 
-	CMemcachedPool::getInstance()->html();
-	var_dump($_REQUEST);
+	//CDbPool::getInstance()->html(); 
+	//CMemcachedPool::getInstance()->html();
+	//var_dump($_REQUEST);
 }
 
 exit(0);

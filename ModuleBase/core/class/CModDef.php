@@ -192,7 +192,7 @@ abstract class CModDef {
 	}
 	
 	private static function _class_exists($mod, $class){
-		$path = self::$appenv->getClassPath($mod, $class);
+		$path = self::$appenv->getClassPath($class, $mod);
 		if(file_exists($path)){
 			require_once $path;
 			$c = strpos($class, '/');
@@ -260,7 +260,7 @@ abstract class CModDef {
 				$error[] = sprintf('invalid file name "%s" in "%s" def',
 					$script, self::PAGE_ARG);
 			else{
-				$path = self::$appenv->getActionPath($mod, $script);
+				$path = self::$appenv->getActionPath($script, $mod);
 				if(!file_exists($path))
 					$error[] = sprintf('"%s"(%s) not exist in "%s" def',
 						$script, $path, self::PAGE_ARG);
@@ -321,7 +321,7 @@ abstract class CModDef {
 			foreach(explode(',', $modac) as $ma){
 				list($mod, $action) = explode('.', $ma, 2);
 				if(is_dir(self::$appenv->getDir($mod))){
-					$path = self::$appenv->getActionPath($mod, $action);
+					$path = self::$appenv->getActionPath($action, $mod);
 					if(!file_exists($path))
 						$error[] = sprintf('action "%s"(%s) not exist on classdef "%s" in "%s" def',
 							$action, $ma, $class, self::LTN);
@@ -383,7 +383,7 @@ abstract class CModDef {
 		}
 		
 		foreach($pages as $action => $p){
-			if(!file_exists($this->appenv->getActionPath($mod, $action))){
+			if(!file_exists($this->appenv->getActionPath($action, $mod))){
 				$error[] = sprintf('no such action %s', $action);
 			}
 		}

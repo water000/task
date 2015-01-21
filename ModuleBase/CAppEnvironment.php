@@ -9,7 +9,7 @@ class CAppEnvironment{
 	private static $instance = null;
 	
 	private $env = array(
-		/* config item */
+		/**********config item **********/
 		'site_name'         => '',
 		'charset'           => 'utf-8',
 		'class_file_suffix' => '.php',
@@ -24,8 +24,16 @@ class CAppEnvironment{
 			//... more
 		),
 		'default_module'    => 'index',
-		/* config item end */
+		/********** config end **********/
 		
+		
+		/********** runtime item **********/
+		'app_root'          => '', // assigned by construct
+		'web_root'          => '', // assigned by construct
+		'cur_mod'           => '', // assigned by fromURL
+		'cur_action'        => '', // assigned by fromURL
+		'cur_action_url'    => '', // assigned by fromURL
+			
 	);
 	
 	private function __construct(){
@@ -51,16 +59,16 @@ class CAppEnvironment{
 		return $this->env['app_root'].$mod.'/'.(empty($file_type) ? '' : $file_type.'/');
 	}
 	
-	function getPath($mod, $filename){
-		return $this->getDir($mod).$filename;
+	function getPath($filename, $mod=''){
+		return $this->getDir(empty($mod) ? $this->env['cur_mod'] : $mod).$filename;
 	}
 	
-	function getClassPath($mod, $classname){
-		return $this->getPath($mod, self::FT_CLASS.'/'.$classname.$this->env['class_file_suffix']);
+	function getClassPath($classname, $mod=''){
+		return $this->getPath(self::FT_CLASS.'/'.$classname.$this->env['class_file_suffix'], $mod);
 	}
 	
-	function getActionPath($mod, $action){
-		return $this->getPath($mod, self::FT_ACTION.'/'.$action.'.php');
+	function getActionPath($action, $mod=''){
+		return $this->getPath(self::FT_ACTION.'/'.$action.'.php', $mod);
 	}
 	
 	//@file: a relative path in action dir
@@ -83,11 +91,14 @@ class CAppEnvironment{
 			$arr2 = array('', '');
 		}
 		$arr2[] = $arr;
+		$this->env['cur_mod']    = $arr2[0];
+		$this->env['cur_action'] = $arr2[1];
+		$this->env['cur_action_url'] = $this->toURL($arr2[0], $arr2[1]);
 		return $arr2;
 	}
 	
-	function getURL($mod, $filename){
-		return $this->env['web_root'].$mod.'/'.$filename;
+	function getURL($filename, $mod=''){
+		return $this->env['web_root'].(empty($mod) ? $this->env['cur_mod'] : $mod).'/'.$filename;
 	}
 	
 	function getModDefInfo($mod){

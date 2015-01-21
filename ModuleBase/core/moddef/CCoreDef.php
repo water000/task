@@ -1,7 +1,7 @@
 <?php
 
 class CCoreDef extends CModDef{
-	function desc(){
+	protected function desc(){
 		return array(
 		    self::MOD => array(
 		    	self::G_NM=>'core', 

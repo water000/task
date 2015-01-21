@@ -35,11 +35,13 @@ $curtime = time();
 $nofiles = array();
 foreach($dest_mod_list as $mod){
 	$moddef = mbs_moddef($mod);
+	if(empty($moddef))
+		continue;
 	$actions_def = $moddef->item(CModDef::PAGES);
 	
 	if(!empty($actions_def)){
 		foreach($actions_def as $ac => $acdef){
-			$fpath = $mbs_appenv->getActionPath($mod, $ac);
+			$fpath = $mbs_appenv->getActionPath($ac, $mod);
 			if(file_exists($fpath)){
 				$all_actions[] = array('_mod'=>$mod, '_name'=>$ac,
 						 'actiondef'=>$acdef, 'fmtime'=>filemtime($fpath));
@@ -52,18 +54,21 @@ foreach($dest_mod_list as $mod){
 usort($all_actions, create_function('$a, $b', 
 	'if($a["fmtime"] == $b["fmtime"]) return 0; return $a["fmtime"] > $b["fmtime"] ? 1 : -1;'));
 
-$pageargs = array(CModDef::PA_TYP, CModDef::PA_REQ, CModDef::PA_EMP, CModDef::PA_TRI, CModDef::PA_RNG);
+$pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0', 
+		CModDef::PA_EMP=>1, CModDef::PA_TRI=>1, CModDef::PA_RNG=>'');
 ?>
 <!doctype html>
 <html>
 <head>
 <style type="text/css">
-body{font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif"}
+body{font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif";font-size:12px;}
 body, p, td, ul{margin:0;padding:0;border:0;}
+ul li{list-style-type:none;}
 .header{height: 40px;background: #252525; color:white;border-bottom: 1px solid #eee;}
 .footer{height: 60px;background: #fff;border-top: 1px solid #eee;clear:both;margin-top:50px;}
-.warpper{width:100%;min-height:100%;background-color:#ddd;font-size:12px;}
+.warpper{width:100%;min-height:100%;background-color:#ddd;font-size:12px;position:relative;}
 .content{margin-top:30px;}
+
 .left{width:170px;float:left;margin-top:80px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
 .left p{font-size:12px; font-weight:bold; text-align:center;padding:6px 0; border-bottom:1px solid #ddd;}
 .left a{display:block;font-size:14px;text-decoration:none;padding:3px 8px;border-bottom:1px solid #e0e0e0;}
@@ -103,7 +108,7 @@ li.head{width:120px;}
 	<div class=content>
 		<h2 style="padding-top:15px;">Actions Info</h2>
 		<div class=filter>
-			<form action="<?=$mbs_appenv->toURL(RTM_MOD, RTM_ACTION)?>" method="get">
+			<form action="<?=$mbs_appenv->item('cur_action_url')?>" method="get">
 				<select name=mod onchange="this.form.submit();">
 					<option value="">--all module--</option>
 				<?php foreach($mod_list as $mod){?><option value=<?=$mod?> <?=$mod==$_REQUEST['mod']?' selected':''?>><?=$mod?></option><?php }?>
@@ -155,14 +160,14 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 					<p><?=CModDef::lang(CModDef::P_ARGS)?></p>
 					<table cellspacing=0>
 						<tr><th><?=CModDef::lang(CModDef::G_NM)?></th>
-							<?php foreach($pageargs as $pa){?><th><?=CModDef::lang($pa)?></th><?php }?>
-							<th style="width: 30%;"><?=CModDef::lang(CModDef::G_DC)?></th>
+							<?php foreach(array_keys($pageargs) as $pa){?><th><?=CModDef::lang($pa)?></th><?php }?>
+							<th style="width: 40%;"><?=CModDef::lang(CModDef::G_DC)?></th>
 						</tr>
 							<?php $n=1; foreach($def[CModDef::P_ARGS] as $key => $args){?>
 							<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
 							<td><?=$key?></td>
-							<?php next($pageargs); foreach($pageargs as $pa){ ?>
-							<td><?=isset($args[$pa])?$args[$pa]:''?></td>
+							<?php next($pageargs); foreach($pageargs as $pa=>$defval){ ?>
+							<td><?=isset($args[$pa])?$args[$pa]:$defval?></td>
 							<?php } ?>
 							<td><?=CStrTools::txt2html($args[CModDef::G_DC])?></td>
 							</tr>

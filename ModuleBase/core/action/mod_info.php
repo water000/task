@@ -9,17 +9,17 @@ if(isset($_REQUEST['mod'])){
 	$selected_mod = $_REQUEST['mod'];
 }
 $moddef = mbs_moddef($selected_mod);
-$modinfo = $moddef->desc();
 ?>
 <!doctype html>
 <html>
 <head>
 <style type="text/css">
-body{font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif"}
+body{font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif";font-size:12px;}
 body, p, td, ul{margin:0;padding:0;border:0;}
+ul li{list-style-type:none;}
 .header{height:40px;background: #252525; color:white;border-bottom: 1px solid #eee;}
 .footer{height:40px;background: #fff;border-top: 1px solid #eee;clear:both;margin-top:50px;}
-.warpper{width:100%;min-height:100%;background-color:#ddd;font-size:12px;}
+.warpper{width:100%;min-height:100%;background-color:#ddd;font-size:12px;position:relative;}
 .content{margin:0 auto;width:1000px;min-height:800px;}
 
 .left{width:170px;float:left;margin-top:80px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
@@ -35,7 +35,7 @@ table , ul{background-color:#fff;}
 tbody th, li.head{font-size:12px;padding:3px 0; font-weight:bold;text-align:center;background-color: #ccccff;border-bottom:1px solid #666;}
 tbody td, ul li{border-bottom:1px solid #888;padding:3px;}
 ul{float:left;width:120px;word-wrap:break-word;}
-ul li{list-style-type:none;}
+
 li.head{width:120px;}
 .even{background-color:#eee}
 </style>
