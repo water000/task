@@ -103,20 +103,13 @@ if(false !== strpos(PHP_SAPI, 'cli')){
  	list($mod, $action, $args) = $mbs_appenv->fromURL();
 }
 
-if(empty($mod)){
-	$mod = $mbs_appenv->item('default_module');
-}else if(!CStrTools::isModifier($mod)){
+if(!CStrTools::isModifier($mod)){
 	trigger_error('Invalid module', E_USER_ERROR);
 }
-
-if(empty($action)){
-	$action = 'index.php';
-}else if(!CStrTools::isModifier($action)){
+if(!CStrTools::isModifier($action)){
 	trigger_error('Invalid action', E_USER_ERROR);
 }
 
-define('RTM_MOD',         $mod);
-define('RTM_ACTION',      $action);
 define('RTM_ACTION_PATH', $mbs_appenv->getActionPath($action, $mod));
 
 if(!file_exists(RTM_ACTION_PATH)){

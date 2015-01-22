@@ -1,5 +1,5 @@
 <?php 
-
+error_reporting(0);
 $dest_mod_list = $mod_list = $mbs_appenv->getModList();
 if(isset($_REQUEST['mod']) && !empty($_REQUEST['mod'])){
 	if(!in_array($_REQUEST['mod'], $mod_list)){
@@ -61,32 +61,27 @@ $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0',
 <html>
 <head>
 <style type="text/css">
-body{font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif";font-size:12px;}
+body{font-size:12px;color:#333;font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif"; }
 body, p, td, ul{margin:0;padding:0;border:0;}
 ul li{list-style-type:none;}
 .header{height: 40px;background: #252525; color:white;border-bottom: 1px solid #eee;}
 .footer{height: 60px;background: #fff;border-top: 1px solid #eee;clear:both;margin-top:50px;}
-.warpper{width:100%;min-height:100%;background-color:#ddd;font-size:12px;position:relative;}
-.content{margin-top:30px;}
+.warpper{width:100%;min-height:100%;background-color:#fff;font-size:12px;position:relative;}
+.content{margin:30px auto 0;margin-top:30px;width:1000px;}
 
-.left{width:170px;float:left;margin-top:80px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
-.left p{font-size:12px; font-weight:bold; text-align:center;padding:6px 0; border-bottom:1px solid #ddd;}
-.left a{display:block;font-size:14px;text-decoration:none;padding:3px 8px;border-bottom:1px solid #e0e0e0;}
-.left a:hover{text-decoration:underline;}
-.left a.current{background-color:#e0e0e0;font-weight:bold;}
-.right{float:left;width:700px;padding:20px 30px;margin:0 30px;background-color: #F8F8F8}
-h2{color:#555;margin:0;text-align:center;}
+.vertical-manu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;overflow:hidden}
+.vertical-manu p.title{border-bottom:1px solid #bbb;background-color:#fff;font-weight:bold; text-align:center;padding:3px 0;}
+.vertical-manu a{padding:2px 5px; display:block;text-decoration:none;border:1px solid #fff;}
+.vertical-manu a:hover, .vertical-manu a.cur{border:1px solid #85BBEF; background-color:#C6E0FA;}
+
+p.table_title{font-size:14px; font-weight:bold;color:#555;text-align:left;padding:3px 5px;}
 table{width:100%;border:1px solid #aaa;margin-bottom:30px;}
-.right p{font-size:16px; font-weight:bold;padding:8px 3px;color:#555;}
-tbody th, li.head{font-size:12px; font-weight:bold;text-align:center;padding:5px 0;width:80px;border-bottom:1px solid #aaa;background-color: #ccccff}
-tbody td, ul li{border-bottom:1px solid #aaa;padding:5px 3px;color:#333333;}
-ul{float:left;width:120px;overflow:hidden;}
-ul li{list-style-type:none;}
-li.head{width:120px;}
-.even{background-color:#F1F1F1}
+tbody th, li.head{font-size:12px; font-weight:bold;text-align:center;padding:5px 0;border-bottom:1px solid #aaa;background-color: #ccccff}
+tbody td, ul li{border-bottom:1px solid #aaa;padding:5px 3px;color:#333;}
 
-.warpper{width:100%;min-height:100%;background-color:#ddd;font-size:12px;}
-.content{margin:0 auto;width:1000px;min-height:800px;}
+body, .warpper{background-color:#ddd;}
+h2{color:#555;margin:0;text-align:center;}
+
 .left{width:290px;margin:30px 0;background-color:#fff;float:left;}
 .left .action-item{font-size:12px;color:#333;position:relative;padding:3px 8px;border-bottom:1px solid #e0e0e0;cursor:pointer;}
 .left .action-item .title{font-weight:bold;}
@@ -95,8 +90,7 @@ li.head{width:120px;}
 .right{width:630px;float:left;min-height:600px;margin:auto 0px;background-color:#fff;}
 .datediff{width:100px;margin: 0 auto;color:#555;}
 .datediff span{width:26px;height:1px;background-color:#ddd;display:inline-block;margin-top:10px;}
-.action{position:absolute;width:700px;min-height:600px;top:-26px; left:290px;background-color:#fff;padding:10px 8px;cursor:default;}
-.left .action p{font-size:14px; font-weight:bold;color:#555;text-align:left;}
+.action{position:absolute;width:700px;min-height:600px;top:-26px; left:290px;background-color:#fff;padding:10px 8px;cursor:default;display:none;}
 .left .action table{margin-bottom:20px;}
 .filter select, .filter span{float:right;margin-left:10px;}
 .even{background-color:#eee;}
@@ -123,8 +117,8 @@ li.head{width:120px;}
 			</form>
 			<span>Filters: </span>
 		</div>
-		<div class=left id=IDD_LEFT>
-			<p>actions</p>
+		<div class="left vertical-manu" id=IDD_LEFT>
+			<p class=title>actions</p>
 <?php
 $dayago = -1;
 
@@ -140,7 +134,9 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 	$ago = intval(($curtime - $fmtime)/86400);
 	if($dayago != $ago){ 
 		$dayago = $ago;
-		echo '<div class=datediff><span></span>',(0 == $ago ? '今天' : ($ago < 7 ? $ago.'天前' : '更久')),'<span></span></div>';
+		echo '<div class=datediff><span></span>',
+			(0 == $ago ? $mbs_appenv->lang('today') : ($ago < 7 ? $ago.$mbs_appenv->lang('days_ago') : $mbs_appenv->lang('long_aog'))),
+			'<span></span></div>';
 	}
 ?>
 			<div class=action-item onclick="_action(this)">
@@ -150,18 +146,18 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 				</div>
 				<div class=desc><?=CStrTools::txt2html(CStrTools::cutstr($def[CModDef::G_DC], 45, $mbs_appenv->item('charset')))?></div>
 				<div class="action" style="display: none;">
-					<p>Basic Info</p>
+					<p class=table_title>Basic Info</p>
 					<table cellspacing=0>
 						<tr><th>URL</th><td><?=$mbs_appenv->toURL($all_actions[$i]['_mod'], $all_actions[$i]['_name'])?></td></tr>
 						<tr><th>Last Modify</th><td><?=date('m-d H:i', $fmtime)?></td></tr>
 						<tr><th>Desc</th><td><?=CStrTools::txt2html($def[CModDef::G_DC])?></td></tr>
 						<?php if(isset($def[CModDef::P_MGR])){?><tr><th>admin</th><td>yes</td></tr><?php }?>
 					</table>
-					<p><?=CModDef::lang(CModDef::P_ARGS)?></p>
+					<p class=table_title><?=$mbs_appenv->lang(CModDef::P_ARGS)?></p>
 					<table cellspacing=0>
-						<tr><th><?=CModDef::lang(CModDef::G_NM)?></th>
-							<?php foreach(array_keys($pageargs) as $pa){?><th><?=CModDef::lang($pa)?></th><?php }?>
-							<th style="width: 40%;"><?=CModDef::lang(CModDef::G_DC)?></th>
+						<tr><th><?=$mbs_appenv->lang(CModDef::G_NM)?></th>
+							<?php foreach(array_keys($pageargs) as $pa){?><th><?=$mbs_appenv->lang($pa)?></th><?php }?>
+							<th style="width: 40%;"><?=$mbs_appenv->lang(CModDef::G_DC)?></th>
 						</tr>
 							<?php $n=1; foreach($def[CModDef::P_ARGS] as $key => $args){?>
 							<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
@@ -173,7 +169,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 							</tr>
 							<?php } ?>
 					</table>
-					<p><?=CModDef::lang(CModDef::P_OUT)?></p>
+					<p class=table_title><?=$mbs_appenv->lang(CModDef::P_OUT)?></p>
 					<table><tr><td style="border:0;">
 						<?=isset($def[CModDef::P_OUT]) ? CStrTools::txt2html($def[CModDef::P_OUT]) : 'empty'?>
 					</td></tr></table>

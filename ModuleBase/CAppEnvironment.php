@@ -12,6 +12,7 @@ class CAppEnvironment{
 		/**********config item **********/
 		'site_name'         => '',
 		'charset'           => 'utf-8',
+		'lang'              => 'zh_CN',
 		'class_file_suffix' => '.php',
 		'table_prefix'      => 'mbs_',
 		'database'          => array(
@@ -35,6 +36,8 @@ class CAppEnvironment{
 		'cur_action_url'    => '', // assigned by fromURL
 			
 	);
+	
+	private $mod_cfg = array();
 	
 	private function __construct(){
 		$this->env['app_root'] = dirname(__FILE__).'/';
@@ -84,12 +87,9 @@ class CAppEnvironment{
 	
 	function fromURL($url=''){
 		parse_str(empty($url) ? $_SERVER['QUERY_STRING'] : $url, $arr);
-		if(isset($arr['m']) && isset($arr['a'])){
-			$arr2 = array($arr['m'], $arr['a']);
-			unset($arr['m'], $arr['a']);
-		}else{
-			$arr2 = array('', '');
-		}
+		$arr2 = array();
+		$arr2[0] = isset($arr['m']) ? $arr['m'] : $this->env['default_module'];
+		$arr2[1] = isset($arr['a']) ? $arr['a'] : 'index';
 		$arr2[] = $arr;
 		$this->env['cur_mod']    = $arr2[0];
 		$this->env['cur_action'] = $arr2[1];
@@ -126,6 +126,30 @@ class CAppEnvironment{
 		}
 		
 		return $list;
+	}
+	
+	function config($item, $cfg='default', $mod=''){
+		$mod = empty($mod) ? $this->env['cur_mod'] : $mod;
+		if(!isset($this->mod_cfg[$mod][$cfg])){
+			$path = $this->getPath('config/'.$cfg.'.php', $mod);
+			if(file_exists($path)){
+				require_once $path;
+				if(isset($$cfg)){
+					$this->mod_cfg[$mod][$cfg] = $$cfg;
+				}else{
+					$this->mod_cfg[$mod][$cfg] = null;
+					trigger_error('no such config found: '.$cfg, E_USER_WARNING);
+				}
+			}else{
+				trigger_error('no such config file: '.$mod.'.'.$cfg, E_USER_ERROR);
+			}
+		}
+		
+		return isset($this->mod_cfg[$mod][$cfg][$item]) ? $this->mod_cfg[$mod][$cfg][$item] : $item;
+	}
+	
+	function lang($item, $mod=''){
+		return $this->config($item, 'lang_'.$this->env['lang'], $mod);
 	}
 
 }

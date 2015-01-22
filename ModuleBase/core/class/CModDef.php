@@ -47,37 +47,8 @@ abstract class CModDef {
 	CONST LD_FTR = 'load_filter'; // do filter checking on each script in the module
 	CONST DEPEXT = 'dependent'; // checking wether the current environment included the extension or function. = array(ext1, ext2, ...)
 	
-	protected static  $lang_dict = array(
-		self::G_NM   => '名称',
-		self::G_CS   => '类名',
-		self::G_TL   => '标题',
-		self::G_DC   => '描述',
-		self::MOD    => '模块',
-		self::M_CS   => '字符集',
-		self::FTR    => '过滤器',
-		self::TAG    => '标签',
-		self::TBDEF  => '表定义',
-		self::LTN    => '监听器',
-		self::LD_FTR => '加载过滤器',
-		self::DEPEXT => '依赖库/方法',
-		self::PAGES  => '请求/页面',
-		self::P_TLE  => '标题',
-		self::P_MGR  => '是否管理',
-		self::P_ARGS => '输入参数',
-		self::P_OUT  => '输出',
-		self::PA_TYP => '类型',
-		self::PA_REQ => '必须存在',
-		self::PA_EMP => '允许为空',
-		self::PA_TRI => '是否trim',
-		self::PA_RNG => '范围',
-	);
-	
 	private static $appenv = null;
 	private $desc = null;
-	
-	static function lang($item){
-		return isset(self::$lang_dict[$item]) ? self::$lang_dict[$item] : $item;
-	}
 	
 	/**
 	 * @return array(
