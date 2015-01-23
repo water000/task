@@ -447,7 +447,7 @@ abstract class CModDef {
  					}
  				}
  				
-				if($opts[CModDef::PA_TRI] && isset($_REQUEST[$name]))
+				if($opts[CModDef::PA_TRI] && isset($_REQUEST[$name]) && is_string($_REQUEST[$name]))
 					$_REQUEST[$name] = trim($_REQUEST[$name]);
  					
 				if(!$opts[CModDef::PA_EMP] && isset($_REQUEST[$name]) && empty($_REQUEST[$name])){

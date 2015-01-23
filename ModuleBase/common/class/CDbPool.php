@@ -1,7 +1,6 @@
 <?php
 /*
  * @depend-lib: string array Exception PDO CPDODebug
- * @depend-constant: CFG_CHARSET
  */
  
 require_once dirname(__FILE__).'/IDebugOutput.php';
@@ -28,10 +27,12 @@ class CDbPool implements IDebugOutput
 	CONST CLASS_PDODEBUG = 'CPDODebug';
 	
 	private static $oInstance = null;
+	private static $charset = '';
 	
 	private $arrConn = array();
 	private $arrConnDebug = array();
 	private $sClassName = self::CLASS_PDO;
+	
 	
 	/**
 	 * @desc all db instance conf(pool), like this"
@@ -50,6 +51,10 @@ class CDbPool implements IDebugOutput
 	
 	static function setConf($arr){
 		self::$arrConfig = array_merge(self::$arrConfig, $arr);
+	}
+	
+	static function setCharset($charset){
+		self::$charset = $charset;
 	}
 	
 	static function appendConf($host, $port, $dbname, $user, $pwd){
@@ -251,7 +256,8 @@ class CDbPool implements IDebugOutput
 			else
 				$obj = new PDO($sDSN, $conf['username'], $conf['pwd']);
 				
-			$obj->query('set names '.str_replace('-', '',CFG_CHARSET));
+			if(!empty(self::$charset))
+				$obj->query('set names '.str_replace('-', '',self::$charset));
 		}
 		catch(PDOException $e)
 		{

@@ -34,7 +34,9 @@ function mbs_import($mod, $class){
 
 mbs_import('core', 'CModDef');
 
-mbs_import('common', 'CDbPool', 'CMemcachedPool', 'CSession', 'CStrTools');
+mbs_import('common', 'CDbPool', 'CMemcachedPool', 
+	'CUniqRowControl', 'CUniqRowOfTable', 'CUniqRowOfCache',
+	'CSession', 'CStrTools');
 if(!class_exists('Memcached', false))
 	mbs_import('common', 'Memcached');
 
@@ -123,6 +125,7 @@ if(empty($mbs_cur_moddef)){
 }
 
 CDbPool::setConf($mbs_appenv->item('database'));
+CDbPool::setCharset($mbs_appenv->item('charset'));
 if(count($mbs_appenv->item('memcache')) > 0){
 	CMemcachedPool::setConf($mbs_appenv->item('memcache'));
 }

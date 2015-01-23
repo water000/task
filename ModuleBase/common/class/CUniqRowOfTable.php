@@ -10,7 +10,7 @@ class CUniqRowOfTable implements IUniqRowOfTable
 	protected        $tbname     = null;
 	protected static $pdos       = null;
 
-	protected function __construct($oPdoConn, $tbname, $keyname, $primaryKey)
+	/*protected*/ function __construct($oPdoConn, $tbname, $keyname, $primaryKey)
 	{
 		$this->oPdoConn   = $oPdoConn;
 		$this->primaryKey = $primaryKey;
