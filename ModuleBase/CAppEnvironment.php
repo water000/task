@@ -29,11 +29,11 @@ class CAppEnvironment{
 		
 		
 		/********** runtime item **********/
-		'app_root'          => '', // assigned by construct
-		'web_root'          => '', // assigned by construct
-		'cur_mod'           => '', // assigned by fromURL
-		'cur_action'        => '', // assigned by fromURL
-		'cur_action_url'    => '', // assigned by fromURL
+		'app_root'          => '', // assigned by __construct()
+		'web_root'          => '', // assigned by __construct()
+		'cur_mod'           => '', // assigned by fromURL()
+		'cur_action'        => '', // assigned by fromURL()
+		'cur_action_url'    => '', // assigned by fromURL()
 			
 	);
 	
@@ -138,10 +138,10 @@ class CAppEnvironment{
 					$this->mod_cfg[$mod][$cfg] = $$cfg;
 				}else{
 					$this->mod_cfg[$mod][$cfg] = null;
-					trigger_error('no such config found: '.$cfg, E_USER_WARNING);
+					trigger_error('no such config item defined: '.$cfg, E_USER_WARNING);
 				}
 			}else{
-				trigger_error('no such config file: '.$mod.'.'.$cfg, E_USER_ERROR);
+				trigger_error('no such config file found: '.$mod.'.'.$cfg, E_USER_ERROR);
 			}
 		}
 		

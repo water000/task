@@ -69,14 +69,14 @@ ul li{list-style-type:none;}
 .warpper{width:100%;min-height:100%;background-color:#fff;font-size:12px;position:relative;}
 .content{margin:30px auto 0;margin-top:30px;width:1000px;}
 
-.vertical-manu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;overflow:hidden}
+.vertical-manu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
 .vertical-manu p.title{border-bottom:1px solid #bbb;background-color:#fff;font-weight:bold; text-align:center;padding:3px 0;}
 .vertical-manu a{padding:2px 5px; display:block;text-decoration:none;border:1px solid #fff;}
 .vertical-manu a:hover, .vertical-manu a.cur{border:1px solid #85BBEF; background-color:#C6E0FA;}
 
 p.table_title{font-size:14px; font-weight:bold;color:#555;text-align:left;padding:3px 5px;}
 table{width:100%;border:1px solid #aaa;margin-bottom:30px;}
-tbody th, li.head{font-size:12px; font-weight:bold;text-align:center;padding:5px 0;border-bottom:1px solid #aaa;background-color: #ccccff}
+tbody th, li.head{font-size:12px; font-weight:bold;text-align:center;padding:5px 0;border-bottom:1px solid #aaa;background-color: #ccccff;min-width:80px;}
 tbody td, ul li{border-bottom:1px solid #aaa;padding:5px 3px;color:#333;}
 
 body, .warpper{background-color:#ddd;}
@@ -90,7 +90,7 @@ h2{color:#555;margin:0;text-align:center;}
 .right{width:630px;float:left;min-height:600px;margin:auto 0px;background-color:#fff;}
 .datediff{width:100px;margin: 0 auto;color:#555;}
 .datediff span{width:26px;height:1px;background-color:#ddd;display:inline-block;margin-top:10px;}
-.action{position:absolute;width:700px;min-height:600px;top:-26px; left:290px;background-color:#fff;padding:10px 8px;cursor:default;display:none;}
+.action{position:absolute;width:700px;min-height:400px;top:-26px; left:290px;background-color:#fff;padding:10px 8px;cursor:default;}
 .left .action table{margin-bottom:20px;}
 .filter select, .filter span{float:right;margin-left:10px;}
 .even{background-color:#eee;}
@@ -216,7 +216,7 @@ function _action(ac){
 	pop = _getPop(ac);
 	if(pop != null){
 		pop.style.display = "";
-		ac.style.backgroundColor="#eee";
+		ac.style.backgroundColor="#ddd";
 	}
 }
 if(g_curAction != null){

@@ -17,6 +17,7 @@ define('IN_INDEX', 1); //ref file: install.php, CModule.php
 require 'CAppEnvironment.php';
 $mbs_appenv = CAppEnvironment::getInstance();
 
+// import class only
 function mbs_import($mod, $class){
 	global $mbs_appenv;
 	$args = func_get_args();
@@ -56,7 +57,7 @@ function mbs_moddef($mod){
 			trigger_error($class.' not instance of CModDef', E_USER_WARNING);
 		}
 	}else{
-		trigger_error($path.' not exists', E_USER_WARNING);
+		//trigger_error($mod.' mod not exists', E_USER_WARNING);
 	}
 	
 	$modbuf[$mod] = $obj;

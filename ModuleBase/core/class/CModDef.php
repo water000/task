@@ -115,6 +115,16 @@ abstract class CModDef {
 		return $ctx;
 	}
 	
+	function getMgrActions(){
+		$ret = array();
+		
+		foreach($this->desc[self::PAGES] as $ac => $def){
+			if(isset($def[CModDef::P_MGR]))
+				$ret[$ac] = $def[CModDef::P_TLE];
+		}
+		
+		return $ret;
+	}
 	
 	static function isIdentifier($str){
 		$ret = false;
@@ -389,7 +399,7 @@ abstract class CModDef {
 	}
 	
 	
-	function checkarg($action){
+	function checkargs($action){
 		static $error_desc = array(
 			'no_such_depend_arg_appeared' => '参数 "%s" 需要 "%s", 但是未出现',
 			'no_such_depend_arg_defined'  => '参数 "%s" 需要 "%s", 但是未定义',
@@ -399,7 +409,7 @@ abstract class CModDef {
 			'arg_length_invalid'          => '参数 "%s" 长度(%d)无效, 需要(%s)',
 		);
 		$error = array();
-		if(isset($this->desc[self::PAGES][$action][self::PAGE_ARG])){
+		if(isset($this->desc[self::PAGES][$action][self::P_ARGS])){
 			$defopts = array(
 	 			self::PA_REQ => 1, 
 	 			self::PA_DEP => null, 
@@ -427,7 +437,7 @@ abstract class CModDef {
  				}
 	 			
  				if($opts[CModDef::PA_REQ]){
- 					if('file' == strtolower($opt[self::PA_TYP]) && !isset($_FILES[$opt[self::PA_TYP]])){
+ 					if('file' == strtolower($opts[self::PA_TYP]) && !isset($_FILES[$opts[self::PA_TYP]])){
  						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], $name);
  						continue;
  					}

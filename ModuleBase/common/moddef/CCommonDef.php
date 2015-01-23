@@ -9,6 +9,7 @@ class CCommonDef extends CModDef{
 		    /*self::LTN => array(
 		    	'class' => 'mod.action1,mod.action2,...'
 		    ),*/
+			self::PAGES => array(),
 	  );
 	}
 }
