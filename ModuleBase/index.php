@@ -40,6 +40,17 @@ mbs_import('common', 'CDbPool', 'CMemcachedPool',
 if(!class_exists('Memcached', false))
 	mbs_import('common', 'Memcached');
 
+CDbPool::setConf($mbs_appenv->item('database'));
+CDbPool::setCharset($mbs_appenv->item('charset'));
+if(count($mbs_appenv->item('memcache')) > 0){
+	CMemcachedPool::setConf($mbs_appenv->item('memcache'));
+}
+if(RTM_DEBUG){
+	CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
+	CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
+}
+
+
 
 function mbs_moddef($mod){
 	global $mbs_appenv;
@@ -56,7 +67,7 @@ function mbs_moddef($mod){
 		$obj = new $class($mbs_appenv);
 		if(! $obj instanceof CModDef){
 			$obj = null;
-			trigger_error($class.' not instance of CModDef', E_USER_WARNING);
+			trigger_error($class.' not instance of CModDef', E_USER_ERROR);
 		}
 	}else{
 		//trigger_error($mod.' mod not exists', E_USER_WARNING);
@@ -113,43 +124,36 @@ if(!CStrTools::isModifier($action)){
 	trigger_error('Invalid action', E_USER_ERROR);
 }
 
-define('RTM_ACTION_PATH', $mbs_appenv->getActionPath($action, $mod));
-
-if(!file_exists(RTM_ACTION_PATH)){
-	trigger_error('Invalid request: '.$mod.'.'.$action, E_USER_ERROR);
-}
 
 $mbs_cur_moddef = mbs_moddef($mod);
 if(empty($mbs_cur_moddef)){
 	trigger_error('no such module: '.$mod, E_USER_ERROR);
 }
 
-CDbPool::setConf($mbs_appenv->item('database'));
-CDbPool::setCharset($mbs_appenv->item('charset'));
-if(count($mbs_appenv->item('memcache')) > 0){
-	CMemcachedPool::setConf($mbs_appenv->item('memcache'));
+if('install' == $action){
+	$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
+	echo empty($err)? 'install complete, successed' : 'error', "\n", implode("\n<br/>", $err);
+	
+}else{
+	define('RTM_ACTION_PATH', $mbs_appenv->getActionPath($action, $mod));
+	if(!file_exists(RTM_ACTION_PATH)){
+		trigger_error('Invalid request: '.$mod.'.'.$action, E_USER_ERROR);
+	}
+	//do filter checking
+	if(!$mbs_cur_moddef->loadFilters()){
+		exit(1);
+	}
+	
+	header('Content-Type: text/html; charset='.$mbs_appenv->item('charset'));
+	require RTM_ACTION_PATH;
 }
-
-if(RTM_DEBUG){
-	CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
-	CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
-}
-
-//do filter checking
-if(!$mbs_cur_moddef->loadFilters()){
-	exit(1);
-}
-
-header('Content-Type: text/html; charset='.$mbs_appenv->item('charset'));
-require RTM_ACTION_PATH;
 
 if(function_exists('fastcgi_finish_request'))
 	fastcgi_finish_request();
 	
 if(RTM_DEBUG){
-	//CDbPool::getInstance()->html(); 
-	//CMemcachedPool::getInstance()->html();
-	//var_dump($_REQUEST);
+	CDbPool::getInstance()->html(); 
+	CMemcachedPool::getInstance()->html();
 }
 
 exit(0);

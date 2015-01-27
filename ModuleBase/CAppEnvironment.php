@@ -30,7 +30,8 @@ class CAppEnvironment{
 		
 		/********** runtime item **********/
 		'app_root'          => '', // assigned by __construct()
-		'web_root'          => '', // assigned by __construct()
+		'web_root'          => '/', // assigned by __construct(). NOTICE: must be '/' if using url-rewrite conditions , else to empty
+		'client_ip'         => '', // assigned by __construct()
 		'cur_mod'           => '', // assigned by fromURL()
 		'cur_action'        => '', // assigned by fromURL()
 		'cur_action_url'    => '', // assigned by fromURL()
@@ -41,7 +42,8 @@ class CAppEnvironment{
 	
 	private function __construct(){
 		$this->env['app_root'] = dirname(__FILE__).'/';
-		$this->env['web_root'] = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')+1);
+		$this->env['web_root'] = empty($this->env['web_root']) ? 
+			substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')+1) : $this->env['web_root'];
 		$this->env['client_ip'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] 
 			: (isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] 
 			: (isset($_SERVER['REMOTE_ADDR'])? $_SERVER['REMOTE_ADDR'] : '0.0.0.0' ));
@@ -79,21 +81,42 @@ class CAppEnvironment{
 		return ($pos = strrpos($file, '.php')) !== false ? substr($file, 0, $pos) : $file;
 	}
 	
-	function toURL($mod, $action='index', $args=array()){
+	function toURL($action='index', $mod='', $args=array()){
+		/*
 		$args['m'] = $mod;
 		$args['a'] = $action;
 		return $this->env['web_root'].'index.php?'.http_build_query($args);
+		*/
+		
+		// detail at the 'fromURL()'
+		return $this->env['web_root'].(empty($mod)?$this->env['cur_mod']:$mod).'/'.$action.'?'.http_build_query($args);
 	}
 	
 	function fromURL($url=''){
+		/*
+		// this version use the 'm' and 'a' to request directly without using any url-rewrite conditions
 		parse_str(empty($url) ? $_SERVER['QUERY_STRING'] : $url, $arr);
 		$arr2 = array();
 		$arr2[0] = isset($arr['m']) ? $arr['m'] : $this->env['default_module'];
 		$arr2[1] = isset($arr['a']) ? $arr['a'] : 'index';
 		$arr2[] = $arr;
+		*/
+		
+		// to enable the url-rewrite on server
+		//RewriteEngine on
+  		//RewriteRule ^/(.+)/(js|css|image)/(.*)     -                       [L,QSA]
+  		//RewriteRule ^/favicon.ico   -                       [L,QSA]
+  		//RewriteRule ^(.*)$          /index.php?__path__=$1  [B,L,QSA] 
+		$arr = explode('/', trim($_GET['__path__'], '/'));
+		$arr2[0] = isset($arr['0']) ? $arr['0'] : $this->env['default_module'];
+		$arr2[1] = isset($arr['1']) ? $arr['1'] : 'index';
+		unset($_GET['__path__']);
+		$arr2[] = $_GET;
+
 		$this->env['cur_mod']    = $arr2[0];
 		$this->env['cur_action'] = $arr2[1];
-		$this->env['cur_action_url'] = $this->toURL($arr2[0], $arr2[1]);
+		$this->env['cur_action_url'] = $this->toURL($arr2[1], $arr2[0]);
+
 		return $arr2;
 	}
 	
@@ -108,7 +131,7 @@ class CAppEnvironment{
 	}
 	
 	function formatTableName($name){
-		return empty($this->env['table_prefix']) ? $name : $this->env['table_prefix'].'_'.$name;
+		return empty($this->env['table_prefix']) ? $name : $this->env['table_prefix'].$name;
 	}
 	
 	function getModList(){

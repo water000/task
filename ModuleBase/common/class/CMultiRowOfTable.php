@@ -45,8 +45,9 @@ class CMultiRowOfTable extends CUniqRowOfTable implements IMultiRowOfTable
 	}
 	
 	function get(){
-		$sql = sprintf('SELECT * FROM %s WHERE %s=%d', 
-			$this->tbname, $this->keyname, $this->primaryKey);
+		$sql = sprintf('SELECT * FROM %s WHERE %s=%d Limit %d, %d', 
+			$this->tbname, $this->keyname, $this->primaryKey, 
+			($this->pageId-1)*$this->numPerPage, $this->numPerPage);
 		try {
 			$pdos = $this->oPdoConn->query($sql);
 			$ret = $pdos->fetchAll();
@@ -123,7 +124,20 @@ class CMultiRowOfTable extends CUniqRowOfTable implements IMultiRowOfTable
 		
 		return $ret;
 	}
-	function getTotal(){}
+	
+	function getTotal(){
+		$sql = sprintf('SELECT count(1) FROM %s WHERE %s=%d', 
+				$this->tbname, $this->keyname, $this->primaryKey);
+		try{
+			$ret = $this->oPdoConn->query($sql);
+			$ret = $pdos->fetchAll();
+			$ret = empty($ret) ? 0 : $ret[0][0];
+		}catch (Exception $e) {
+			throw $e;
+		}
+		
+		return $ret;
+	}
 }
 
 ?>

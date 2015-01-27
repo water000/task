@@ -53,7 +53,7 @@ li.head{width:120px;}
 		<div class="left vertical-manu" >
 			<p class=title><?=$mbs_appenv->lang('mod_list')?></p>
 			<?php foreach($mod_list as $mod){?>
-			<a href="<?=$mbs_appenv->toURL($mbs_appenv->item('cur_mod'), $mbs_appenv->item('cur_action'), array('mod'=>$mod))?>" <?=$mod==$selected_mod?' class=cur':''?>><?=$mod?></a>
+			<a href="<?=$mbs_appenv->toURL($mbs_appenv->item('cur_action'), array('mod'=>$mod))?>" <?=$mod==$selected_mod?' class=cur':''?>><?=$mod?></a>
 			<?php }?>
 		</div>
 		<div class=right>

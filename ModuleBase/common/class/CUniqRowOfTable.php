@@ -112,6 +112,7 @@ class CUniqRowOfTable implements IUniqRowOfTable
 	}
 	
  	function del(){
+ 		$ret = null;
  		$sql = sprintf('DELETE FROM %s WHERE %s=%d', 
  			$this->tbname, $this->keyname, $this->primaryKey);
  			
@@ -122,6 +123,20 @@ class CUniqRowOfTable implements IUniqRowOfTable
 		}
 		
 		return $ret;
+ 	}
+ 	
+ 	function listAll(){
+ 		$ret = null;
+ 		
+ 		try {
+ 			$pdos = $this->oPdoConn->query('SELECT * FROM '.$this->tbname);
+ 			$ret  = $pdos->fetchAll();
+ 			 
+ 		} catch (Exception $e) {
+ 			throw $e;
+ 		}
+ 		
+ 		return $ret;
  	}
 }
 

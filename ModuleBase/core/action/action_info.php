@@ -148,7 +148,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 				<div class="action" style="display: none;">
 					<p class=table_title>Basic Info</p>
 					<table cellspacing=0>
-						<tr><th>URL</th><td><?=$mbs_appenv->toURL($all_actions[$i]['_mod'], $all_actions[$i]['_name'])?></td></tr>
+						<tr><th>URL</th><td><?=$mbs_appenv->toURL($all_actions[$i]['_name'], $all_actions[$i]['_mod'])?></td></tr>
 						<tr><th>Last Modify</th><td><?=date('m-d H:i', $fmtime)?></td></tr>
 						<tr><th>Desc</th><td><?=CStrTools::txt2html($def[CModDef::G_DC])?></td></tr>
 						<?php if(isset($def[CModDef::P_MGR])){?><tr><th>admin</th><td>yes</td></tr><?php }?>

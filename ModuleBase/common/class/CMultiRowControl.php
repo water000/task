@@ -1,9 +1,9 @@
 <?php
 /**
- * Ò»¶Ô¶à(Ò»¸öID, ¶àÌõ¼ÇÂ¼¡£ÀýÈçºÃÓÑ±í)µÄ¶ÔÏóÂß¼­¿ØÖÆ.
- * CMultiRowControlÖÐµÄgetÔÚ´ËÀàÖÐÒâË¼±äÎª»ñÈ¡¼ÇÂ¼ÁÐ±í£¬¶ø
- * ·ÇÒ»Ìõ¼ÇÂ¼;add·½·¨²»ÄÜÊ¹ÓÃ£¬»»ÎªaddNode;set ÓÃ·¨Í¬add;
- * destroyÒâË¼¸Ä±äÎªÉ¾³ýÁÐ±í
+ * Ò»ï¿½Ô¶ï¿½(Ò»ï¿½ï¿½ID, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ±ï¿½)ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½.
+ * CMultiRowControlï¿½Ðµï¿½getï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¼ï¿½ï¿½Îªï¿½ï¿½È¡ï¿½ï¿½Â¼ï¿½Ð±ï¿½ï¿½ï¿½
+ * ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Â¼;addï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã£ï¿½ï¿½ï¿½ÎªaddNode;set ï¿½Ã·ï¿½Í¬add;
+ * destroyï¿½ï¿½Ë¼ï¿½Ä±ï¿½ÎªÉ¾ï¿½ï¿½ï¿½Ð±ï¿½
  * @author Administrator
  *
  */
@@ -71,7 +71,7 @@ class CMultiRowControl extends CUniqRowControl
 			
 		try
 		{	
-			if(empty($this->oCache))
+			if($this->oCache)
 			{
 				$this->arrBuf[$this->bufkey] = $this->oCache->get();
 				if(false === $this->arrBuf[$this->bufkey])

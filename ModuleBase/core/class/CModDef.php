@@ -47,7 +47,7 @@ abstract class CModDef {
 	CONST LD_FTR = 'load_filter'; // do filter checking on each script in the module
 	CONST DEPEXT = 'dependent'; // checking wether the current environment included the extension or function. = array(ext1, ext2, ...)
 	
-	private static $appenv = null;
+	protected static $appenv = null;
 	private $desc = null;
 	
 	/**
@@ -232,40 +232,40 @@ abstract class CModDef {
 	private static function _parg($parg, $mod, &$error, &$warning){
 		if(!is_array($parg)){
 			$error[] = sprintf('need ARRAY, "%s" was given in "%s" def', 
-				gettype($parg), self::PAGE_ARG);
+				gettype($parg), self::P_ARGS);
 			return;
 		}
 		$var = '0';
 		foreach($parg as $script => $arr){
 			if(strpos($script, '..') !== false)
 				$error[] = sprintf('invalid file name "%s" in "%s" def',
-					$script, self::PAGE_ARG);
+					$script, self::P_ARGS);
 			else{
 				$path = self::$appenv->getActionPath($script, $mod);
 				if(!file_exists($path))
 					$error[] = sprintf('"%s"(%s) not exist in "%s" def',
-						$script, $path, self::PAGE_ARG);
+						$script, $path, self::P_ARGS);
 			}
 			if(!is_array($arr)){
 				$error[] = sprintf('need ARRAY, "%s" was given on page "%s" in "%s" def', 
-					gettype($arr), $script, self::PAGE_ARG);
+					gettype($arr), $script, self::P_ARGS);
 				continue;
 			}
 			foreach($arr as $arg => $opt){
 				if(!self::isIdentifier($arg))
 					$error[] = sprintf('invalid identifier "%s" on page "%s" in "%s" def', 
-						$arg, $script, self::PAGE_ARG);
+						$arg, $script, self::P_ARGS);
 				else{
 					if(!is_array($opt))
 						$error[] = sprintf('need ARRAY, "%s" was given at arg "%s" on page "%s" in "%s" def', 
-							gettype($opt), $arg, $script, self::PAGE_ARG);
+							gettype($opt), $arg, $script, self::P_ARGS);
 					else {
 						if(isset($opt[self::PARG_TYP]) && !settype($var, $opt[self::PARG_TYP]))
 							$error[] = sprintf('unsupported type "%s" at arg "%s" on page "%s" in "%s" def', 
-								$opt[self::PARG_TYP], $arg, $script, self::PAGE_ARG);
+								$opt[self::PARG_TYP], $arg, $script, self::P_ARGS);
 						if(isset($opt[self::PARG_DEP]) && !isset($parg[$opt[self::PARG_DEP]]))
 							$error[] = sprintf('not existed dep-arg "%s" at arg "%s" on page "%s" in "%s" def', 
-								$opt[self::PARG_DEP], $arg, $script, self::PAGE_ARG);
+								$opt[self::PARG_DEP], $arg, $script, self::P_ARGS);
 					}
 				}
 			}
@@ -364,13 +364,13 @@ abstract class CModDef {
 		}
 		
 		foreach($pages as $action => $p){
-			if(!file_exists($this->appenv->getActionPath($action, $mod))){
+			if(!file_exists(self::$appenv->getActionPath($action, $mod))){
 				$error[] = sprintf('no such action %s', $action);
 			}
 		}
 	}
 	
-	static function syntax(){
+	function syntax(){
 		$error = array();
 		$warning = array();
 		$modname = '';
@@ -378,7 +378,7 @@ abstract class CModDef {
 		static $err_func = array(
 			//self::MOD      => '_mod',
 			self::TAG      => '_tag',
-			self::PAGE_ARG => '_parg',
+			self::P_ARGS   => '_parg',
 			self::TBDEF    => '_tbdef',
 			self::LTN      => '_listener',
 			self::LD_FTR   => '_load_filter',
@@ -390,8 +390,9 @@ abstract class CModDef {
 		self::_mod($this->desc, $modname, $error, $warning);
 		foreach($this->desc as $key => $def){
 			if(isset($err_func[$key])){
-				call_user_func(array('CModDef', $err_func[$key]),
-					$def, $modname, $error, $warning);
+				//call_user_func(array('CModDef', $err_func[$key]),
+				//	$def, $modname, $error, $warning);
+				self::$err_func[$key]($def, $modname, $error, $warning);
 			}
 		}
 		
@@ -438,11 +439,13 @@ abstract class CModDef {
 	 			
  				if($opts[CModDef::PA_REQ]){
  					if('file' == strtolower($opts[self::PA_TYP]) && !isset($_FILES[$opts[self::PA_TYP]])){
- 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], $name);
+ 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
+ 								(isset($opts[self::G_DC]) ? $opts[self::G_DC].':' : '').$name);
  						continue;
  					}
  					else if(!isset($_REQUEST[$name])){
- 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], $name);
+ 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
+ 								(isset($opts[self::G_DC]) ? $opts[self::G_DC].':' : '').$name);
  						continue;
  					}
  				}
@@ -529,12 +532,13 @@ abstract class CModDef {
 		return true;
 	}
 	
-	function install_tables($dbpool, $tabledef){
+	function installTables($dbpool, $tabledef){
 		$error = array();
 		$pdoconn = $dbpool->getDefaultConnection();
 		foreach($tabledef as $name => $def){
 			$ret = $pdoconn->exec(sprintf('CREATE TABLE IF NOT EXISTS %s%s CHARACTER SET=%s', 
-				self::$appenv->formatTableName($name), $def, str_replace('-', '', $this->appenv->item('charset'))));
+				self::$appenv->formatTableName($name), $def, 
+				str_replace('-', '', self::$appenv->item('charset'))));
 			if(false === $ret){
 				list($id, $code, $str) = $pdoconn->errorInfo();
 				if($id != '00000'){
@@ -548,7 +552,7 @@ abstract class CModDef {
 	function install($dbpool, $mempool=null){
 		$modinfo = $this->desc;
 		
-		list($err, $war) = self::syntax($modinfo);
+		list($err, $war) = $this->syntax($modinfo);
 		$err += $war;
 		if(count($err) > 0)
 			return $err;
@@ -556,7 +560,7 @@ abstract class CModDef {
 		if(isset($modinfo[self::TBDEF]) && 
 			count($modinfo[self::TBDEF]) > 0)
 		{
-			$err = $this->install_tables($dbpool, $modinfo[self::TBDEF]);
+			$err = $this->installTables($dbpool, $modinfo[self::TBDEF]);
 			if(!empty($err)){
 				return $err;
 			}
