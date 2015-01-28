@@ -41,7 +41,7 @@ class CAppEnvironment{
 	private $mod_cfg = array();
 	
 	private function __construct(){
-		$this->env['app_root'] = dirname(__FILE__).'/';
+		$this->env['app_root'] = realpath(dirname(__FILE__).'/..').'/';
 		$this->env['web_root'] = empty($this->env['web_root']) ? 
 			substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')+1) : $this->env['web_root'];
 		$this->env['client_ip'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] 
@@ -89,7 +89,8 @@ class CAppEnvironment{
 		*/
 		
 		// detail at the 'fromURL()'
-		return $this->env['web_root'].(empty($mod)?$this->env['cur_mod']:$mod).'/'.$action.'?'.http_build_query($args);
+		return $this->env['web_root'].(empty($mod)?$this->env['cur_mod']:$mod).'/'.$action
+			.(empty($args) ? '' : '?'.http_build_query($args));
 	}
 	
 	function fromURL($url=''){
@@ -139,7 +140,8 @@ class CAppEnvironment{
 		
 		if ($dh = opendir($this->env['app_root'])) {
 			while (($file = readdir($dh)) !== false) {
-				if($file[0] != '.' && is_dir($this->env['app_root'].$file)){
+				if($file[0] != '.' && is_dir($this->env['app_root'].$file) 
+						&& is_dir($this->env['app_root'].$file.'/'.self::FT_MODDEF)){
 					$list[] = $file;
 				}
 			}

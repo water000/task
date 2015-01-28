@@ -13,27 +13,8 @@ $moddef = mbs_moddef($selected_mod);
 <!doctype html>
 <html>
 <head>
+<link href="<?=$mbs_appenv->getURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
-body{font-size:12px;color:#333;font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif"; }
-body, p, td, ul{margin:0;padding:0;border:0;}
-ul li{list-style-type:none;}
-.header{height: 40px;background: #252525; color:white;border-bottom: 1px solid #eee;}
-.footer{height: 60px;background: #fff;border-top: 1px solid #eee;clear:both;margin-top:50px;}
-.warpper{width:100%;min-height:100%;background-color:#fff;font-size:12px;position:relative;}
-.content{margin:30px auto 0;margin-top:30px;width:1000px;}
-
-.vertical-manu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
-.vertical-manu p.title{border-bottom:1px solid #bbb;background-color:#fff;font-weight:bold; text-align:center;padding:3px 0;}
-.vertical-manu a{padding:2px 5px; display:block;text-decoration:none;border:1px solid #fff;}
-.vertical-manu a:hover, .vertical-manu a.cur{border:1px solid #85BBEF; background-color:#C6E0FA;}
-
-p.table_title{font-size:14px; font-weight:bold;color:#555;text-align:left;padding:3px 5px;}
-table{width:100%;border:1px solid #aaa;margin-bottom:30px;}
-tbody th, li.head{font-size:12px; font-weight:bold;text-align:center;padding:5px 0;border-bottom:1px solid #aaa;background-color: #ccccff;min-width:80px;}
-tbody td, ul li{border-bottom:1px solid #aaa;padding:5px 3px;color:#333;}
-
-.warpper{background-color:#ddd;}
-
 .left{width:170px;float:left;margin-top:80px;}
 .left a{font-size:14px;}
 
