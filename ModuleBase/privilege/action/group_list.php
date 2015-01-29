@@ -11,7 +11,7 @@ $all = $priv_group->getDB()->listAll();
 <head>
 <link href="<?=$mbs_appenv->getURL('core.css', 'core')?>" rel="stylesheet">
 <style type="text/css">
-.content{width:1000px; margin:30px auto 0;}
+.content{background-color:#fff}
 .content p.title{padding:2px 0;margin-top:5px;color:green;}
 .mg-content{margin:0 10px;padding:20px 0;}
 .content span{width:150px;display:inline-block;float:left;padding:2px 0;}
@@ -68,6 +68,7 @@ p.table_title a:hover{text-decoration:underline;color:white;}
 					echo '<span>', $ac, '</span>';
 				}
 			}
+			echo '</div>';
 		}
 	}
 	?>

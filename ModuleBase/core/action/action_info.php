@@ -1,5 +1,5 @@
 <?php 
-error_reporting(0);
+
 $dest_mod_list = $mod_list = $mbs_appenv->getModList();
 if(isset($_REQUEST['mod']) && !empty($_REQUEST['mod'])){
 	if(!in_array($_REQUEST['mod'], $mod_list)){
@@ -51,24 +51,23 @@ usort($all_actions, create_function('$a, $b',
 	'if($a["fmtime"] == $b["fmtime"]) return 0; return $a["fmtime"] > $b["fmtime"] ? 1 : -1;'));
 
 $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0', 
-		CModDef::PA_EMP=>1, CModDef::PA_TRI=>1, CModDef::PA_RNG=>'');
+		CModDef::PA_EMP=>1, CModDef::PA_RNG=>'');
 ?>
 <!doctype html>
 <html>
 <head>
 <link href="<?=$mbs_appenv->getURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
-.content{background-color:#ddd;}
-.left{width:290px;margin:50px 0 0;background-color:#fff;float:left;}
+.left{width:290px;margin:30px 0 0;background-color:#fff;float:left;}
 .left .action-item{font-size:12px;color:#333;position:relative;padding:3px 8px;border-bottom:1px solid #e0e0e0;cursor:pointer;}
 .left .action-item .title{font-weight:bold;}
 .left .action-item .date{float:right;}
 .left .action-item .desc{color:#888;padding:1px;}
-.right{position:fixed;width:690px;;min-height:600px;margin:30px 0 0 313px;background-color:#fff;}
+.right{position:fixed;width:690px;;min-height:500px;margin:30px 0 0 313px;background-color:#fff;}
 .datediff{width:100px;margin: 0 auto;color:#555;}
 .datediff span{width:26px;height:1px;background-color:#ddd;display:inline-block;margin-top:10px;}
-.action{background-color:#fff;margin:10px 8px;cursor:default;}
-.left .action table{margin-bottom:20px;}
+.action{width:670px;background-color:#fff;margin:10px auto;cursor:default;}
+.action table{margin-bottom:20px;overflow-x:scroll;word-wrap:break-word;word-break:break-word;}
 .filter select, .filter span{float:right;margin-left:10px;}
 .even{background-color:#eee;}
 </style>
@@ -112,7 +111,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 	if($dayago != $ago){ 
 		$dayago = $ago;
 		echo '<div class=datediff><span></span>',
-			(0 == $ago ? $mbs_appenv->lang('today') : ($ago < 7 ? $ago.$mbs_appenv->lang('days_ago') : $mbs_appenv->lang('long_aog'))),
+			(0 == $ago ? $mbs_appenv->lang('today') : ($ago < 7 ? $ago.$mbs_appenv->lang('days_ago') : $mbs_appenv->lang('long_ago'))),
 			'<span></span></div>';
 	}
 ?>
@@ -134,7 +133,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 					<table cellspacing=0>
 						<tr><th><?=$mbs_appenv->lang(CModDef::G_NM)?></th>
 							<?php foreach(array_keys($pageargs) as $pa){?><th><?=$mbs_appenv->lang($pa)?></th><?php }?>
-							<th style="width: 40%;"><?=$mbs_appenv->lang(CModDef::G_DC)?></th>
+							<th width=40%><?=$mbs_appenv->lang(CModDef::G_DC)?></th>
 						</tr>
 							<?php $n=1; foreach($def[CModDef::P_ARGS] as $key => $args){?>
 							<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
@@ -147,7 +146,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 							<?php } ?>
 					</table>
 					<p class=table_title><?=$mbs_appenv->lang(CModDef::P_OUT)?></p>
-					<table><tr><td>
+					<table><tr><td style="font-size: 13px;">
 						<?=isset($def[CModDef::P_OUT]) ? CStrTools::txt2html($def[CModDef::P_OUT]) : 'NULL'?>
 					</td></tr></table>
 				</div>

@@ -1,5 +1,7 @@
 <?php
 
+defined('IN_INDEX') or exit('access denied');
+
 class CAppEnvironment{
 
 	CONST FT_CLASS      = 'class';	
@@ -175,6 +177,26 @@ class CAppEnvironment{
 	
 	function lang($item, $mod=''){
 		return $this->config($item, 'lang_'.$this->env['lang'], $mod);
+	}
+	
+	/*
+	 * get the module name by extracting $path(=__FILE__) passed. 
+	 * ex:$mbs_appenv->modF(__FILE__). 
+	 * NOTICE: the path not exists in _wwwroot  
+	 */
+	function modF($path){
+		$len = strlen($this->env['app_root']);
+		if(0 == substr_compare($path, $this->env['app_root'], $len)){
+			$next = strpos($path, DIRECTORY_SEPARATOR, $len);
+			if($next !== false){
+				return substr($path, $len, $next-$len);
+			}else{
+				trigger_error('Invalid path, need a file but dir passed: '.$path, E_USER_WARNING);
+			}
+		}else{
+			trigger_error('Invalid path in the system: '.$path, E_USER_WARNING);
+		}
+		return '';
 	}
 
 }

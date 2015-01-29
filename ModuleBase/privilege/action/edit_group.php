@@ -46,7 +46,7 @@ if(isset($_REQUEST['group_id'])){
 <link href="<?=$mbs_appenv->getURL('core.css', 'core')?>" rel="stylesheet">
 <style type="text/css">
 body, .warpper{background-color:#fff;}
-.content{width:1000px;margin:0 auto;background-color:#fff;}
+.content{background-color:#fff;}
 h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 .left{width:600px;float:left;}
 .right{width:320px;float:left;padding:0 20px 20px;background-color:#eee;}
