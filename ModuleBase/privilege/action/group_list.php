@@ -9,6 +9,7 @@ $all = $priv_group->getDB()->listAll();
 <!doctype html>
 <html>
 <head>
+<title><?php $mbs_cur_moddef->title($mbs_appenv->item('cur_action'), $mbs_appenv->item('site_name'))?></title>
 <link href="<?=$mbs_appenv->getURL('core.css', 'core')?>" rel="stylesheet">
 <style type="text/css">
 .content{background-color:#fff}

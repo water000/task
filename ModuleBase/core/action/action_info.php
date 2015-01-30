@@ -56,6 +56,7 @@ $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0',
 <!doctype html>
 <html>
 <head>
+<title><?php $mbs_cur_moddef->title($mbs_appenv->item('cur_action'), $mbs_appenv->item('site_name'))?></title>
 <link href="<?=$mbs_appenv->getURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 .left{width:290px;margin:30px 0 0;background-color:#fff;float:left;}

@@ -532,6 +532,11 @@ abstract class CModDef {
 		return true;
 	}
 	
+	function title($action, $site_name){
+		echo $this->item(self::PAGES, $action, self::P_TLE), 
+			'-', $this->item(self::MOD, self::G_TL), '-', $site_name;
+	}
+	
 	function installTables($dbpool, $tabledef){
 		$error = array();
 		$pdoconn = $dbpool->getDefaultConnection();

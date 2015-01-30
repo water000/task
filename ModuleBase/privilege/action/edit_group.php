@@ -43,6 +43,7 @@ if(isset($_REQUEST['group_id'])){
 <!doctype html>
 <html>
 <head>
+<title><?php $mbs_cur_moddef->title($mbs_appenv->item('cur_action'), $mbs_appenv->item('site_name'))?></title>
 <link href="<?=$mbs_appenv->getURL('core.css', 'core')?>" rel="stylesheet">
 <style type="text/css">
 body, .warpper{background-color:#fff;}
@@ -62,7 +63,6 @@ h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 
 .submit_btn{display:block;width:100%;height:32px;font-weight:bold;margin:0 auto;}
 </style>
-<title><?=$action_def[CModDef::P_TLE]?></title>
 </head>
 <body>
 <div class="warpper">

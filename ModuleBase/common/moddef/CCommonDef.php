@@ -18,7 +18,7 @@ class CCommonDef extends CModDef{
 						'ts'        => array(self::PA_REQ=>1, self::G_DC=>'请求的时间戳'),
 						'sign'      => array(self::PA_REQ=>1, self::G_DC=>'身份签名，用于检验是否是有效客户端。md5(phone_num+ts+APPKEY)')
 					),
-					self::P_OUT => '{success:0/1: msg:"如果失败，输出错误信息", captcha_num:""}'
+					self::P_OUT => '{success:0/1, msg:"如果失败，输出错误信息", captcha_num:""}'
 				),
 				'img_captcha' => array(
 					self::P_TLE => '图形验证码',

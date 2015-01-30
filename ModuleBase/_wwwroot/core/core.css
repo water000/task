@@ -14,7 +14,13 @@ ul li{list-style-type:none;}
 
 p.table_title{font-size:14px; font-weight:bold;color:#555;text-align:left;padding:3px 5px;}
 table{width:100%;margin-bottom:30px;background-color:#fff;border-top:1px solid #aaa;}
-tbody th, li.head{font-size:12px; font-weight:bold;text-align:center;padding:5px 0;background-color: #ccccff;min-width:70px;}
+tbody th, li.head{font-size:12px;border-bottom:1px solid #bbb; font-weight:bold;text-align:center;padding:5px 0;background-color: #ccccff;min-width:70px;}
 tbody td, ul li{border-bottom:1px solid #ddd;padding:5px 3px;color:#333;}
 
 h2{color:#555;margin:0;text-align:center;}
+
+.success, .error{border: 1px solid #ECDBDB;position:relative;padding: 20px 0;text-align: center;background-color: rgb(249, 250, 225);border: 1px solid #ECDBDB;font-weight: bold;font-size: 14px;width: 90%;margin: 20px auto;}
+.success a.close, .error a.close{position:absolute; top:2px; right:2px; color:#999;font-size:12px;}
+.success a.close:hover, .error a.close:hover{color:#333;}
+.success {color: green;}
+.error {color: red;}

@@ -13,6 +13,7 @@ $moddef = mbs_moddef($selected_mod);
 <!doctype html>
 <html>
 <head>
+<title><?php $mbs_cur_moddef->title($mbs_appenv->item('cur_action'), $mbs_appenv->item('site_name'))?></title>
 <link href="<?=$mbs_appenv->getURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 .left{width:170px;float:left;margin-top:80px;}
@@ -41,7 +42,7 @@ li.head{width:120px;}
 			<p class=table_title><?=$mbs_appenv->lang(CModDef::MOD)?></p>
 			<table cellspacing=0>
 			<?php foreach($moddef->item(CModDef::MOD) as $key => $val){ ?>
-			<tr><th><?=$mbs_appenv->lang($key)?></th><td><?=$val?></td></tr>
+			<tr><th style="width:70px;"><?=$mbs_appenv->lang($key)?></th><td><?=$val?></td></tr>
 			<?php } ?>
 			</table>
 			<p class=table_title><?=$mbs_appenv->lang(CModDef::TBDEF)?></p>

@@ -17,8 +17,7 @@ class CUserDef extends CModDef {
 					password char(32) not null, -- md5(submit-password)
 					reg_ts int unsigned not null, -- register timestamp
 					reg_ip varchar(32) not null, -- not only include ipv4 but also include ipv6
-					third_platform_id char(32) not null, -- value=md5(([weixin, weibo, ...])+returned-id-by-third-platform)
-					third_platform_src tinyint not null, -- 1: weixin, 2:weibo, ...
+					third_platform_id char(33) not null, -- value=([1:weixin, 2:weibo, ...])+md5(returned-id-by-third-platform)
 					primary key(id),
 					unique key(phone_num),
 					unique key(third_platform_id)
@@ -42,7 +41,7 @@ class CUserDef extends CModDef {
 						'third_platform_id'  => array(self::G_DC=>'第三方认证平台返回的唯一编码;如果此参数不存在，则password必须存在'),
 						'third_platform_src' => array(self::G_DC=>'第三方平台的来源，1:weixin, 2:weibo, 3...;当third_platform_id出现后，此参数必须存在'),
 						'ts'                 => array(self::PA_REQ=>1, self::G_DC=>'请求的时间戳'),
-						'sign'               => array(self::PA_REQ=>1, self::G_DC=>'身份签名，用于检验是否是有效客户端。md5(phone_num+[password/third_platform_id]+ts+APPKEY)'),
+						'sign'               => array(self::PA_REQ=>1, self::G_DC=>'身份签名，用于检验是否是有效客户端。md5(phone_num+password/third_platform_id+ts+APPKEY)'),
 					),
 					self::P_OUT => '{success:0/1, msg:"如果失败， 返回错误提示.成功后返回user_id", user_id:111}',
 				),
