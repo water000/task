@@ -13,7 +13,7 @@ $moddef = mbs_moddef($selected_mod);
 <!doctype html>
 <html>
 <head>
-<title><?php $mbs_cur_moddef->title($mbs_appenv->item('cur_action'), $mbs_appenv->item('site_name'))?></title>
+<title><?php mbs_title()?></title>
 <link href="<?=$mbs_appenv->getURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 .left{width:170px;float:left;margin-top:80px;}

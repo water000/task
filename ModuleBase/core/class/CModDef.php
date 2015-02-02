@@ -531,18 +531,13 @@ abstract class CModDef {
 		}
 		return true;
 	}
-	
-	function title($action, $site_name){
-		echo $this->item(self::PAGES, $action, self::P_TLE), 
-			'-', $this->item(self::MOD, self::G_TL), '-', $site_name;
-	}
-	
+
 	function installTables($dbpool, $tabledef){
 		$error = array();
 		$pdoconn = $dbpool->getDefaultConnection();
 		foreach($tabledef as $name => $def){
 			$ret = $pdoconn->exec(sprintf('CREATE TABLE IF NOT EXISTS %s%s CHARACTER SET=%s', 
-				self::$appenv->formatTableName($name), $def, 
+				self::$appenv->tbname($name), $def, 
 				str_replace('-', '', self::$appenv->item('charset'))));
 			if(false === $ret){
 				list($id, $code, $str) = $pdoconn->errorInfo();

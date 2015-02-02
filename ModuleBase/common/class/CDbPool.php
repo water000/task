@@ -214,6 +214,9 @@ class CDbPool implements IDebugOutput
 	 */
 	public function getDefaultConnection()
 	{
+		if(empty(self::$arrConfig))
+			return null;
+		
 		list($host, $port, $dbname) = explode(self::SEP_HOST_PORT, key(self::$arrConfig), 3);
 		try
 		{
@@ -235,6 +238,9 @@ class CDbPool implements IDebugOutput
 	 */
 	public function getConnection($sHost, $port, $sDbName)
 	{
+		if(empty($sHost) || empty($port) || empty($sDbName))
+			return null;
+		
 		if('127.0.0.1' == $sHost)
 			$sHost = 'localhost';
 		$sKey = $sHost.self::SEP_HOST_PORT.$port.self::SEP_HOST_PORT.$sDbName;
@@ -248,6 +254,7 @@ class CDbPool implements IDebugOutput
 		$conf = self::$arrConfig[$sKey];
 		$sDSN = sprintf('mysql:host=%s;port=%d;dbname=%s;', 
 			$sHost, $port, $sDbName);
+		$obj = null;
 		try
 		{
 			if($this->sClassName == self::CLASS_PDODEBUG)

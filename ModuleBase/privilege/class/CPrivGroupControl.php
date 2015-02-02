@@ -19,7 +19,7 @@ class CPrivGroupControl extends CUniqRowControl {
 			$memconn = $mempool->getConnection();
 			self::$instance = new CPrivGroupControl(
 				new CUniqRowOfTable($dbpool->getDefaultConnection(), 
-						$mbs_appenv->formatTableName('priv_group'), 'id', $primarykey),
+						$mbs_appenv->tbname('priv_group'), 'id', $primarykey),
 				$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CPrivGroupControl') : null,
 				$primarykey
 			);

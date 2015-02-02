@@ -50,8 +50,6 @@ if(RTM_DEBUG){
 	CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
 }
 
-
-
 function mbs_moddef($mod){
 	global $mbs_appenv;
 	static $modbuf = array();
@@ -129,6 +127,29 @@ $mbs_cur_moddef = mbs_moddef($mod);
 if(empty($mbs_cur_moddef)){
 	trigger_error('no such module: '.$mod, E_USER_ERROR);
 }
+
+
+function mbs_title($action='', $mod='', $system=''){
+	global $mbs_cur_moddef, $mbs_appenv;
+
+	$argc = func_num_args();
+	if(0 == $argc){
+		echo $mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'), CModDef::P_TLE), 
+			'-', $mbs_cur_moddef->item(CModDef::MOD, CModDef::G_TL), 
+			'-', $mbs_appenv->lang('site_name');
+	}
+	else if(1 == $argc){
+		echo $action , 
+			'-', $mbs_cur_moddef->item(CModDef::MOD, CModDef::G_TL),
+			'-', $mbs_appenv->lang('site_name');
+	}else if(2 == $argc){
+		echo $action , '-', $mod, '-', $mbs_appenv->lang('site_name');
+	}else{
+		echo $action , '-', $mod, '-', $system;
+	}
+
+}
+
 
 if('install' == $action){
 	$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());

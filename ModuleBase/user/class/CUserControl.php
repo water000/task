@@ -19,7 +19,7 @@ class CUserControl extends CUniqRowControl {
 			$memconn = $mempool->getConnection();
 			self::$instance = new CUserControl(
 					new CUniqRowOfTable($dbpool->getDefaultConnection(),
-							$mbs_appenv->formatTableName('user_info'), 'id', $primarykey),
+							$mbs_appenv->tbname('user_info'), 'id', $primarykey),
 					$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CUserControl') : null,
 					$primarykey
 			);

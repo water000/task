@@ -13,9 +13,7 @@ class CUniqRowControl
 	 * @param IUniqRowCache $cache the instance that implements the interface 'IObjectCache'
 	 * @param variable $primaryKey the primary key of the object
 	 */
-	protected function __construct(IUniqRowOfTable $db, 
-								   IUniqRowOfCache $cache=null, 
-								   $primaryKey=null)
+	protected function __construct($db, $cache=null, $primaryKey=null)
 	{
 		$this->oDB = $db;
 		$this->oCache = $cache;

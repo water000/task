@@ -1,9 +1,5 @@
 <?php
 /**
- * һ�Զ�(һ��ID, ������¼��������ѱ�)�Ķ����߼�����.
- * CMultiRowControl�е�get�ڴ�������˼��Ϊ��ȡ��¼�б���
- * ��һ����¼;add��������ʹ�ã���ΪaddNode;set �÷�ͬadd;
- * destroy��˼�ı�Ϊɾ���б�
  * @author Administrator
  *
  */

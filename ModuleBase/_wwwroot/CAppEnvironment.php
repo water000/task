@@ -20,7 +20,7 @@ class CAppEnvironment{
 		'database'          => array(
 			// format: host_port_dbname, the 'dbname' is a database name that should be created by yourself
 			'localhost_3306_module_base' => array('username'=>'root', 'pwd'=>''),
-			//... more 
+			//... more
 		),
 		'memcache'          => array(
 			//array('localhost', '11211'),
@@ -107,7 +107,7 @@ class CAppEnvironment{
 		
 		// to enable the url-rewrite on server
 		//RewriteEngine on
-  		//RewriteRule ^/(.+)/(js|css|image)/(.*)     -                       [L,QSA]
+  		//RewriteRule ^/static/(.+)                          [L,QSA]
   		//RewriteRule ^/favicon.ico   -                       [L,QSA]
   		//RewriteRule ^(.*)$          /index.php?__path__=$1  [B,L,QSA] 
 		$arr = explode('/', trim($_GET['__path__'], '/'));
@@ -133,7 +133,7 @@ class CAppEnvironment{
 		return array($class, $path);
 	}
 	
-	function formatTableName($name){
+	function tbname($name){
 		return empty($this->env['table_prefix']) ? $name : $this->env['table_prefix'].$name;
 	}
 	
