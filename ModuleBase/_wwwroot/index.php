@@ -26,29 +26,17 @@ function mbs_import($mod, $class){
 		$c = $args[$i];
 		$path = $mbs_appenv->getClassPath($c, $mod);
 		require_once $path;
-		if(!class_exists($c) && !interface_exists($c)){
-			trigger_error('import class or interface "'.$c.'" not exists in: '.$path, E_USER_ERROR);
+		if(!class_exists($c, false) && !interface_exists($c, false)){
+			trigger_error('imported class or interface "'.$c.'" not exists in: '.$path, E_USER_ERROR);
 		}
 	}
 }
 
 mbs_import('core', 'CModDef');
 
-mbs_import('common', 'CDbPool', 'CMemcachedPool', 
-	'CUniqRowControl', 'CUniqRowOfTable', 'CUniqRowOfCache',
-	'CSession', 'CStrTools');
+mbs_import('common', 'CDbPool', 'CMemcachedPool', 'CUniqRowControl', 'CStrTools');
 if(!class_exists('Memcached', false))
 	mbs_import('common', 'Memcached');
-
-CDbPool::setConf($mbs_appenv->item('database'));
-CDbPool::setCharset($mbs_appenv->item('charset'));
-if(count($mbs_appenv->item('memcache')) > 0){
-	CMemcachedPool::setConf($mbs_appenv->item('memcache'));
-}
-if(RTM_DEBUG){
-	CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
-	CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
-}
 
 function mbs_moddef($mod){
 	global $mbs_appenv;
@@ -128,6 +116,9 @@ if(empty($mbs_cur_moddef)){
 	trigger_error('no such module: '.$mod, E_USER_ERROR);
 }
 
+function mbs_tbname($name){
+	return $GLOBALS['mbs_appenv']->config('table_prefix', 'common').$name;
+}
 
 function mbs_title($action='', $mod='', $system=''){
 	global $mbs_cur_moddef, $mbs_appenv;
@@ -147,7 +138,23 @@ function mbs_title($action='', $mod='', $system=''){
 	}else{
 		echo $action , '-', $mod, '-', $system;
 	}
+}
 
+if(!empty($mbs_appenv->config('database', 'common'))){
+	CDbPool::setConf($mbs_appenv->config('database', 'common'));
+}
+CDbPool::setCharset($mbs_appenv->item('charset'));
+if(!empty($mbs_appenv->config('memcache', 'common'))){
+	CMemcachedPool::setConf($mbs_appenv->config('memcache', 'common'));
+}
+if(RTM_DEBUG){
+	CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
+	CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
+}
+
+if(!empty($mbs_appenv->config('session.save_handler'))){
+	ini_set("session.save_handler", $mbs_appenv->config('session.save_handler'));
+	ini_set("session.save_path", $mbs_appenv->config('session.save_path'));
 }
 
 
@@ -160,6 +167,7 @@ if('install' == $action){
 	if(!file_exists(RTM_ACTION_PATH)){
 		trigger_error('Invalid request: '.$mod.'.'.$action, E_USER_ERROR);
 	}
+	
 	//do filter checking
 	if(!$mbs_cur_moddef->loadFilters()){
 		exit(1);

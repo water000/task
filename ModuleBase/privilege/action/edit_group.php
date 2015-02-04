@@ -1,6 +1,7 @@
 <?php
 
 mbs_import('privilege', 'CPrivGroupControl');
+mbs_import('user', 'CUserControl');
 
 $action_def = &$mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'));
 $args_def = $action_def[CModDef::P_ARGS];
@@ -44,7 +45,7 @@ if(isset($_REQUEST['group_id'])){
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?=$mbs_appenv->getURL('core.css', 'core')?>" rel="stylesheet">
+<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 body, .warpper{background-color:#fff;}
 .content{background-color:#fff;}

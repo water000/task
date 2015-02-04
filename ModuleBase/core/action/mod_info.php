@@ -14,7 +14,7 @@ $moddef = mbs_moddef($selected_mod);
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?=$mbs_appenv->getURL('core.css')?>" rel="stylesheet">
+<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 .left{width:170px;float:left;margin-top:80px;}
 .left a{font-size:14px;}
@@ -22,9 +22,9 @@ $moddef = mbs_moddef($selected_mod);
 .right{float:left;width:700px;padding:8px 13px;margin:20px;background-color:#fff;}
 h2{color:#555;margin:0;text-align:center;}
 table , ul{background-color:#fff;}
-ul{float:left;width:120px;word-wrap:break-word;}
+ul{float:left;width:110px;word-wrap:break-word;}
 
-li.head{width:120px;}
+li.head{}
 .even{background-color:#eee}
 </style>
 </head>

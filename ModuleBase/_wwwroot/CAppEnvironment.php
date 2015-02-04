@@ -12,21 +12,10 @@ class CAppEnvironment{
 	
 	private $env = array(
 		/**********config item **********/
-		'site_name'         => '',
 		'charset'           => 'utf-8',
 		'lang'              => 'zh_CN',
 		'class_file_suffix' => '.php',
-		'table_prefix'      => 'mbs_',
-		'database'          => array(
-			// format: host_port_dbname, the 'dbname' is a database name that should be created by yourself
-			'localhost_3306_module_base' => array('username'=>'root', 'pwd'=>''),
-			//... more
-		),
-		'memcache'          => array(
-			//array('localhost', '11211'),
-			//... more
-		),
-		'default_module'    => 'index',
+		'default_module'    => 'common',
 		/********** config end **********/
 		
 		
@@ -107,7 +96,8 @@ class CAppEnvironment{
 		
 		// to enable the url-rewrite on server
 		//RewriteEngine on
-  		//RewriteRule ^/static/(.+)                          [L,QSA]
+  		//RewriteRule ^/static/(.+)   -                       [L,QSA]
+		//RewriteRule ^/upload/(.+)   -                       [L,QSA]
   		//RewriteRule ^/favicon.ico   -                       [L,QSA]
   		//RewriteRule ^(.*)$          /index.php?__path__=$1  [B,L,QSA] 
 		$arr = explode('/', trim($_GET['__path__'], '/'));
@@ -123,18 +113,31 @@ class CAppEnvironment{
 		return $arr2;
 	}
 	
-	function getURL($filename, $mod=''){
-		return $this->env['web_root'].(empty($mod) ? $this->env['cur_mod'] : $mod).'/'.$filename;
+	/**
+	 * get the static resource URL
+	 * @param string $filename the resource name like 'core.css, core.js, core/a.png'.
+	 * @return string
+	 */
+	function sURL($filename){
+		$ext = pathinfo($filename, PATHINFO_EXTENSION);
+		switch (strtolower($ext)){
+			case 'css':
+				$filename = 'css/'.$filename;
+				break;
+			case 'js':
+				$filename = 'js/'.$filename;
+				break;
+			default :
+				$filename = 'img/'.$filename;
+				break;
+		}
+		return $this->env['web_root'].'static/'.$filename;
 	}
 	
 	function getModDefInfo($mod){
 		$class = 'C'.ucfirst($mod).'Def';
 		$path = $this->getDir($mod, self::FT_MODDEF).$class.$this->env['class_file_suffix'];
 		return array($class, $path);
-	}
-	
-	function tbname($name){
-		return empty($this->env['table_prefix']) ? $name : $this->env['table_prefix'].$name;
 	}
 	
 	function getModList(){
@@ -155,7 +158,7 @@ class CAppEnvironment{
 		return $list;
 	}
 	
-	function config($item, $cfg='default', $mod=''){
+	function config($item, $mod='', $cfg='default'){
 		$mod = empty($mod) ? $this->env['cur_mod'] : $mod;
 		if(!isset($this->mod_cfg[$mod][$cfg])){
 			$path = $this->getPath('config/'.$cfg.'.php', $mod);
@@ -172,11 +175,12 @@ class CAppEnvironment{
 			}
 		}
 		
-		return isset($this->mod_cfg[$mod][$cfg][$item]) ? $this->mod_cfg[$mod][$cfg][$item] : $item;
+		return isset($this->mod_cfg[$mod][$cfg][$item]) ? $this->mod_cfg[$mod][$cfg][$item] : null;
 	}
 	
 	function lang($item, $mod=''){
-		return $this->config($item, 'lang_'.$this->env['lang'], $mod);
+		$ret = $this->config($item, $mod, 'lang_'.$this->env['lang']);
+		return is_null($ret) ? $item : $ret;
 	}
 }
 

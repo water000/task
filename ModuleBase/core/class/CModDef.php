@@ -12,7 +12,7 @@
  * if CFileTypeDef::CLASS_FILE_SUFFIX not present, the FILE_NAME was treated as class_name, 
  * then the CFileTypeDef::CLASS_FILE_SUFFIX was appended to class_name to get the FILE_NAME
  * @author Administrator
- * @dependent: CAppEnvironment.php, index.php:mbs_moddef()
+ * @dependent: CAppEnvironment.php, index.php:mbs_moddef(), index.php:mbs_tbname()
  *
  */
 abstract class CModDef {
@@ -537,7 +537,7 @@ abstract class CModDef {
 		$pdoconn = $dbpool->getDefaultConnection();
 		foreach($tabledef as $name => $def){
 			$ret = $pdoconn->exec(sprintf('CREATE TABLE IF NOT EXISTS %s%s CHARACTER SET=%s', 
-				self::$appenv->tbname($name), $def, 
+				mbs_tbname($name), $def, 
 				str_replace('-', '', self::$appenv->item('charset'))));
 			if(false === $ret){
 				list($id, $code, $str) = $pdoconn->errorInfo();

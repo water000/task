@@ -1,8 +1,7 @@
 <?php
 
-require_once dirname(__FILE__).'/IUniqRowOfTable.php';
 
-class CUniqRowOfTable implements IUniqRowOfTable
+class CUniqRowOfTable
 {
 	protected        $primaryKey = null;
 	protected        $oPdoConn   = null;

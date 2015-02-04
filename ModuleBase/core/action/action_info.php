@@ -57,7 +57,7 @@ $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0',
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?=$mbs_appenv->getURL('core.css')?>" rel="stylesheet">
+<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 .left{width:290px;margin:30px 0 0;background-color:#fff;float:left;}
 .left .action-item{font-size:12px;color:#333;position:relative;padding:3px 8px;border-bottom:1px solid #e0e0e0;cursor:pointer;}
@@ -109,6 +109,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 		continue;
 	
 	$ago = intval(($curtime - $fmtime)/86400);
+	$ago = $ago > 7 ? 7 : $ago;
 	if($dayago != $ago){ 
 		$dayago = $ago;
 		echo '<div class=datediff><span></span>',
@@ -147,7 +148,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 							<?php } ?>
 					</table>
 					<p class=table_title><?=$mbs_appenv->lang(CModDef::P_OUT)?></p>
-					<table><tr><td style="font-size: 13px;">
+					<table><tr><td style="font-size: 13px;background-color:#fff9ea;">
 						<?=isset($def[CModDef::P_OUT]) ? CStrTools::txt2html($def[CModDef::P_OUT]) : 'NULL'?>
 					</td></tr></table>
 				</div>

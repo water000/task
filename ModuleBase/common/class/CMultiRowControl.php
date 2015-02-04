@@ -3,7 +3,10 @@
  * @author Administrator
  *
  */
+
 require_once dirname(__FILE__).'/CUniqRowControl.php';
+require_once dirname(__FILE__).'/CMultiRowOfTable.php';
+require_once dirname(__FILE__).'/CMultiRowOfCache.php';
 
 class CMultiRowControl extends CUniqRowControl
 {
@@ -22,8 +25,8 @@ class CMultiRowControl extends CUniqRowControl
 	
 	/**
 	 * 
-	 * @param IMultiObjectDB $db the instance of interface IMultiObjectDB
-	 * @param IMultiObjectCache $cache the instance of interface IMultiObjectCache
+	 * @param CMultiRowOfTable $db the instance of class CMultiRowOfTable
+	 * @param CMultiRowOfCache $cache the instance of class CMultiRowOfCache
 	 * @param string/int $primaryKey
 	 * @param string/int $secondKey
 	 */

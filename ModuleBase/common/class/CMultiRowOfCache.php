@@ -10,9 +10,8 @@
 
 
 require_once dirname(__FILE__).'/CUniqRowOfCache.php';
-require_once dirname(__FILE__).'/IMultiRowOfCache.php';
 
-class CMultiRowOfCache extends CUniqRowOfCache implements IMultiRowOfCache
+class CMultiRowOfCache extends CUniqRowOfCache
 {
 	protected $secondKey  = null;
 	protected $_sCacheKey = '';

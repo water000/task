@@ -1,5 +1,8 @@
 <?php
 
+require_once dirname(__FILE__).'/CUniqRowOfTable.php';
+require_once dirname(__FILE__).'/CUniqRowOfCache.php';
+
 class CUniqRowControl
 {
 	protected $oDB        = null;
@@ -9,8 +12,8 @@ class CUniqRowControl
 	
 	/**
 	 * 
-	 * @param IUniqRowOfTable $db the instance that implements the interface 'IObjectDB'
-	 * @param IUniqRowCache $cache the instance that implements the interface 'IObjectCache'
+	 * @param CUniqRowOfTable $db the instance that extends the interface 'CUniqRowOfTable'
+	 * @param CUniqRowOfCache $cache the instance that extends the interface 'CUniqRowOfCache'
 	 * @param variable $primaryKey the primary key of the object
 	 */
 	protected function __construct($db, $cache=null, $primaryKey=null)

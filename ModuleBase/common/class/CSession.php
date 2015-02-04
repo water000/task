@@ -24,20 +24,36 @@ class CSession
 	{
 		$this->oMemConn = $conn;
 	}
+
+	static function getInstance($oMemp)
+	{
+		if(empty(self::$oIns))
+			self::$oIns = new CSession($oMemp);
+		return self::$oIns;
+	}
 	
 	private function __construct($oMemp=null)
 	{
 		$this->oMemPool = $oMemp;
+		register_shutdown_function(array($this, '__destruct'));
 	}
 	
 	function __destruct()
 	{
-		if(!CCore::hasAborted() && $this->bModified)
+		if($this->bModified)
 		{
 			if(empty($this->oMemConn))
 				$this->oMemConn  = $this->oMemPool->getConnection();
-			$this->oMemConn->setByKey(self::DEBUG_KEY, $this->sCacheKey,
-				 $this->arrData, self::CACHE_EXPIRE);
+			
+			if(empty($this->oMemConn)){
+				trigger_error('failed to connect memcache server', E_USER_WARNING);
+			}else{
+				if(is_null($this->arrData))
+					$this->oMemConn->deleteByKey(self::DEBUG_KEY, $this->sCacheKey);
+				else
+					$this->oMemConn->setByKey(self::DEBUG_KEY, $this->sCacheKey,
+						 $this->arrData, self::CACHE_EXPIRE);
+			}
 		}
 	}
 	
@@ -47,28 +63,23 @@ class CSession
 		{
 			$this->sCacheKey = $_COOKIE[self::CK_NAME];
 			$this->oMemConn  = $this->oMemPool->getConnection();
-			$this->arrData = $this->oMemConn->getByKey(self::DEBUG_KEY, $this->sCacheKey);
-			$this->arrData = empty($this->arrData) ? array() : $this->arrData;
+			if(empty($this->oMemConn)){
+				trigger_error('failed to connect memcache server', E_USER_WARNING);
+			}else{
+				$this->arrData = $this->oMemConn->getByKey(self::DEBUG_KEY, $this->sCacheKey);
+				$this->arrData = empty($this->arrData) ? array() : $this->arrData;
+			}
 		}
 	}
 	
 	function destroy()
 	{
-		if(empty($this->oMemConn))
-			$this->oMemConn  = $this->oMemPool->getDefaultConnection();
-		$this->oMemConn->deleteByKey(self::DEBUG_KEY, $this->sCacheKey);
 		$conf = session_get_cookie_params();
 		setcookie(self::CK_NAME, '', time() - 1000, $conf['path']);
 		$this->arrData = null;
+		$this->bModified = true;
 	}
-	
-	static function getInstance($oMemp)
-	{
-		if(empty(self::$oIns))
-			self::$oIns = new CSession($oMemp);
-		return self::$oIns;
-	}
-	
+
 	function get($key)
 	{
 		return isset($this->arrData[$key]) ? $this->arrData[$key] : FALSE;
@@ -119,6 +130,10 @@ class CSession
 	{
 		$this->arrData = array_diff_key($this->arrData, $arr);
 		$this->bModified = true;
+	}
+	
+	function checkLogin($loginURL){
+		
 	}
 
 }

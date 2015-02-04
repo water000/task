@@ -1,9 +1,8 @@
 <?php
 
 require_once dirname(__FILE__).'/CUniqRowOfTable.php';
-require_once dirname(__FILE__).'/IMultiRowOfTable.php';
 
-class CMultiRowOfTable extends CUniqRowOfTable implements IMultiRowOfTable
+class CMultiRowOfTable extends CUniqRowOfTable
 {
 	protected $skyname    = '';
 	protected $secondKey  = null;

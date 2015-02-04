@@ -10,7 +10,7 @@ $all = $priv_group->getDB()->listAll();
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?=$mbs_appenv->getURL('core.css', 'core')?>" rel="stylesheet">
+<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 .content{background-color:#fff}
 .content p.title{padding:2px 0;margin-top:5px;color:green;}

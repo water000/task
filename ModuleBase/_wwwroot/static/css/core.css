@@ -13,8 +13,8 @@ ul li{list-style-type:none;}
 .vertical-manu a:hover, .vertical-manu .cur{border:1px solid #85BBEF; background-color:#C6E0FA;}
 
 p.table_title{font-size:14px; font-weight:bold;color:#555;text-align:left;padding:3px 5px;}
-table{width:100%;margin-bottom:30px;background-color:#fff;border-top:1px solid #aaa;}
-tbody th, li.head{font-size:12px;border-bottom:1px solid #bbb; font-weight:bold;text-align:center;padding:5px 0;background-color: #ccccff;min-width:70px;}
+table{width:100%;margin-bottom:30px;background-color:#fff;border-top:1px solid #ccc;}
+tbody th, li.head{font-size:12px;border-right:1px solid #bbb;border-bottom:1px solid #bbb; font-weight:bold;text-align:center;padding:5px 0;background-color: #ccccff;min-width:70px;}
 tbody td, ul li{border-bottom:1px solid #ddd;padding:5px 3px;color:#333;}
 
 h2{color:#555;margin:0;text-align:center;}

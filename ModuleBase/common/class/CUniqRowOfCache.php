@@ -1,8 +1,6 @@
 <?php
 
-require_once dirname(__FILE__).'/IUniqRowOfCache.php';
-
-class CUniqRowOfCache implements IUniqRowOfCache
+class CUniqRowOfCache
 {
 	protected $oMemConn  = null;
 	protected $sCacheKey = '';
