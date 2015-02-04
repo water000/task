@@ -32,7 +32,7 @@ function mbs_import($mod, $class){
 	}
 }
 
-mbs_import('core', 'CModDef');
+mbs_import('core', 'CModDef', 'IModTag');
 
 mbs_import('common', 'CDbPool', 'CMemcachedPool', 'CUniqRowControl', 'CStrTools');
 if(!class_exists('Memcached', false))
@@ -140,23 +140,31 @@ function mbs_title($action='', $mod='', $system=''){
 	}
 }
 
-if(!empty($mbs_appenv->config('database', 'common'))){
-	CDbPool::setConf($mbs_appenv->config('database', 'common'));
-}
-CDbPool::setCharset($mbs_appenv->item('charset'));
-if(!empty($mbs_appenv->config('memcache', 'common'))){
-	CMemcachedPool::setConf($mbs_appenv->config('memcache', 'common'));
-}
-if(RTM_DEBUG){
-	CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
-	CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
+function _init_conf($mbs_appenv){
+	$db = $mbs_appenv->config('database', 'common');
+	if(!empty($db)){
+		CDbPool::setConf($db);
+	}
+	CDbPool::setCharset($mbs_appenv->item('charset'));
+	
+	$mem = $mbs_appenv->config('memcache', 'common');
+	if(!empty($mem)){
+		CMemcachedPool::setConf($mem);
+	}
+	
+	if(RTM_DEBUG){
+		CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
+		CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
+	}
+
+	$sess = $mbs_appenv->config('session.save_handler', 'common');
+	if(!empty($sess)){
+		ini_set('session.save_handler', $sess);
+		ini_set('session.save_path', $mbs_appenv->config('session.save_path', 'common'));
+	}
 }
 
-if(!empty($mbs_appenv->config('session.save_handler'))){
-	ini_set("session.save_handler", $mbs_appenv->config('session.save_handler'));
-	ini_set("session.save_path", $mbs_appenv->config('session.save_path'));
-}
-
+_init_conf($mbs_appenv);
 
 if('install' == $action){
 	$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
@@ -169,7 +177,7 @@ if('install' == $action){
 	}
 	
 	//do filter checking
-	if(!$mbs_cur_moddef->loadFilters()){
+	if(!$mbs_cur_moddef->loadFilters($action)){
 		exit(1);
 	}
 	

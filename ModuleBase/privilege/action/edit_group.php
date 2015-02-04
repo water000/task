@@ -1,7 +1,7 @@
 <?php
 
 mbs_import('privilege', 'CPrivGroupControl');
-mbs_import('user', 'CUserControl');
+mbs_import('user', 'CUserSession');
 
 $action_def = &$mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'));
 $args_def = $action_def[CModDef::P_ARGS];
@@ -20,7 +20,7 @@ if(isset($_REQUEST['name'])){
 				unset($input_param['group_id']);
 				$priv_group->set($input_param);
 			}else{
-				$input_param['creator_id'] = 1;
+				$input_param['creator_id'] = (new CUserSession())->loginInfo()['id'];
 				$input_param['create_ts'] = time();
 				$id = $priv_group->add($input_param);
 			}

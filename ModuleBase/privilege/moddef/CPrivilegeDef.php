@@ -16,6 +16,9 @@ class CPrivilegeDef extends CModDef {
 								首先创建权限组，把允许或拒绝的action放到组中，待用户访问特定action时，
 								检测当前用户的权限组是否包含当前action'
 			),
+			self::LD_FTR => array(
+				//array('user', 'checkLogin', true, 1),
+			),
 			self::TBDEF => array(
 				'priv_group' => "(
 		  			id int unsigned not null auto_increment,

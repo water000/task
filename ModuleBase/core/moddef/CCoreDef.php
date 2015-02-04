@@ -9,9 +9,9 @@ class CCoreDef extends CModDef{
 		    	self::G_TL=>'内核模块', 
 		    	self::G_DC=>'核心模块，定义了模块的组成部分，详细看class/CModDef.php'
 		   	),
-		    /*self::FTR => array(
-		    	'name' => array(G_CS => '', G_DC => ''),
-		    ),*/
+		    self::LD_FTR => array(
+				//array('user', 'checkLogin', true, array('is_api'=>1)),
+			),
 		    self::TAG => array(
 		   	 	'url' => array(self::G_CS => 'CFileURL', self::G_DC => '(,,mod,file,[type])'),
 		    ),

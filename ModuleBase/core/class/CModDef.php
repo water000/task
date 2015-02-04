@@ -85,7 +85,7 @@ abstract class CModDef {
 	 *   	'class' => 'mod.action1,mod.action2,...'
 	 *   ),
 	 *   self::LD_FTR=>array(
-	 *   	array(mod, ftr_name, isExitOnFilterUndefined, arg1, arg2, ...),
+	 *   	array(mod, ftr_name, isExitOnFilterUndefined, array('arg1'=>v1, 'arg2'=>v2, ...)),
 	 *   	...
 	 *   ),
 	 * ) 
@@ -499,27 +499,20 @@ abstract class CModDef {
 	}
 		
 	//continue exucuting or abort
-	function loadFilters(){
-		if(isset($this->desc[self::LD_FTR])){
-			foreach($this->desc[self::LD_FTR] as $ftr){
-				list($mod, $ftrname, $isExitOnFilterUndefined) = $ftr;
-				$moddef = mbs_moddef($mod);
-				if(!empty($moddef)){
-					$ftrsdef = $moddef->item(self::FTR);
-					if(!empty($ftrsdef) && isset($ftrsdef[$ftrname]) 
-						&& isset($ftrsdef[$ftrname][self::G_CS]) 
-						&& self::_class_exists($mod, $ftrsdef[$ftrname][self::G_CS]))
-					{
-						$objftr = new $ftrsdef[$ftrname][self::G_CS]();
-						if(!$objftr->oper(array_slice($objftr, 0, 3))){
-							trigger_error($objftr->getError(), E_USER_ERROR);
-							return false;
-						}
-					}else{
-						if($isExitOnFilterUndefined){
-							trigger_error(sprintf('load filter error on %s.%s', $mod, $ftrname), E_USER_ERROR);
-							return false;
-						}
+	static function _loadFilters($ftrs){
+		foreach($ftrs as $ftr){
+			list($mod, $ftrname, $isExitOnFilterUndefined) = $ftr;
+			$moddef = mbs_moddef($mod);
+			if(!empty($moddef)){
+				$ftrsdef = $moddef->item(self::FTR);
+				if(!empty($ftrsdef) && isset($ftrsdef[$ftrname]) 
+					&& isset($ftrsdef[$ftrname][self::G_CS]) 
+					&& self::_class_exists($mod, $ftrsdef[$ftrname][self::G_CS]))
+				{
+					$objftr = new $ftrsdef[$ftrname][self::G_CS]();
+					if(!$objftr->oper(isset($ftr[3])?$ftr[3]:null)){
+						echo $objftr->getError();
+						return false;
 					}
 				}else{
 					if($isExitOnFilterUndefined){
@@ -527,7 +520,23 @@ abstract class CModDef {
 						return false;
 					}
 				}
+			}else{
+				if($isExitOnFilterUndefined){
+					trigger_error(sprintf('load filter error on %s.%s', $mod, $ftrname), E_USER_ERROR);
+					return false;
+				}
 			}
+		}
+		return true;
+	}
+	
+	function loadFilters($action){
+		if(isset($this->desc[self::LD_FTR])){
+			if(!self::_loadFilters($this->desc[self::LD_FTR]))
+				return false;
+		}
+		if(isset($this->desc[self::PAGES][$action][self::LD_FTR])){
+			return self::_loadFilters($this->desc[self::PAGES][$action][self::LD_FTR]);
 		}
 		return true;
 	}

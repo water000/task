@@ -9,6 +9,9 @@ class CUserDef extends CModDef {
 				self::G_TL=>'用户信息',
 				self::G_DC=>'提供用户的基本信息，包括注册，登录，认证，修改信息等'
 			),
+			self::FTR => array(
+				'checkLogin' =>array(self::G_CS=>'CUserSession', self::G_DC=>'')
+			),
 			self::TBDEF => array(
 				'user_info' => '(
 					id int unsigned not null auto_increment,
