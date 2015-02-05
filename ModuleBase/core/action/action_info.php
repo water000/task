@@ -68,7 +68,8 @@ $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0',
 .datediff{width:130px;margin: 0 auto;color:#555;}
 .datediff span{width:26px;height:1px;background-color:#ccc;display:inline-block;margin:0 5px 3px;}
 .action{width:670px;background-color:#fff;margin:10px auto;cursor:default;}
-.action table{margin-bottom:20px;overflow-x:scroll;word-wrap:break-word;word-break:break-word;}
+.action table{margin-bottom:20px;overflow-x:scroll;}
+td{word-wrap:break-word;word-break:break-all;}
 .filter select, .filter span{float:right;margin-left:10px;}
 .even{background-color:#eee;}
 </style>
