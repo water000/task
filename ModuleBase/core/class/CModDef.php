@@ -510,7 +510,7 @@ abstract class CModDef {
 					&& self::_class_exists($mod, $ftrsdef[$ftrname][self::G_CS]))
 				{
 					$objftr = new $ftrsdef[$ftrname][self::G_CS]();
-					if(!$objftr->oper(isset($ftr[3])?$ftr[3]:null)){
+					if(!$objftr->oper(isset($ftr[3])?$ftr[3]:null, $ftrname)){
 						echo $objftr->getError();
 						return false;
 					}

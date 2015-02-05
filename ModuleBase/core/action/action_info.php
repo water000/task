@@ -64,9 +64,9 @@ $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0',
 .left .action-item .title{font-weight:bold;}
 .left .action-item .date{float:right;}
 .left .action-item .desc{color:#888;padding:1px;}
-.right{position:fixed;width:690px;;min-height:500px;margin:30px 0 0 313px;background-color:#fff;}
-.datediff{width:100px;margin: 0 auto;color:#555;}
-.datediff span{width:26px;height:1px;background-color:#ddd;display:inline-block;margin-top:10px;}
+.right{position:fixed;width:690px;;min-height:500px;margin:30px 0 0 313px;background-color:#fff;box-shadow:0 2px 6px #313131}
+.datediff{width:130px;margin: 0 auto;color:#555;}
+.datediff span{width:26px;height:1px;background-color:#ccc;display:inline-block;margin:0 5px 3px;}
 .action{width:670px;background-color:#fff;margin:10px auto;cursor:default;}
 .action table{margin-bottom:20px;overflow-x:scroll;word-wrap:break-word;word-break:break-word;}
 .filter select, .filter span{float:right;margin-left:10px;}

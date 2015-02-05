@@ -8,10 +8,14 @@ class CUserSession implements IModTag {
 		session_start();
 	}
 	
-	function login($user_id, $userinfo=null){
+	function set($user_id, $userinfo=null){
 		$userinfo = empty($userinfo) ? array() : $userinfo;
 		$userinfo['id'] = $user_id;
 		$_SESSION['user_login'] = $userinfo;
+	}
+
+	function get(){
+		return isset($_SESSION['user_login']) ? $_SESSION['user_login'] : null;
 	}
 	
 	/**
@@ -44,11 +48,7 @@ class CUserSession implements IModTag {
 		}
 		return false;
 	}
-	
-	function loginInfo(){
-		return isset($_SESSION['user_login']) ? $_SESSION['user_login'] : null;
-	}
-	
+
 	function getError(){
 		return $this->error;
 	}
