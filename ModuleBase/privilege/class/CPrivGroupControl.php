@@ -19,7 +19,7 @@ class CPrivGroupControl extends CUniqRowControl {
 			$memconn = $mempool->getConnection();
 			self::$instance = new CPrivGroupControl(
 				new CUniqRowOfTable($dbpool->getDefaultConnection(), 
-						mbs_tbname('priv_group'), 'id', $primarykey),
+					mbs_tbname('priv_group'), 'id', $primarykey),
 				$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CPrivGroupControl') : null,
 				$primarykey
 			);
@@ -27,7 +27,7 @@ class CPrivGroupControl extends CUniqRowControl {
 		return self::$instance;
 	}
 	
-	static function encodePriv($mod, $action='*'){
+	static function encodePriv($mod, $action){
 		return $mod.'.'.$action;
 	}
 	

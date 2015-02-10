@@ -8,14 +8,15 @@ date_default_timezone_set('Asia/Shanghai');
 define('RTM_DEBUG', true);
 error_reporting(RTM_DEBUG ? E_ALL : 0);
 	
-define('IN_INDEX', 1); //ref file: install.php, CModule.php
+define('IN_INDEX', 1); //ref file: CAppEnvironment.php
 
 //env and conf init;there are two kinds of const in the system.
 //one start with 'RTM_' what means 'run-time' defined;the other start
 //with 'CFG_' what means 'configuration(installing)' defined
 
 require 'CAppEnvironment.php';
-$mbs_appenv = CAppEnvironment::getInstance();
+$mbs_appenv     = CAppEnvironment::getInstance();
+$mbs_cur_moddef = null;
 
 // import class only
 function mbs_import($mod, $class){
@@ -64,58 +65,6 @@ function mbs_moddef($mod){
 	return $obj;
 }
 
-if(false !== strpos(PHP_SAPI, 'cli')){
-		if($args < 3){
-			trigger_error('param is missing', E_USER_ERROR);
-		}
-		$mod = $args[1];
-		$action = $args[2];
-		$args = array_slice($args, 0, 3);
-}else{
-	if(false === stripos(ini_get('request_order'), 'GP'))
-		$_REQUEST = array_merge($_GET, $_POST);
-	
-	if(ini_get('register_globals')){
-		$GLOBALS = array_intersect_key($GLOBALS, array(
-			'GLOBALS'=>'', '_GET'=>'', '_POST'=>'', '_COOKIE'=>''
-			,'_REQUEST'=>'', '_SERVER'=>'', '_ENV'=>'', '_FILES'=>'')
-		);
-	}
-	
-	//check on installing first
-	if((get_magic_quotes_gpc() || ini_get('magic_quotes_runtime')) && ini_get('magic_quotes_sybase'))
-	{// the system use the method 'prepare' in class PDO to prevent the sql injection
-		$func = create_function('&$v, $k', "\$v=str_replace(\"''\", \"'\", \$v);");
-		array_walk_recursive($_GET, $func);
-		array_walk_recursive($_POST, $func);
-		array_walk_recursive($_COOKIE, $func);
-		array_walk_recursive($_REQUEST, $func);
-	}
-	else if(get_magic_quotes_gpc())
-	{
-		$func = create_function('&$v, $k', "\$v=stripslashes(\$v);");
-		array_walk_recursive($_GET, $func);
-		array_walk_recursive($_POST, $func);
-		array_walk_recursive($_COOKIE, $func);
-		array_walk_recursive($_REQUEST, $func);
-	}
- 	
- 	list($mod, $action, $args) = $mbs_appenv->fromURL();
-}
-
-if(!CStrTools::isModifier($mod)){
-	trigger_error('Invalid module', E_USER_ERROR);
-}
-if(!CStrTools::isModifier($action)){
-	trigger_error('Invalid action', E_USER_ERROR);
-}
-
-
-$mbs_cur_moddef = mbs_moddef($mod);
-if(empty($mbs_cur_moddef)){
-	trigger_error('no such module: '.$mod, E_USER_ERROR);
-}
-
 function mbs_tbname($name){
 	return $GLOBALS['mbs_appenv']->config('table_prefix', 'common').$name;
 }
@@ -140,7 +89,72 @@ function mbs_title($action='', $mod='', $system=''){
 	}
 }
 
-function _init_conf($mbs_appenv){
+function mbs_api_echo($err, $arr=array(), $return = false){
+	static $output = array('success'=>0, 'error'=>'');
+	
+	$output['success'] = empty($err) ? 1 : 0;
+	$output['error']   = $err;
+	$output = array_merge($output, $arr);
+	
+	if($return)
+		return json_encode($output);
+	else 
+		echo json_encode($output);
+}
+
+function _main($mbs_appenv){
+	global $mbs_cur_moddef;
+	
+	if(false !== strpos(PHP_SAPI, 'cli')){
+		if($argc < 3){
+			trigger_error('param is missing', E_USER_ERROR);
+		}
+		$mod = $argv[1];
+		$action = $argv[2];
+		$argv = array_slice($argv, 0, 3);
+	}else{
+		if(false === stripos(ini_get('request_order'), 'GP'))
+			$_REQUEST = array_merge($_GET, $_POST);
+	
+		if(ini_get('register_globals')){
+			$GLOBALS = array_intersect_key($GLOBALS, array(
+					'GLOBALS'=>'', '_GET'=>'', '_POST'=>'', '_COOKIE'=>''
+					,'_REQUEST'=>'', '_SERVER'=>'', '_ENV'=>'', '_FILES'=>'')
+			);
+		}
+	
+		//check on installing first
+		if((get_magic_quotes_gpc() || ini_get('magic_quotes_runtime')) && ini_get('magic_quotes_sybase'))
+		{// the system use the method 'prepare' in class PDO to prevent the sql injection
+			$func = create_function('&$v, $k', "\$v=str_replace(\"''\", \"'\", \$v);");
+			array_walk_recursive($_GET, $func);
+			array_walk_recursive($_POST, $func);
+			array_walk_recursive($_COOKIE, $func);
+			array_walk_recursive($_REQUEST, $func);
+		}
+		else if(get_magic_quotes_gpc())
+		{
+			$func = create_function('&$v, $k', "\$v=stripslashes(\$v);");
+			array_walk_recursive($_GET, $func);
+			array_walk_recursive($_POST, $func);
+			array_walk_recursive($_COOKIE, $func);
+			array_walk_recursive($_REQUEST, $func);
+		}
+	
+		list($mod, $action, $args) = $mbs_appenv->fromURL();
+		
+		header('Content-Type: text/html; charset='.$mbs_appenv->item('charset'));
+	}
+	
+	if(!CStrTools::isModifier($mod) || !CStrTools::isModifier($action)){
+		trigger_error('Invalid request', E_USER_ERROR);
+	}
+	
+	$mbs_cur_moddef = mbs_moddef($mod);
+	if(empty($mbs_cur_moddef)){
+		trigger_error('no such module: '.$mod, E_USER_ERROR);
+	}
+	
 	$db = $mbs_appenv->config('database', 'common');
 	if(!empty($db)){
 		CDbPool::setConf($db);
@@ -157,41 +171,54 @@ function _init_conf($mbs_appenv){
 		CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
 	}
 
-	$sess = $mbs_appenv->config('session.save_handler', 'common');
-	if(!empty($sess)){
-		ini_set('session.save_handler', $sess);
-		ini_set('session.save_path', $mbs_appenv->config('session.save_path', 'common'));
+	$mbs_appenv->config('', 'common');
+	
+	if('install' == $action){
+		$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
+		echo empty($err)? 'install complete, successed' : 'error: ', "\n", implode("\n<br/>", $err);
+	}else{
+		
+		//do filter checking
+		if(!$mbs_cur_moddef->loadFilters($action)){
+			exit(1);
+		}
+		
+		$filters = $mbs_appenv->config('action_filters', 'common');
+		if(!empty($filters)){
+			foreach($filters as $ftr){
+				if(2 == count($ftr)){
+					mbs_import($ftr[0], $ftr[1]);
+					$obj = new $ftr[1]();
+					if(!$obj->oper(null)){
+						echo $obj->getError();
+						exit(1);
+					}
+				}
+			}
+		}
+		
+		$path = $mbs_appenv->getActionPath($action, $mod);
+		if(!file_exists($path)){
+			trigger_error('Invalid request: '.$mod.'.'.$action, E_USER_ERROR);
+		}
+		require $path;
+	}
+	
+	if(function_exists('fastcgi_finish_request'))
+		fastcgi_finish_request();
+	
+	if(RTM_DEBUG){
+		if(false !== strpos(PHP_SAPI, 'cli')){
+			CDbPool::getInstance()->cli();
+			CMemcachedPool::getInstance()->cli();
+		}else{
+			CDbPool::getInstance()->html();
+			CMemcachedPool::getInstance()->html();
+		}
 	}
 }
 
-_init_conf($mbs_appenv);
-
-if('install' == $action){
-	$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
-	echo empty($err)? 'install complete, successed' : 'error', "\n", implode("\n<br/>", $err);
-	
-}else{
-	define('RTM_ACTION_PATH', $mbs_appenv->getActionPath($action, $mod));
-	if(!file_exists(RTM_ACTION_PATH)){
-		trigger_error('Invalid request: '.$mod.'.'.$action, E_USER_ERROR);
-	}
-	
-	//do filter checking
-	if(!$mbs_cur_moddef->loadFilters($action)){
-		exit(1);
-	}
-	
-	header('Content-Type: text/html; charset='.$mbs_appenv->item('charset'));
-	require RTM_ACTION_PATH;
-}
-
-if(function_exists('fastcgi_finish_request'))
-	fastcgi_finish_request();
-	
-if(RTM_DEBUG){
-	CDbPool::getInstance()->html(); 
-	CMemcachedPool::getInstance()->html();
-}
+_main($mbs_appenv);
 
 exit(0);
 ?>

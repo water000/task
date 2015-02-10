@@ -1,16 +1,37 @@
 <?php 
 
-$priv_group = array(
-	'core'      => array('mod_info', 'action_info'),
-	'privilege' => array('index')
-);
+mbs_import('user', 'CUserSession');
+$us = new CUserSession();
+$user_id = $us->checkLogin();
+if(empty($user_id)){
+	echo $us->getError();
+	exit(0);
+}
 
+mbs_import('privilege', 'CUserPrivControl', 'CPrivGroupControl');
+$up = CUserPrivControl::getInstance($mbs_appenv, 
+	CDbPool::getInstance(), CMemcachedPool::getInstance(), $user_id);
+$user_priv = $up->get();
+if(empty($user_priv)){
+	echo 'access denied(1)';
+	exit(0);
+}
+
+$pg = CPrivGroupControl::getInstance($mbs_appenv, CDbPool::getInstance(), 
+	CMemcachedPool::getInstance(), $user_priv['priv_group_id']);
+$priv_list = $pg->get();
+if(empty($priv_list)){
+	echo 'access denied(2)';
+	exit(0);
+}
+
+$priv_group = CPrivGroupControl::decodePrivList($priv_list['priv_list']);
 
 ?>
 <!doctype html>
 <html>
 <head>
-<link href="<?=$mbs_appenv->getURL('core.css', 'core')?>" rel="stylesheet">
+<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 iframe{width:100%;border:0;}
 .actions{width:150px;padding:8px;position:fixed;left:10px;;bottom:20px;}
@@ -25,7 +46,7 @@ iframe{width:100%;border:0;}
 </style>
 </head>
 <body>
-<iframe scrolling=no src="/index.php?mod=privilege&m=core&a=mod_info" onload="this.height=this.contentWindow.document.body.scrollHeight;"></iframe>
+<iframe scrolling=no src="<?=$mbs_appenv->toURL($ac, $mod, array('mod'=>'privilege'))?>" onload="this.height=this.contentWindow.document.body.scrollHeight;"></iframe>
 <div class=actions>
 	<div class="vertical-manu groups">
 	<p class=title><?=$mbs_appenv->lang('mgrlist')?></p>

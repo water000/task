@@ -41,6 +41,21 @@ class CStrTools {
 		return preg_match('/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z]{2,4})+$/', $email);
 	}
 	
+	static function isValidPhone($phone){
+		$len = strlen($phone);
+		
+		if($len >= 11 && ('+' == $phone[0] || is_numeric($phone[0]))){
+			for($i=1; $i<$len; ++$i){
+				if(!is_numeric($phone[$i])){
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		return false;
+	}
+	
 	static function stripComment($s)
 	{
 		$s = preg_replace('/\/\*.+?\*\//s', '', $s);

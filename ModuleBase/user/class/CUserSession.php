@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @include $mbs_appenv, mbs_api_echo(), session 
+ * @author tiger
+ *
+ */
+
 class CUserSession implements IModTag {
 	
 	private $error = '';
@@ -31,7 +37,7 @@ class CUserSession implements IModTag {
 		}
 		
 		if(isset($param['is_api'])){
-			echo json_encode(array('success'=>0, 'msg'=>'', 'force_login'=>1));
+			$this->error = mbs_api_echo('login first', array('force_login'=>1), true);
 		}else{
 			header('Location: '.$mbs_appenv->toURL('login', 'user'));
 		}
