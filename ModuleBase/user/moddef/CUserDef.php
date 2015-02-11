@@ -10,13 +10,13 @@ class CUserDef extends CModDef {
 				self::G_DC=>'提供用户的基本信息，包括注册，登录，认证，修改信息等'
 			),
 			self::FTR => array(
-				'checkLogin' =>array(self::G_CS=>'CUserSession', self::G_DC=>'')
+				'checkLogin' =>array(self::G_CS=>'CUserSession', self::G_DC=>'检查用户是否登录')
 			),
 			self::TBDEF => array(
 				'user_info' => '(
 					id int unsigned not null auto_increment,
 					nick_name varchar(16) not null,
-					phone_num char(14) not null, -- 3(country-code:086)+11(basic num)
+					phone_num varchar(14), -- (include country-code:086)+11(basic num)
 					password char(32) not null, -- md5(submit-password)
 					reg_ts int unsigned not null, -- register timestamp
 					reg_ip varchar(32) not null, -- not only include ipv4 but also include ipv6
@@ -24,6 +24,12 @@ class CUserDef extends CModDef {
 					primary key(id),
 					unique key(phone_num),
 					unique key(third_platform_id)
+				)',
+				'user_third_platform' => '(
+					user_id int unsigned not null,
+					plat_id char(33) not null, -- value=([1:weixin, 2:weibo, ...])+md5(returned-id-by-third-platform)
+					unique key(plat_id),
+					key(user_id)
 				)',
 				'user_mobile_device' => '(
 					user_id int unsigned not null,

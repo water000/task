@@ -13,17 +13,27 @@ $default = array(
 		'localhost_3306_module_base' => array('username'=>'root', 'pwd'=>''),
 		//... more
 	),
-		
+	
 	'memcache'             => array(
 		//array('localhost', '11211'),
 		//... more
 	),
 	
 	'action_filters'       => array(
-		//array('mod', 'class'), the class must implements the IModTag interface, and the params in function 'oper' are 'null'
-		array('privilege', 'CPrivFilter'),
+		//array(function(){return true/false, execute the 'class' if true returned}, 'mod', 'class'), 
+		//the class must implements the CModTag interface, and the params in function 'oper' are 'null'
+		
+		array(function($action_def){return !empty($action_def) && isset($action_def[CModDef::P_MGR]); }, 
+			'privilege', 'CPrivFilter'),
+		
+		//array(function($action_def){return !empty($action_def) && isset($action_def[CModDef::P_OUT]); }, '', ''),
+		
 		//.... more
-	),
+	), 
+	
+	'appkeys'    => array(
+		'1.0' => 'v1.0863c6bf0bc0d26257db4edcfdad309c1'
+	)
 )
 
 ?>

@@ -16,7 +16,7 @@ define('IN_INDEX', 1); //ref file: CAppEnvironment.php
 
 require 'CAppEnvironment.php';
 $mbs_appenv     = CAppEnvironment::getInstance();
-$mbs_cur_moddef = null;
+$mbs_cur_moddef = $mbs_cur_action_def = null;
 
 // import class only
 function mbs_import($mod, $class){
@@ -33,7 +33,7 @@ function mbs_import($mod, $class){
 	}
 }
 
-mbs_import('core', 'CModDef', 'IModTag');
+mbs_import('core', 'CModDef', 'CModTag');
 
 mbs_import('common', 'CDbPool', 'CMemcachedPool', 'CUniqRowControl', 'CStrTools');
 if(!class_exists('Memcached', false))
@@ -103,7 +103,7 @@ function mbs_api_echo($err, $arr=array(), $return = false){
 }
 
 function _main($mbs_appenv){
-	global $mbs_cur_moddef;
+	global $mbs_cur_moddef, $mbs_cur_action_def;
 	
 	if(false !== strpos(PHP_SAPI, 'cli')){
 		if($argc < 3){
@@ -154,6 +154,7 @@ function _main($mbs_appenv){
 	if(empty($mbs_cur_moddef)){
 		trigger_error('no such module: '.$mod, E_USER_ERROR);
 	}
+	$mbs_cur_action_def = $mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'));
 	
 	$db = $mbs_appenv->config('database', 'common');
 	if(!empty($db)){
@@ -186,9 +187,9 @@ function _main($mbs_appenv){
 		$filters = $mbs_appenv->config('action_filters', 'common');
 		if(!empty($filters)){
 			foreach($filters as $ftr){
-				if(2 == count($ftr)){
-					mbs_import($ftr[0], $ftr[1]);
-					$obj = new $ftr[1]();
+				if(3 == count($ftr) && $ftr[0]($mbs_cur_action_def)){
+					mbs_import($ftr[1], $ftr[2]);
+					$obj = new $ftr[2]();
 					if(!$obj->oper(null)){
 						echo $obj->getError();
 						exit(1);

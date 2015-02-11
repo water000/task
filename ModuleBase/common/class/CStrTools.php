@@ -56,6 +56,13 @@ class CStrTools {
 		return false;
 	}
 	
+	static function isValidPassword($pwd){
+		if(strlen($pwd) > 6)
+			return true;
+		
+		return false;
+	}
+	
 	static function stripComment($s)
 	{
 		$s = preg_replace('/\/\*.+?\*\//s', '', $s);

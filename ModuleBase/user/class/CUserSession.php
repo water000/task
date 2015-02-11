@@ -6,10 +6,8 @@
  *
  */
 
-class CUserSession implements IModTag {
-	
-	private $error = '';
-	
+class CUserSession extends CModTag {
+
 	function __construct(){
 		session_start();
 	}
@@ -39,7 +37,7 @@ class CUserSession implements IModTag {
 		if(isset($param['is_api'])){
 			$this->error = mbs_api_echo('login first', array('force_login'=>1), true);
 		}else{
-			header('Location: '.$mbs_appenv->toURL('login', 'user'));
+			header('Location: '.$mbs_appenv->toURL('login', 'user', array('redirect'=>$_SERVER['REQUEST_URI'])));
 		}
 		
 		return false;
@@ -53,10 +51,6 @@ class CUserSession implements IModTag {
 				break;
 		}
 		return false;
-	}
-
-	function getError(){
-		return $this->error;
 	}
 	
 }

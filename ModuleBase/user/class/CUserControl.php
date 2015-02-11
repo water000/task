@@ -33,7 +33,7 @@ class CUserControl extends CUniqRowControl {
 		return $searchKeys;
 	}
 	
-	static function search($keyval){
+	function search($keyval){
 		$keyval = array_intersect_key($keyval, self::$searchKeys);
 		$sql = sprintf('SELECT * FROM %s WHERE '.implode('=?,', array_keys($keyval)));
 		try{
@@ -46,6 +46,10 @@ class CUserControl extends CUniqRowControl {
 		return null;
 	}
 	
+	
+	static function formatPassword($pwd){
+		
+	}
 }
 
 ?>

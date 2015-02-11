@@ -12,6 +12,16 @@ if(!empty($user_info)){
 	setcookie('is_cookie_avaiable', 'yes'); // for checking whether the client supporting cookies
 }
 
+
+if(isset($_COOKIE['is_cookie_avaiable'])){
+	setcookie('is_cookie_avaiable', '', time()-1000);
+	unset($_COOKIE['is_cookie_avaiable']);
+}else{
+	mbs_api_echo('cookie unavaiable');
+	exit(1);
+}
+
+
 ?>
 <!doctype html>
 <html>

@@ -9,6 +9,7 @@ $lang_zh_CN = array(
 	'captcha'       => '验证码',
 	'reload_on_unclear' => '看不清，换一个',
 	'invalid_phone_num' => '手机号码无效',
+	'invalid_password'  => '密码无效',
 );
 
 ?>
