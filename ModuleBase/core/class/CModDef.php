@@ -115,11 +115,11 @@ abstract class CModDef {
 		return $ctx;
 	}
 	
-	function getMgrActions(){
+	function filterActions($condKey=CModDef::P_MGR){
 		$ret = array();
 		
 		foreach($this->desc[self::PAGES] as $ac => $def){
-			if(isset($def[CModDef::P_MGR]))
+			if(isset($def[$condKey]))
 				$ret[$ac] = $def[CModDef::P_TLE];
 		}
 		
@@ -543,18 +543,23 @@ abstract class CModDef {
 
 	function installTables($dbpool, $tabledef){
 		$error = array();
-		$pdoconn = $dbpool->getDefaultConnection();
-		foreach($tabledef as $name => $def){
-			$ret = $pdoconn->exec(sprintf('CREATE TABLE IF NOT EXISTS %s%s CHARACTER SET=%s', 
-				mbs_tbname($name), $def, 
-				str_replace('-', '', self::$appenv->item('charset'))));
-			if(false === $ret){
-				list($id, $code, $str) = $pdoconn->errorInfo();
-				if($id != '00000'){
-					$error []= $name.':'.$str;
+		try {
+			$pdoconn = $dbpool->getDefaultConnection();
+			foreach($tabledef as $name => $def){
+				$ret = $pdoconn->exec(sprintf('CREATE TABLE IF NOT EXISTS %s%s CHARACTER SET=%s',
+						mbs_tbname($name), $def,
+						str_replace('-', '', self::$appenv->item('charset'))));
+				if(false === $ret){
+					list($id, $code, $str) = $pdoconn->errorInfo();
+					if($id != '00000'){
+						$error []= $name.':'.$str;
+					}
 				}
 			}
+		} catch (Exception $e) {
+			throw $e;
 		}
+		
 		return $error;
 	}
 	
@@ -569,7 +574,12 @@ abstract class CModDef {
 		if(isset($modinfo[self::TBDEF]) && 
 			count($modinfo[self::TBDEF]) > 0)
 		{
-			$err = $this->installTables($dbpool, $modinfo[self::TBDEF]);
+			try {
+				$err = $this->installTables($dbpool, $modinfo[self::TBDEF]);
+			} catch (Exception $e) {
+				throw $e;
+			}
+			
 			if(!empty($err)){
 				return $err;
 			}

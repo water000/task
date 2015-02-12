@@ -17,17 +17,15 @@ class CUserDef extends CModDef {
 					id int unsigned not null auto_increment,
 					nick_name varchar(16) not null,
 					phone_num varchar(14), -- (include country-code:086)+11(basic num)
-					password char(32) not null, -- md5(submit-password)
+					password char(38) not null, -- salt(6)+md5(md5(submit-password)+salt)
 					reg_ts int unsigned not null, -- register timestamp
 					reg_ip varchar(32) not null, -- not only include ipv4 but also include ipv6
-					third_platform_id char(33) not null, -- value=([1:weixin, 2:weibo, ...])+md5(returned-id-by-third-platform)
 					primary key(id),
-					unique key(phone_num),
-					unique key(third_platform_id)
+					unique key(phone_num)
 				)',
 				'user_third_platform' => '(
 					user_id int unsigned not null,
-					plat_id char(33) not null, -- value=([1:weixin, 2:weibo, ...])+md5(returned-id-by-third-platform)
+					plat_id varchar(33) not null, -- value=([1:weixin, 2:weibo, ...])+returned-id-by-third-platform
 					unique key(plat_id),
 					key(user_id)
 				)',

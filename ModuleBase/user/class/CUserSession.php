@@ -30,8 +30,8 @@ class CUserSession extends CModTag {
 	function checkLogin($param=array()){
 		global $mbs_appenv;
 		
-		if(isset($_SESSION['user']['id'])){
-			return $_SESSION['user']['id'];
+		if(isset($_SESSION['user_login']['id'])){
+			return $_SESSION['user_login']['id'];
 		}
 		
 		if(isset($param['is_api'])){

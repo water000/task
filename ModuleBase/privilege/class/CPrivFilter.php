@@ -1,10 +1,11 @@
 <?php
 
 /**
- *@depend user.CUserSession, privilege.CUserPrivControl
+ *@depend user.CUserSession, privilege.CPrivUserControl
  */
 
 require_once dirname(__FILE__).'/CPrivGroupControl.php';
+require_once dirname(__FILE__).'/CPrivUserControl.php';
 
 class CPrivFilter extends CModTag{
 	
@@ -19,13 +20,32 @@ class CPrivFilter extends CModTag{
 			return false;
 		}
 		
-		$up = CUserPrivControl::getInstance($mbs_appenv,
-				CDbPool::getInstance(), CMemcachedPool::getInstance(), $user_id);
-		if(!$up->privExists($mbs_appenv->item('cur_mod'), $mbs_appenv->item('cur_action'))){
+		$priv_info = null;
+		try {
+			$pu = CPrivUserControl::getInstance($mbs_appenv,
+					CDbPool::getInstance(), CMemcachedPool::getInstance(), $user_id);
+			$priv_info = $pu->get();
+		} catch (Exception $e) {
+			$this->error = $mbs_appenv->lang('db_exception', 'common');
+			return false;
+		}
+		if(empty($priv_info)){
 			$this->error = 'access denied';
 			return false;
 		}
 		
+		try {
+			$pg = CPrivGroupControl::getInstance($mbs_appenv, CDbPool::getInstance(), 
+					CMemcachedPool::getInstance(), $priv_info['priv_group_id']);
+			if(!$pg->privExists($mbs_appenv->item('cur_mod'), $mbs_appenv->item('cur_action'))){
+				$this->error = 'access denied';
+				return false;
+			}
+		} catch (Exception $e) {
+			$this->error = $mbs_appenv->lang('db_exception', 'common');
+			return false;
+		}
+
 		return true;
 	}
 

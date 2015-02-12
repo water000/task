@@ -5,6 +5,7 @@
 
 //ini_set('session.save_handler', 'memcache');
 //ini_set('session.save_path',    'tcp://127.0.0.1:11211');
+ini_set('session.use_only_cookies', 1);
 
 $default = array(
 	'table_prefix'         => 'mbs_',
@@ -21,7 +22,7 @@ $default = array(
 	
 	'action_filters'       => array(
 		//array(function(){return true/false, execute the 'class' if true returned}, 'mod', 'class'), 
-		//the class must implements the CModTag interface, and the params in function 'oper' are 'null'
+		//the class must extends the core.CModTag, and the params in function 'oper' are 'null'
 		
 		array(function($action_def){return !empty($action_def) && isset($action_def[CModDef::P_MGR]); }, 
 			'privilege', 'CPrivFilter'),

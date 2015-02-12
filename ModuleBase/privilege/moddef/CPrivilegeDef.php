@@ -6,6 +6,8 @@ class CPrivilegeDef extends CModDef {
 	const TYPE_ALLOW = 1;
 	const TYPE_DENY  = 2;
 	
+	const PRIV_ALL = '*.*';
+	
 	protected function desc() {
 		return array(
 			self::MOD => array(
@@ -23,14 +25,14 @@ class CPrivilegeDef extends CModDef {
 				'priv_group' => "(
 		  			id int unsigned not null auto_increment,
 					name varchar(16) not null default '',
-					type tinyint not null default 0, -- 0:allow , 1:deny
+					type tinyint not null default 0, -- 1:allow , 2:deny
 					priv_list text not null default '',
 					creator_id int unsigned not null default 0,
 					create_ts int unsigned not null default 0,
 					primary key(id),
 					unique key(name)
 		  		)",
-				'user_priv' => "(
+				'priv_user' => "(
 					user_id int unsigned not null default 0,
 					creator_id int unsigned not null default 0, -- creator_id add priv_group_id to user_id
 					priv_group_id int unsigned not null default 0,
@@ -92,6 +94,30 @@ class CPrivilegeDef extends CModDef {
 			 'class' => 'mod.action1,mod.action2,...'
 			),*/
 		);
+	}
+	
+	function install($dbpool, $mempool=null){
+		parent::install($dbpool, $mempool);
+		
+		mbs_import('', 'CPrivGroupControl', 'CPrivUserControl');
+		try {
+			$ins = CPrivGroupControl::getInstance(self::$appenv, $dbpool, $mempool);
+			$ins->add(array(
+				'name'      => 'topmost',
+				'type'      => self::TYPE_ALLOW,
+				'priv_list' => CPrivGroupControl::encodePrivList(array(self::PRIV_ALL=>'')),
+				'create_ts' => time()
+			));
+			
+			$ins = CPrivUserControl::getInstance(self::$appenv, $dbpool, $mempool);
+			$ins->add(array(
+				'user_id'       => 1,
+				'priv_group_id' => 1,
+				'create_ts'     => time(),
+			));
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
 }
 

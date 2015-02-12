@@ -137,6 +137,10 @@ class CUniqRowOfTable
  		
  		return $ret;
  	}
+ 	
+ 	function tbname(){
+ 		return $this->tbname;
+ 	}
 }
 
 ?>

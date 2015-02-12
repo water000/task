@@ -1,8 +1,5 @@
 <?php
-/**
- * argv:1)http, main.php?a=mod.action
- * 2)cli, php main.php arg1, arg2, ...
- */
+
 date_default_timezone_set('Asia/Shanghai');
 
 define('RTM_DEBUG', true);
@@ -38,6 +35,21 @@ mbs_import('core', 'CModDef', 'CModTag');
 mbs_import('common', 'CDbPool', 'CMemcachedPool', 'CUniqRowControl', 'CStrTools');
 if(!class_exists('Memcached', false))
 	mbs_import('common', 'Memcached');
+
+if(RTM_DEBUG){
+	CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
+	CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
+	
+	register_shutdown_function(function(){
+		if(false !== strpos(PHP_SAPI, 'cli')){
+			CDbPool::getInstance()->cli();
+			CMemcachedPool::getInstance()->cli();
+		}else{
+			CDbPool::getInstance()->html();
+			CMemcachedPool::getInstance()->html();
+		}
+	});
+}
 
 function mbs_moddef($mod){
 	global $mbs_appenv;
@@ -166,17 +178,17 @@ function _main($mbs_appenv){
 	if(!empty($mem)){
 		CMemcachedPool::setConf($mem);
 	}
-	
-	if(RTM_DEBUG){
-		CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
-		CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
-	}
 
 	$mbs_appenv->config('', 'common');
 	
 	if('install' == $action){
-		$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
-		echo empty($err)? 'install complete, successed' : 'error: ', "\n", implode("\n<br/>", $err);
+		$err = '';
+		try {
+			$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
+		} catch (Exception $e) {
+			echo $mbs_appenv->lang('db_exception', 'common');
+		}
+		echo empty($err)? 'install complete, successed' : "error: \n". implode("\n<br/>", $err);
 	}else{
 		
 		//do filter checking
@@ -206,17 +218,7 @@ function _main($mbs_appenv){
 	}
 	
 	if(function_exists('fastcgi_finish_request'))
-		fastcgi_finish_request();
-	
-	if(RTM_DEBUG){
-		if(false !== strpos(PHP_SAPI, 'cli')){
-			CDbPool::getInstance()->cli();
-			CMemcachedPool::getInstance()->cli();
-		}else{
-			CDbPool::getInstance()->html();
-			CMemcachedPool::getInstance()->html();
-		}
-	}
+		fastcgi_finish_request();	
 }
 
 _main($mbs_appenv);

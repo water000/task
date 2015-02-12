@@ -20,7 +20,9 @@ if(isset($_REQUEST['name'])){
 				unset($input_param['group_id']);
 				$priv_group->set($input_param);
 			}else{
-				$input_param['creator_id'] = (new CUserSession())->loginInfo()['id'];
+				$us = new CUserSession();
+				$us = $us->get();
+				$input_param['creator_id'] = $us['id'];
 				$input_param['create_ts'] = time();
 				$id = $priv_group->add($input_param);
 			}
@@ -98,7 +100,7 @@ h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 					$moddef = mbs_moddef($mod);
 					if(empty($moddef))
 						continue;
-					$mgr_list = $moddef->getMgrActions();
+					$mgr_list = $moddef->filterActions();
 					if(empty($mgr_list))
 						continue;
 				?>

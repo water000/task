@@ -16,13 +16,17 @@ class CPrivGroupControl extends CUniqRowControl {
 	 */
 	static function getInstance($mbs_appenv, $dbpool, $mempool, $primarykey = null){
 		if(empty(self::$instance)){
-			$memconn = $mempool->getConnection();
-			self::$instance = new CPrivGroupControl(
-				new CUniqRowOfTable($dbpool->getDefaultConnection(), 
-					mbs_tbname('priv_group'), 'id', $primarykey),
-				$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CPrivGroupControl') : null,
-				$primarykey
-			);
+			try {
+				$memconn = $mempool->getConnection();
+				self::$instance = new CPrivGroupControl(
+						new CUniqRowOfTable($dbpool->getDefaultConnection(),
+								mbs_tbname('priv_group'), 'id', $primarykey),
+						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CPrivGroupControl') : null,
+						$primarykey
+				);
+			} catch (Exception $e) {
+				throw $e;
+			}
 		}
 		return self::$instance;
 	}

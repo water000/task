@@ -1,6 +1,6 @@
 <?php
 
-class CUserPrivControl extends CUniqRowControl {
+class CPrivUserControl extends CUniqRowControl {
 	private static $instance = null;
 	
 	protected function __construct($db, $cache, $primarykey = null){
@@ -16,13 +16,17 @@ class CUserPrivControl extends CUniqRowControl {
 	 */
 	static function getInstance($mbs_appenv, $dbpool, $mempool, $primarykey = null){
 		if(empty(self::$instance)){
-			$memconn = $mempool->getConnection();
-			self::$instance = new CUserPrivControl(
-					new CUniqRowOfTable($dbpool->getDefaultConnection(),
-							mbs_tbname('user_priv'), 'user_id', $primarykey),
-					$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CUserPrivControl') : null,
-					$primarykey
-			);
+			try {
+				$memconn = $mempool->getConnection();
+				self::$instance = new CPrivUserControl(
+						new CUniqRowOfTable($dbpool->getDefaultConnection(),
+								mbs_tbname('priv_user'), 'user_id', $primarykey),
+						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CPrivUserControl') : null,
+						$primarykey
+				);
+			} catch (Exception $e) {
+				throw $e;
+			}
 		}
 		return self::$instance;
 	}

@@ -26,8 +26,26 @@ if(isset($_REQUEST['phone_num'])){
 		exit(1);
 	}
 	
-	$uc = new CUserControl(CDbPool::getInstance(), CMemcachedPool::getInstance());
-	$rs = $uc->search(array('phone_num'=>$_REQUEST['phone_num']))
+	$uc = CUserControl::getInstance($mbs_appenv, CDbPool::getInstance(), CMemcachedPool::getInstance());
+	$rs = null;
+	try {
+		$rs = $uc->search(array('phone_num'=>$_REQUEST['phone_num']));
+	} catch (Exception $e) {
+		mbs_api_echo('system exception');
+		exit(1);
+	}
+	if(empty($rs)){
+		mbs_api_echo($mbs_appenv->lang('invalid_phone_num'));
+		exit(1);
+	}
+	if(!CUserControl::checkPassword($_REQUEST['password'], $rs[0]['password'])){
+		mbs_api_echo($mbs_appenv->lang('invalid_password'));
+		exit(1);
+	}
+	
+	$us->set($rs[0]['id']);
+	mbs_api_echo('', array('user_id'=>$rs[0]['id']));
+	
 }
 else if(isset($_REQUEST['third_platform_id'])){
 	

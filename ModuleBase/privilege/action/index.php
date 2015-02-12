@@ -8,8 +8,8 @@ if(empty($user_id)){
 	exit(0);
 }
 
-mbs_import('privilege', 'CUserPrivControl', 'CPrivGroupControl');
-$up = CUserPrivControl::getInstance($mbs_appenv, 
+mbs_import('privilege', 'CPrivUserControl', 'CPrivGroupControl');
+$up = CPrivUserControl::getInstance($mbs_appenv, 
 	CDbPool::getInstance(), CMemcachedPool::getInstance(), $user_id);
 $user_priv = $up->get();
 if(empty($user_priv)){
@@ -34,28 +34,42 @@ $priv_group = CPrivGroupControl::decodePrivList($priv_list['priv_list']);
 <link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 iframe{width:100%;border:0;}
-.actions{width:150px;padding:8px;position:fixed;left:10px;;bottom:20px;}
-.actions div.groups{width:130px;}
+.actions{width:160px;padding:8px;position:fixed;left:10px;;bottom:50px;}
+.actions div.groups{width:140px;}
 
 .actions a{color:rgb(0,100,200);}
 .actions a.mod{}
-.actions a.mod span{margin-left:2px;color:#777;font-size:12px;}
+.actions a.mod span{margin-left:2px;color:#777;font-size:12px;float:right;}
 .actions div.group{display:none;}
 .actions div.group a{padding-left: 15px;}
+.actions .blur_a{background-color:#fff;}
 
 </style>
 </head>
 <body>
-<iframe scrolling=no src="<?=$mbs_appenv->toURL($ac, $mod, array('mod'=>'privilege'))?>" onload="this.height=this.contentWindow.document.body.scrollHeight;"></iframe>
+<iframe scrolling=no src=""></iframe>
 <div class=actions>
 	<div class="vertical-manu groups">
 	<p class=title><?=$mbs_appenv->lang('mgrlist')?></p>
-	<?php foreach($priv_group as $mod => $actions){ $moddef=mbs_moddef($mod);if(empty($moddef)) continue; ?>
+	<?php 
+	if(isset($priv_group[CPrivilegeDef::PRIV_ALL])){
+		$list = $mbs_appenv->getModList();
+		foreach($list as $mod){ 
+			$moddef=mbs_moddef($mod);
+			if(empty($moddef)) continue;
+			$actions = $moddef->filterActions(CModDef::P_MGR);
+			if(empty($actions)) continue;
+	?>
+	<a href="#" class=mod>
+		<?=$moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
+	</a><div class=group><?php foreach($actions as $ac => $title){?>
+		<a href="#" onclick="_to('<?=$mbs_appenv->toURL($ac, $mod)?>', this)"><?=$title?></a><?php }?></div>
+	<?php } }else{ foreach($priv_group as $mod => $actions){ $moddef=mbs_moddef($mod);if(empty($moddef)) continue; ?>
 	<a href="#" class=mod>
 		<?=$moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
 	</a><div class=group><?php foreach($actions as $ac){?>
 		<a href="#" onclick="_to('<?=$mbs_appenv->toURL($ac, $mod)?>', this)"><?=$moddef->item(CModDef::PAGES, $ac, CModDef::P_TLE)?></a><?php }?></div>
-	<?php } ?>
+	<?php }} ?>
 	</div>
 </div>
 <script type="text/javascript">
@@ -67,7 +81,7 @@ function _push_mod(mod){
 			return;
 		}
 	}
-	if(1 == visit_mod_list.length){
+	if(3 == visit_mod_list.length){
 		var m = visit_mod_list.shift();
 		m.style.display = "none";
 	}
@@ -104,8 +118,15 @@ function _to(url, link, mod, ac){
 	frame.src = url;
 	link.className = "cur";
 	prev = link;
-	
 }
+frame.onload = function(e){
+	this.height=this.contentWindow.document.body.scrollHeight;
+	frame.contentWindow.document.body.onclick = function(e){
+		if(prev)
+			prev.className = "cur blur_a";
+	}
+}
+
 </script>
 </body>
 </html>

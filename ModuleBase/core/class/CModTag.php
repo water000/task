@@ -6,7 +6,7 @@
  *
  */
 abstract class CModTag {
-	private $error = '';
+	protected $error = '';
 	/**
 	 * @desc if errors occued, calling getError() to operate
 	 * @param array $params the params(start at 0) that the user passed
