@@ -73,7 +73,8 @@ iframe{width:100%;border:0;}
 	</div>
 </div>
 <script type="text/javascript">
-var links = document.getElementsByTagName("a"), i, visit_mod_list = [];
+var visit_mod_list = [];
+
 function _push_mod(mod){
 	var i;
 	for(i=0; i<visit_mod_list.length; i++){
@@ -96,7 +97,18 @@ function _pull_mod(mod){
 		}
 	}
 }
-var j=0;
+
+function _to(url, link, mod, ac){
+	if(prev != null){
+		prev.className = '';
+	}
+	frame.src = url;
+	link.className = "cur";
+	prev = link;
+}
+
+var frame = document.getElementsByTagName("iframe")[0], prev = null, visit_actions = [];
+var links = document.getElementsByTagName("a"), i, j=0, firstlink=null;
 for(i=0; i<links.length; i++){
 	if("mod" == links[i].className){
 		if(++j<3)
@@ -110,17 +122,14 @@ for(i=0; i<links.length; i++){
 				_pull_mod(this.nextSibling);
 			}
 		}
+	}else{
+		if("group" == links[i].parentNode.className && null == firstlink){
+			firstlink = links[i];
+			firstlink.onclick.apply(firstlink);
+		}
 	}
 }
-var frame = document.getElementsByTagName("iframe")[0], prev = null, visit_actions = [];
-function _to(url, link, mod, ac){
-	if(prev != null){
-		prev.className = '';
-	}
-	frame.src = url;
-	link.className = "cur";
-	prev = link;
-}
+
 frame.onload = function(e){
 	this.style.height=(document.body.scrollHeight-20)+"px";
 	frame.contentWindow.document.body.onclick = function(e){
