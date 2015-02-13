@@ -7,9 +7,9 @@ ul li{list-style-type:none;}
 .warpper{width:100%;min-height:100%;font-size:12px;position:relative;background-color:#ddd;}
 .content{margin:30px auto 0;margin-top:30px;width:1000px;min-height:600px;}
 
-.vertical-manu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
-.vertical-manu p.title{background-color:#fff;font-weight:bold; text-align:center;padding:3px 0;}
-.vertical-manu a{padding:2px 5px; display:block;text-decoration:none;border:1px solid #fff;border-top:1px solid #bbb;}
+.vertical-manu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;border-bottom:0;background-color:#fff;}
+.vertical-manu p.title{background-color:#fff;font-weight:bold; text-align:center;padding:3px 0;border-bottom:1px solid #bbb;}
+.vertical-manu a{padding:3px 5px; display:block;text-decoration:none;border:1px solid #fff;border-bottom:1px solid #bbb;}
 .vertical-manu a:hover, .vertical-manu .cur{border:1px solid #85BBEF; background-color:#C6E0FA;}
 
 p.table_title{font-size:14px; font-weight:bold;color:#555;text-align:left;padding:3px 5px;}

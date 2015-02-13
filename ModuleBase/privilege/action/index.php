@@ -38,7 +38,7 @@ iframe{width:100%;border:0;}
 .actions div.groups{width:140px;}
 
 .actions a{color:rgb(0,100,200);}
-.actions a.mod{}
+.actions a.mod{font-weight:bold;}
 .actions a.mod span{margin-left:2px;color:#777;font-size:12px;float:right;}
 .actions div.group{display:none;}
 .actions div.group a{padding-left: 15px;}
@@ -47,7 +47,7 @@ iframe{width:100%;border:0;}
 </style>
 </head>
 <body>
-<iframe scrolling=no src=""></iframe>
+<iframe src=""></iframe>
 <div class=actions>
 	<div class="vertical-manu groups">
 	<p class=title><?=$mbs_appenv->lang('mgrlist')?></p>
@@ -96,9 +96,11 @@ function _pull_mod(mod){
 		}
 	}
 }
+var j=0;
 for(i=0; i<links.length; i++){
 	if("mod" == links[i].className){
-		links[i].nextSibling.style.display = "none";
+		if(++j<3)
+			links[i].nextSibling.style.display = "block";
 		links[i].onclick = function(e){
 			if("none" == this.nextSibling.style.display){
 				this.nextSibling.style.display = "block";
@@ -120,7 +122,7 @@ function _to(url, link, mod, ac){
 	prev = link;
 }
 frame.onload = function(e){
-	this.height=this.contentWindow.document.body.scrollHeight;
+	this.style.height=(document.body.scrollHeight-20)+"px";
 	frame.contentWindow.document.body.onclick = function(e){
 		if(prev)
 			prev.className = "cur blur_a";
