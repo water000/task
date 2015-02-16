@@ -1,6 +1,8 @@
 <?php
 
 class CPrivGroupControl extends CUniqRowControl {
+	const PRIV_TOPMOST = '*.*';
+	
 	private static $instance = null;
 	
 	protected function __construct($db, $cache, $primarykey = null){
@@ -40,8 +42,8 @@ class CPrivGroupControl extends CUniqRowControl {
 	}
 	
 	static function encodePrivList($list){
-		if(isset($list['*.*'])){
-			$list = array('*.*'=>'');
+		if(self::isTopmost($list)){
+			$list = array(self::PRIV_TOPMOST=>'');
 		}else{
 			/*ksort($list);//ascii-code(*:42, a:97, A:65, _:95)
 			for(;$cur = key($list);){ // remove the element(s) like 'mod.name' when 'mod.*' appeared 
@@ -70,12 +72,12 @@ class CPrivGroupControl extends CUniqRowControl {
 		$row = $this->get();
 		if(!empty($row)){
 			$list = self::decodePrivList($row['priv_list']);
-			return (isset($list[$mod]) && in_array($action, $list[$mod])) || isset($list['*.*']); 
+			return (isset($list[$mod]) && in_array($action, $list[$mod])) || self::isTopmost($list); 
 		}
 		return false;
 	}
 	
-	function isTopmost($list){
+	static function isTopmost($list){
 		return isset($list['*.*']);
 	}
 }

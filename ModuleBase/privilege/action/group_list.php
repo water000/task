@@ -45,36 +45,35 @@ p.table_title a:hover{text-decoration:underline;color:white;}
 				<td><?=$row['creator_id']?></td><td><?=date('Y-m-d', $row['create_ts'])?></td>
 				<td><?=$mbs_appenv->lang($row['type'] == CPrivilegeDef::TYPE_ALLOW ? 'type_allow' : 'type_deny')?></td>
 				<td>
-	<?php 
-	$modified_priv = array();
-	$priv_list = CPrivGroupControl::decodePrivList($row['priv_list']);
-	if(CPrivGroupControl::isTopmost($priv_list)){
-		echo '<b>',$mbs_appenv->lang('topmost_group'), '</b>';
-	}else{
-		$prev = '';
-		$_moddef = null;
-		foreach($priv_list as $mod => $actions){
-			$_moddef = mbs_moddef($mod);
-			if(empty($_moddef)){
-				$modified_priv[$row['id']][] = $mod;
-				continue;
-			}
-			echo '<p class=title>', $_moddef->item(CModDef::MOD, CModDef::G_TL), '</p>';
-			echo '<div class=mod>';
-			foreach($actions as $action){
-				$ac = $_moddef->item(CModDef::PAGES, $action, CModDef::P_TLE);
-				if(empty($ac)){
-					$modified_priv[$row['id']][] = $mod.'.'.$action;
-				}else{
-					echo '<span>', $ac, '</span>';
-				}
-			}
-			echo '</div>';
+<?php 
+$modified_priv = array();
+$priv_list = CPrivGroupControl::decodePrivList($row['priv_list']);
+if(CPrivGroupControl::isTopmost($priv_list)){
+	echo '<b>',$mbs_appenv->lang('topmost_group'), '</b>';
+}else{
+	$_moddef = null;
+	foreach($priv_list as $mod => $actions){
+		$_moddef = mbs_moddef($mod);
+		if(empty($_moddef)){
+			$modified_priv[$row['id']][] = $mod;
+			continue;
 		}
+		echo '<p class=title>', $_moddef->item(CModDef::MOD, CModDef::G_TL), '</p>';
+		echo '<div class=mod>';
+		foreach($actions as $action){
+			$ac = $_moddef->item(CModDef::PAGES, $action, CModDef::P_TLE);
+			if(empty($ac)){
+				$modified_priv[$row['id']][] = $mod.'.'.$action;
+			}else{
+				echo '<span>', $ac, '</span>';
+			}
+		}
+		echo '</div>';
 	}
-	?>
+}
+?>
 				</td>
-				<td><a href="<?=$mbs_appenv->toURL('join_group')?>"><?=$mbs_appenv->lang('join_group')?></a></td>
+				<td><a href="<?=$mbs_appenv->toURL('join_group', '', array('group_id'=>$row['id']))?>"><?=$mbs_appenv->lang('join_group')?></a></td>
 			</tr>
 			<?php } ?>
 			</table>

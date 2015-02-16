@@ -16,10 +16,10 @@ $moddef = mbs_moddef($selected_mod);
 <title><?php mbs_title()?></title>
 <link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
-.left{width:170px;float:left;margin-top:80px;}
+.left{width:150px;float:left;margin-top:80px;}
 .left a{font-size:14px;}
 
-.right{float:left;width:700px;padding:8px 13px;margin:20px;background-color:#fff;box-shadow:0 2px 6px #313131}
+.right{float:left;width:720px;padding:8px 13px;margin:20px;background-color:#fff;box-shadow:0 2px 6px #313131}
 h2{color:#555;margin:0;text-align:center;}
 table , ul{background-color:#fff;}
 ul{float:left;width:110px;word-wrap:break-word;}

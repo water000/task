@@ -6,8 +6,6 @@ class CPrivilegeDef extends CModDef {
 	const TYPE_ALLOW = 1;
 	const TYPE_DENY  = 2;
 	
-	const PRIV_ALL = '*.*';
-	
 	protected function desc() {
 		return array(
 			self::MOD => array(
@@ -76,8 +74,8 @@ class CPrivilegeDef extends CModDef {
 					self::P_ARGS => array(
 						'group_id' => array(self::PA_TYP=>'integer', self::PA_REQ=>1, 
 								self::PA_EMP=>0, self::G_DC=>'选择指定的组id'),
-						'del'  => array(self::PA_TYP=>'array', self::G_DC=>'选择需要删除的用户'),
-						'join' => array(self::PA_TYP=>'array', self::G_DC=>'选择需要加入的用户'),
+						'del'  => array(self::PA_TYP=>'array', self::PA_REQ=>0, self::G_DC=>'选择需要删除的用户'),
+						'join' => array(self::PA_TYP=>'array', self::PA_REQ=>0, self::G_DC=>'选择需要加入的用户'),
 					),
 				),
 				'rematch_action' => array(
@@ -105,7 +103,7 @@ class CPrivilegeDef extends CModDef {
 			$ins->add(array(
 				'name'      => 'topmost',
 				'type'      => self::TYPE_ALLOW,
-				'priv_list' => CPrivGroupControl::encodePrivList(array(self::PRIV_ALL=>'')),
+				'priv_list' => CPrivGroupControl::encodePrivList(array(CPrivGroupControl::PRIV_TOPMOST=>'')),
 				'create_ts' => time()
 			));
 			

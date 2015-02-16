@@ -33,6 +33,7 @@ $priv_group = CPrivGroupControl::decodePrivList($priv_list['priv_list']);
 <head>
 <link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
+body{overflow:hidden;}
 iframe{width:100%;border:0;}
 .actions{width:160px;padding:8px;position:fixed;left:10px;;bottom:50px;}
 .actions div.groups{width:140px;}
@@ -52,7 +53,7 @@ iframe{width:100%;border:0;}
 	<div class="vertical-manu groups">
 	<p class=title><?=$mbs_appenv->lang('mgrlist')?></p>
 	<?php 
-	if(isset($priv_group[CPrivilegeDef::PRIV_ALL])){
+	if(isset($priv_group[CPrivGroupControl::PRIV_TOPMOST])){
 		$list = $mbs_appenv->getModList();
 		foreach($list as $mod){ 
 			$moddef=mbs_moddef($mod);
@@ -131,11 +132,12 @@ for(i=0; i<links.length; i++){
 }
 
 frame.onload = function(e){
-	this.style.height=(document.body.scrollHeight-20)+"px";
+	frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-5)+"px";
 	frame.contentWindow.document.body.onclick = function(e){
 		if(prev)
 			prev.className = "cur blur_a";
 	}
+	document.title = frame.contentWindow.document.title;
 }
 
 </script>
