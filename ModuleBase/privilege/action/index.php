@@ -131,13 +131,15 @@ for(i=0; i<links.length; i++){
 	}
 }
 
-frame.onload = function(e){
-	frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-5)+"px";
-	frame.contentWindow.document.body.onclick = function(e){
-		if(prev)
-			prev.className = "cur blur_a";
+frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-5)+"px";
+frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
+	if (frame.contentWindow.document.readyState=="complete"){
+		frame.contentWindow.document.body.onclick = function(e){
+			if(prev)
+				prev.className = "cur blur_a";
+		}
+		document.title = frame.contentWindow.document.title;
 	}
-	document.title = frame.contentWindow.document.title;
 }
 
 </script>
