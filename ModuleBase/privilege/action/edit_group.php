@@ -21,8 +21,8 @@ if(isset($_REQUEST['name'])){
 				$priv_group->set($input_param);
 			}else{
 				$us = new CUserSession();
-				$us = $us->get();
-				$input_param['creator_id'] = $us['id'];
+				list($user_id, ) = $us->get();
+				$input_param['creator_id'] = $user_id;
 				$input_param['create_ts'] = time();
 				$id = $priv_group->add($input_param);
 			}

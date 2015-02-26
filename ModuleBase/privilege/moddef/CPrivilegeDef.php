@@ -34,9 +34,10 @@ class CPrivilegeDef extends CModDef {
 					user_id int unsigned not null default 0,
 					creator_id int unsigned not null default 0, -- creator_id add priv_group_id to user_id
 					priv_group_id int unsigned not null default 0,
-					create_ts int unsigned not null default 0,
+					join_ts int unsigned not null default 0,
 					last_edit_ts int unsigned not null default 0,
-					primary key(user_id)
+					uniq key(user_id),
+					key(priv_group_id)
 				)"
 			),
 			self::PAGES => array(
@@ -100,7 +101,7 @@ class CPrivilegeDef extends CModDef {
 		mbs_import('', 'CPrivGroupControl', 'CPrivUserControl');
 		try {
 			$ins = CPrivGroupControl::getInstance(self::$appenv, $dbpool, $mempool);
-			$ins->add(array(
+			$pgid = $ins->add(array(
 				'name'      => 'topmost',
 				'type'      => self::TYPE_ALLOW,
 				'priv_list' => CPrivGroupControl::encodePrivList(array(CPrivGroupControl::PRIV_TOPMOST=>'')),
@@ -110,7 +111,7 @@ class CPrivilegeDef extends CModDef {
 			$ins = CPrivUserControl::getInstance(self::$appenv, $dbpool, $mempool);
 			$ins->add(array(
 				'user_id'       => 1,
-				'priv_group_id' => 1,
+				'priv_group_id' => $pgid,
 				'create_ts'     => time(),
 			));
 		} catch (Exception $e) {

@@ -25,6 +25,8 @@ $lang_zh_CN = array(
 	'nick_name'     => '昵称',
 	'reg_time'      => '注册时间',
 	'joined_user'   => '已加入用户',
+	'join_ts'       => '加入时间',
+	'exit_user'     => '退出用户',
 );
 
 

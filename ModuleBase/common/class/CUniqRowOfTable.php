@@ -141,6 +141,18 @@ class CUniqRowOfTable
  	function tbname(){
  		return $this->tbname;
  	}
+ 	
+ 	function search($keyval){
+ 		$sql = sprintf('SELECT * FROM %s WHERE '.implode('=?,', array_keys($keyval)).'=?', $this->tbname());
+ 		try{
+ 			$pdos = $this->oPdoConn->prepare($sql);
+ 			$pdos->execute(array_values($keyval));
+ 			return $pdos->fetchAll();
+ 		}catch (Exception $e){
+ 			throw $e;
+ 		}
+ 		return null;
+ 	}
 }
 
 ?>

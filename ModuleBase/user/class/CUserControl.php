@@ -41,15 +41,12 @@ class CUserControl extends CUniqRowControl {
 	 * 
 	 * @param array $keyval
 	 * @throws Exception
-	 * @return result if $keyval exists, else return NULL
+	 * @return return the result if $keyval exists, else return NULL
 	 */
 	function search($keyval){
 		$keyval = array_intersect_key($keyval, self::$searchKeys);
-		$sql = sprintf('SELECT * FROM %s WHERE '.implode('=?,', array_keys($keyval)), $this->oDB->tbname());
 		try{
-			$pdos = $this->oDB->getConnection()->prepare($sql);
-			$pdos->execute(array_values($keyval));
-			return $pdos->fetchAll();
+			return $this->oDB->search($keyval);
 		}catch (Exception $e){
 			throw $e;
 		}

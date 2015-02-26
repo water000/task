@@ -23,8 +23,8 @@ class CPrivFilter extends CModTag{
 		$priv_info = null;
 		try {
 			$pu = CPrivUserControl::getInstance($mbs_appenv,
-					CDbPool::getInstance(), CMemcachedPool::getInstance(), $user_id);
-			$priv_info = $pu->get();
+					CDbPool::getInstance(), CMemcachedPool::getInstance());
+			$priv_info = $pu->getDB()->search(array('user_id' => $user_id));
 		} catch (Exception $e) {
 			$this->error = $mbs_appenv->lang('db_exception', 'common');
 			return false;
@@ -33,6 +33,7 @@ class CPrivFilter extends CModTag{
 			$this->error = 'access denied';
 			return false;
 		}
+		$priv_info = $priv_info[0];
 		
 		try {
 			$pg = CPrivGroupControl::getInstance($mbs_appenv, CDbPool::getInstance(), 

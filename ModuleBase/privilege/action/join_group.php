@@ -1,6 +1,7 @@
 <?php
 
-mbs_import('privilege', 'CPrivGroupControl');
+mbs_import('privilege', 'CPrivGroupControl', 'CPrivUserControl');
+mbs_import('user', 'CUserControl');
 
 $error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 if(empty($error)){
@@ -10,24 +11,53 @@ if(empty($error)){
 		$pg_info = $pg->get();
 		$pg_list = $pg->decodePrivList($pg_info['priv_list']);
 		
+		$pu = CPrivUserControl::getInstance($mbs_appenv,
+				CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['group_id']);
+		
 		if(isset($_REQUEST['user_id'])){
-			mbs_import('user', 'CUserControl');
 			$uc = CUserControl::getInstance($mbs_appenv, 
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
 			$search_rs = $search_kv = array();
 			foreach(array('user_id', 'phone_num', 'nick_name') as $k){
-				if(isset($_REQUEST[$k]) && strlen($_REQUEST[$k] != 0)){
+				if(isset($_REQUEST[$k]) && strlen($_REQUEST[$k]) != 0){
 					$search_kv[$k] = $_REQUEST[$k];
 				}
 			}
+			
 			if(!empty($search_kv)){
 				if(isset($search_kv['user_id'])){
 					$search_kv['id'] = $search_kv['user_id'];
 					unset($search_kv['user_id']);
 				}
+				
 				$search_rs = $uc->search($search_kv);
 			}
 		}
+		else if(isset($_REQUEST['del'])){
+			foreach($_REQUEST['del'] as $uid){
+				$pu->setSecondKey($uid);
+				$pu->delNode();
+			}
+		}
+		else if(isset($_REQUEST['join'])){
+			mbs_import('user', 'CUserSession');
+			$us = new CUserSession();
+			list($user_id, ) = $us->get();
+			foreach($_REQUEST['join'] as $uid){
+				$pu->addNode(array(
+					'priv_group_id' => $_REQUEST['group_id'],
+					'user_id'       => $uid,
+					'creator_id'    => $user_id,
+					'join_ts'       => time()
+				));
+			}
+		}
+		
+		
+		$pu_list = $pu->getDB()->getAll();
+		
+		$usctr = CUserControl::getInstance($mbs_appenv,
+				CDbPool::getInstance(), CMemcachedPool::getInstance());
 	} catch (Exception $e) {
 		$error[] = $e->getMessage();
 	}
@@ -46,7 +76,7 @@ body, .warpper{background-color:#fff;}
 h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 .left{width:600px;float:left;}
 .right{width:320px;float:right;padding:0 20px 20px;background-color:#eee;}
-.left h2, .left p{text-align:center;color:#777;}
+.left h2{text-align:center;color:#777;}
 
 .right p.title{font-weight:bold;padding:2px 0;margin-top:20px;}
 .right .text{width:100%; padding:3px;}
@@ -57,7 +87,7 @@ h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 
 table{margin:10px 0 0;}
 input{width:120px;padding:3px 0;}
-fieldset{border: 2px solid #85BBEF;border-radius:3px;padding:10px;}
+fieldset{border: 2px solid #85BBEF;border-left-width:5px; border-right-width:5px; border-radius:3px;padding:10px;}
 fieldset span{margin-left:5px;}
 .submit_btn{width:60px;font-weight:bold;margin-left:5px;}
 .even{background-color:#eee}
@@ -93,13 +123,13 @@ fieldset span{margin-left:5px;}
 <?php 
 if(isset($_REQUEST['user_id']) && !empty($search_rs)){
 ?>
+				<form action="" method="post">
 				<table cellspacing=0>
-					<tr></th><th>ID</th>
+					<tr><th>ID</th>
 						<th><?php echo $mbs_appenv->lang('nick_name')?></th>
 						<th><?php echo $mbs_appenv->lang('phone_num')?></th>
 						<th><?php echo $mbs_appenv->lang('reg_time')?></th>
 					</tr>
-				
 <?php $n = 1; foreach($search_rs as $row){?>
 					<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
 						<td><input style="width:30px;" type="checkbox" name="join[]" value="<?php echo $row['id']?>" /><?php echo $row['id']?></td>
@@ -108,21 +138,40 @@ if(isset($_REQUEST['user_id']) && !empty($search_rs)){
 						<td><?php echo date('Y-m-d', $row['reg_ts'])?></td>
 					</tr>
 <?php }?>
-					<tr><td colspan=4><input type="submit" style="width: 80px;" class="submit_btn" value="<?php echo $mbs_appenv->lang('join_group')?>" /></td></tr>
 				</table>
+				<div style="margin-top:10px;"><input type="submit" style="width: 80px;" class="submit_btn" value="<?php echo $mbs_appenv->lang('join_group')?>" /></div>
+				</form>
 <?php
-} 
+}
 ?>
 			</fieldset>
-			<p class=table_title><?=$mbs_appenv->lang('joined_user')?></p>
-			<table>
-				<tr>
-					<th>ID</th>
-					<th><?php echo $mbs_appenv->lang('nick_name')?></th>
-					<th><?php echo $mbs_appenv->lang('phone_num')?></th>
-					<th><?php echo $mbs_appenv->lang('phone_num')?></th>
-				</tr>
-			</table>
+			<fieldset style="border-color:rgb(9, 100, 18);margin-top:15px;">
+				<legend><?=$mbs_appenv->lang('joined_user')?></legend>
+				<form action="" method="post">
+				<table cellspacing=0 style="margin-top:0;">
+					<tr>
+						<th>USER ID</th>
+						<th><?php echo $mbs_appenv->lang('nick_name')?></th>
+						<th><?php echo $mbs_appenv->lang('join_ts')?></th>
+					</tr>
+<?php 
+if(!empty($pu_list)){
+	$n = 1; 
+	foreach($pu_list as $row){ 
+		$usctr->setPrimaryKey($row['user_id']); 
+		$usinfo = $usctr->get(); 
+?>
+					<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
+						<td><input style="width:30px;" type="checkbox" name="del[]" value="<?php echo $row['user_id']?>" /><?php echo $row['user_id']?></td>
+						<td><?php echo CStrTools::txt2html($usinfo['nick_name'])?></td>
+						<td><?php echo date('Y-m-d', $row['join_ts'])?></td>
+					</tr>
+<?php }?>
+				</table>
+				<div style="margin-top:10px;"><input type="submit" style="width: 80px;" class="submit_btn" value="<?php echo $mbs_appenv->lang('exit_user')?>" /></div>
+				</form>
+<?php }?>
+			</fieldset>
 		</div>
 		<div class=right>
 			<p class=title><?php echo $mbs_appenv->lang('group_name')?></p>

@@ -26,7 +26,6 @@ if(isset($_REQUEST['phone_num'])){
 	
 	//"$_SESSION['common_img_captcha']" defined in common/action/img_captcha.php
 	session_start();
-	var_dump($_SESSION['common_img_captcha'], $_REQUEST['captcha']);
 	if(strtoupper($_REQUEST['captcha']) != $_SESSION['common_img_captcha']){
 		$error[] = $mbs_appenv->lang('invalid_captcha');
 	}

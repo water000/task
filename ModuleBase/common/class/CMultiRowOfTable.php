@@ -9,7 +9,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 	protected $pageId     = 0;
 	protected $numPerPage = 20;
 	
-	protected function __construct($oPdoConn, $tbname, 
+	/*protected */function __construct($oPdoConn, $tbname, 
 									$pkeyname, $primaryKey, 
 									$skeyname, $secondKey=null)
 	{
@@ -47,6 +47,18 @@ class CMultiRowOfTable extends CUniqRowOfTable
 		$sql = sprintf('SELECT * FROM %s WHERE %s=%d Limit %d, %d', 
 			$this->tbname, $this->keyname, $this->primaryKey, 
 			($this->pageId-1)*$this->numPerPage, $this->numPerPage);
+		try {
+			$pdos = $this->oPdoConn->query($sql);
+			$ret = $pdos->fetchAll();
+		} catch (Exception $e) {
+			throw $e;
+		}
+		return $ret;
+	}
+	
+	function getAll(){
+		$sql = sprintf('SELECT * FROM %s WHERE %s=%d',
+				$this->tbname, $this->keyname, $this->primaryKey);
 		try {
 			$pdos = $this->oPdoConn->query($sql);
 			$ret = $pdos->fetchAll();

@@ -14,8 +14,7 @@ class CUserSession extends CModTag {
 	
 	function set($user_id, $userinfo=null){
 		$userinfo = empty($userinfo) ? array() : $userinfo;
-		$userinfo['id'] = $user_id;
-		$_SESSION['user_login'] = $userinfo;
+		$_SESSION['user_login'] = array($user_id, $userinfo);
 	}
 
 	function get(){
@@ -25,13 +24,13 @@ class CUserSession extends CModTag {
 	/**
 	 * 
 	 * @param array $param('is_api'=>0/1)
-	 * @return unknown
+	 * @return user id
 	 */
 	function checkLogin($param=array()){
 		global $mbs_appenv;
 		
-		if(isset($_SESSION['user_login']['id'])){
-			return $_SESSION['user_login']['id'];
+		if(isset($_SESSION['user_login'])){
+			return $_SESSION['user_login'][0];
 		}
 		
 		if(isset($param['is_api'])){
@@ -51,6 +50,10 @@ class CUserSession extends CModTag {
 				break;
 		}
 		return false;
+	}
+	
+	function destroy(){
+		session_destroy();
 	}
 	
 }

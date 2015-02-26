@@ -1,10 +1,12 @@
 <?php
 
-class CPrivUserControl extends CUniqRowControl {
+mbs_import('common', 'CMultiRowControl');
+
+class CPrivUserControl extends CMultiRowControl {
 	private static $instance = null;
 	
-	protected function __construct($db, $cache, $primarykey = null){
-		parent::__construct($db, $cache, $primarykey);
+	protected function __construct($db, $cache, $primarykey = null, $secondKey = null){
+		parent::__construct($db, $cache, $primarykey, $secondKey);
 	}
 	
 	/**
@@ -14,20 +16,21 @@ class CPrivUserControl extends CUniqRowControl {
 	 * @param CMemcachePool $mempool
 	 * @param string $primarykey
 	 */
-	static function getInstance($mbs_appenv, $dbpool, $mempool, $primarykey = null){
+	static function getInstance($mbs_appenv, $dbpool, $mempool, $priv_group_id = null){
 		if(empty(self::$instance)){
 			try {
 				$memconn = $mempool->getConnection();
 				self::$instance = new CPrivUserControl(
-						new CUniqRowOfTable($dbpool->getDefaultConnection(),
-								mbs_tbname('priv_user'), 'user_id', $primarykey),
-						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CPrivUserControl') : null,
-						$primarykey
+						new CMultiRowOfTable($dbpool->getDefaultConnection(),
+								mbs_tbname('priv_user'), 'priv_group_id', $priv_group_id, 'user_id'),
+						$memconn ? new CMultiRowOfCache($memconn, $primarykey, 'CPrivUserControl') : null
 				);
 			} catch (Exception $e) {
 				throw $e;
 			}
 		}
+		self::$instance->setPrimaryKey($priv_group_id);
+		
 		return self::$instance;
 	}
 }
