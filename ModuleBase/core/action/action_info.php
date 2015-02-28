@@ -57,7 +57,7 @@ $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0',
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 .left{width:290px;margin:30px 0 0;background-color:#fff;float:left;}
 .left .action-item{font-size:12px;color:#333;position:relative;padding:3px 8px;border-bottom:1px solid #e0e0e0;cursor:pointer;}
@@ -80,17 +80,17 @@ td{word-wrap:break-word;word-break:break-all;}
 	<div class=content>
 		<h2 style="padding-bottom:30px;">Actions Info</h2>
 		<div class=filter>
-			<form action="<?=$mbs_appenv->item('cur_action_url')?>" method="get">
+			<form action="<?php echo $mbs_appenv->item('cur_action_url')?>" method="get">
 				<select name=mod onchange="this.form.submit();">
 					<option value="">--all module--</option>
-				<?php foreach($mod_list as $mod){?><option value=<?=$mod?> <?=$mod==$_REQUEST['mod']?' selected':''?>><?=$mod?></option><?php }?>
+				<?php foreach($mod_list as $mod){?><option value=<?php echo $mod?> <?php echo $mod==$_REQUEST['mod']?' selected':''?>><?php echo $mod?></option><?php }?>
 				</select>
 				<select name=otype onchange="this.form.submit();">
 					<option value="">--all output--</option>
-					<?php foreach($output_type as $type){?><option value=<?=$type?> <?=$type==$_REQUEST['otype']?' selected':''?>><?=$type?></option><?php }?>
+					<?php foreach($output_type as $type){?><option value=<?php echo $type?> <?php echo $type==$_REQUEST['otype']?' selected':''?>><?php echo $type?></option><?php }?>
 				</select>
 				<?php foreach($_GET as $k=>$v){ if('mod' == $k || 'otype' == $k) continue;?>
-				<input type="hidden" name="<?=$k?>" value="<?=$v?>" />
+				<input type="hidden" name="<?php echo $k?>" value="<?php echo $v?>" />
 				<?php }?>
 			</form>
 			<span>Filters: </span>
@@ -120,37 +120,37 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 ?>
 			<div class=action-item onclick="_action(this)">
 				<div>
-					<span class=title>[<?=$all_actions[$i]['_mod']?>.<?=$all_actions[$i]['_name']?>]
-						<?=CStrTools::txt2html($def[CModDef::P_TLE])?></span>
+					<span class=title>[<?php echo $all_actions[$i]['_mod']?>.<?php echo $all_actions[$i]['_name']?>]
+						<?php echo CStrTools::txt2html($def[CModDef::P_TLE])?></span>
 				</div>
-				<div class=desc><?=CStrTools::txt2html(CStrTools::cutstr($def[CModDef::G_DC], 45, $mbs_appenv->item('charset')))?></div>
+				<div class=desc><?php echo CStrTools::txt2html(CStrTools::cutstr($def[CModDef::G_DC], 45, $mbs_appenv->item('charset')))?></div>
 				<div class="action" style="display: none;">
 					<p class=table_title>Basic Info</p>
 					<table cellspacing=0>
-						<tr><th>URL</th><td><?=$mbs_appenv->toURL($all_actions[$i]['_name'], $all_actions[$i]['_mod'])?></td></tr>
-						<tr><th>Last Modify</th><td><?=0==$fmtime ? '' : date('m-d H:i', $fmtime)?></td></tr>
-						<tr><th>Desc</th><td><?=CStrTools::txt2html($def[CModDef::G_DC])?></td></tr>
+						<tr><th>URL</th><td><?php echo $mbs_appenv->toURL($all_actions[$i]['_name'], $all_actions[$i]['_mod'])?></td></tr>
+						<tr><th>Last Modify</th><td><?php echo 0==$fmtime ? '' : date('m-d H:i', $fmtime)?></td></tr>
+						<tr><th>Desc</th><td><?php echo CStrTools::txt2html($def[CModDef::G_DC])?></td></tr>
 						<?php if(isset($def[CModDef::P_MGR])){?><tr><th>admin</th><td>yes</td></tr><?php }?>
 					</table>
-					<p class=table_title><?=$mbs_appenv->lang(CModDef::P_ARGS)?></p>
+					<p class=table_title><?php echo $mbs_appenv->lang(CModDef::P_ARGS)?></p>
 					<table cellspacing=0>
-						<tr><th><?=$mbs_appenv->lang(CModDef::G_NM)?></th>
-							<?php foreach(array_keys($pageargs) as $pa){?><th><?=$mbs_appenv->lang($pa)?></th><?php }?>
-							<th width=40%><?=$mbs_appenv->lang(CModDef::G_DC)?></th>
+						<tr><th><?php echo $mbs_appenv->lang(CModDef::G_NM)?></th>
+							<?php foreach(array_keys($pageargs) as $pa){?><th><?php echo $mbs_appenv->lang($pa)?></th><?php }?>
+							<th width=40%><?php echo $mbs_appenv->lang(CModDef::G_DC)?></th>
 						</tr>
 							<?php $n=1; foreach($def[CModDef::P_ARGS] as $key => $args){?>
 							<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
-							<td><?=$key?></td>
+							<td><?php echo $key?></td>
 							<?php next($pageargs); foreach($pageargs as $pa=>$defval){ ?>
-							<td><?=isset($args[$pa])?$args[$pa]:$defval?></td>
+							<td><?php echo isset($args[$pa])?$args[$pa]:$defval?></td>
 							<?php } ?>
-							<td><?=CStrTools::txt2html($args[CModDef::G_DC])?></td>
+							<td><?php echo CStrTools::txt2html($args[CModDef::G_DC])?></td>
 							</tr>
 							<?php } ?>
 					</table>
-					<p class=table_title><?=$mbs_appenv->lang(CModDef::P_OUT)?></p>
+					<p class=table_title><?php echo $mbs_appenv->lang(CModDef::P_OUT)?></p>
 					<table><tr><td style="font-size: 13px;background-color:#fff9ea;">
-						<?=isset($def[CModDef::P_OUT]) ? CStrTools::txt2html($def[CModDef::P_OUT]) : 'NULL'?>
+						<?php echo isset($def[CModDef::P_OUT]) ? CStrTools::txt2html($def[CModDef::P_OUT]) : 'NULL'?>
 					</td></tr></table>
 				</div>
 			</div>

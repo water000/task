@@ -52,13 +52,13 @@ if(isset($_REQUEST['code'])){
 	<div class="main">
 		<div style="margin:20px 0;">
 			<a href="#NTAG_CALL(core, url, core, modmgr)">module management</a>&nbsp;&gt;&nbsp; 
-			<a href="#NTAG_CALL(core, url, core, detail)&mod=<?=CUR_MOD?>"><?=CUR_MOD?></a>&nbsp;&gt;&nbsp;
-			<b><?=htmlspecialchars($_REQUEST['file'])?></b>
+			<a href="#NTAG_CALL(core, url, core, detail)&mod=<?php echo CUR_MOD?>"><?php echo CUR_MOD?></a>&nbsp;&gt;&nbsp;
+			<b><?php echo htmlspecialchars($_REQUEST['file'])?></b>
 		</div>
 		<?php if(isset($_REQUEST['code'])){ ?>
-		<p style="text-align:center;"><b>edit result: <?=count($error) > 0 ? 'failure' : 'success'?></b></p>
+		<p style="text-align:center;"><b>edit result: <?php echo count($error) > 0 ? 'failure' : 'success'?></b></p>
 		<?php if(count($error) > 0){foreach($error as $err){?>
-		<p style="color:red;"><?=htmlspecialchars($err)?></p>
+		<p style="color:red;"><?php echo htmlspecialchars($err)?></p>
 		<?php }}}?>
 		<div style="margin:15px 0;">
 			<form action="" method="post">
@@ -67,7 +67,7 @@ if(isset($_REQUEST['code'])){
 				<div style="border:2px solid #ddd;width:98%;height:300px;overflow:scroll;"><?php highlight_string($content)?></div>
 			<?php } ?>
 				<p style="margin-top:10px;"><b>edit</b></p>
-				<div><textarea name="code" style="border:2px solid #ddd;width:98%;height:500px;"><?=htmlspecialchars($content)?></textarea></div>
+				<div><textarea name="code" style="border:2px solid #ddd;width:98%;height:500px;"><?php echo htmlspecialchars($content)?></textarea></div>
 				<div style="margin:10px 0;"><input type="submit" value="update" />&nbsp;&nbsp;WARNING: we recommand highly that the content modified should be download to local file </div>
 			</form>
 		</div>

@@ -4,7 +4,7 @@ require_once dirname(__FILE__).'/CUniqRowOfTable.php';
 
 class CMultiRowOfTable extends CUniqRowOfTable
 {
-	protected $skyname    = '';
+	protected $skeyname    = '';
 	protected $secondKey  = null;
 	protected $pageId     = 0;
 	protected $numPerPage = 20;
@@ -14,7 +14,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 									$skeyname, $secondKey=null)
 	{
 		parent::__construct($oPdoConn, $tbname, $pkeyname, $primaryKey);
-		$this->skyname   = $skeyname;
+		$this->skeyname   = $skeyname;
 		$this->secondKey = $secondKey;
 	}
 	
@@ -68,39 +68,38 @@ class CMultiRowOfTable extends CUniqRowOfTable
 		return $ret;
 	}
 	
-	function addNode($param){
-		$keys   = '';
-		$values = '';
-		
-		foreach($param as $k=>$v){
-			$keys   .= $k.',';
-			$values .= sprintf('"%s",', $this->oPdoConn->quote($v));
-		}
-		$keys = substr($keys, 0, -1);
-		$values = substr($values, 0, -1);
-		$sql = sprintf('INSERT INTO %s(%s) VALUES(%s)', $this->tbname, $keys, $values);
+	function addNode($param){	
+		$ret = false;
+		$sql = sprintf('INSERT INTO %s(%s) VALUES(%s)', 
+				$this->tbname, 
+				implode(',', array_keys($param)), 
+				str_repeat('?,', count($param)-1).'?'
+		);
 		
 		try{
-			$this->oPdoConn->query($sql);
-			$this->secondKey = $this->oPdoConn->lastInsertId();
+			$pdos = $this->oPdoConn->prepare($sql);
+			$ret = $pdos->execute(array_values($param));
 		}catch(Exception $e){
 			throw $e;
 		}
-		return $this->secondKey;
-	}
+		return $ret;
+	} 
 	
 	function setNode($param){
 		$sql = '';
 		
 		foreach($param as $k => $v){
-			$sql .= sprintf('`%s`="%s",', $k, $this->oPdoConn->quote($v));
+			$sql .= sprintf('`%s`=?,', $k);
 		}
 		$sql = sprintf('UPDATE %s SET %s WHERE %s=%d AND %s=%d', 
-			$this->tbname, $sql, $this->keyname, $this->primaryKey,
-			$this->skyname, $this->secondKey);
+			$this->tbname, 
+			substr($sql, 0, -1), 
+			$this->keyname, $this->primaryKey,
+			$this->skeyname, $this->secondKey);
 		
 		try {
-			$ret = $this->oPdoConn->exec($sql);
+			$pre = $this->oPdoConn->prepare($sql);
+			$ret = $pre->execute(array_values($param));
 		} catch (Exception $e) {
 			throw $e;
 		}

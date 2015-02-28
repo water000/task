@@ -44,12 +44,15 @@ if(empty($error)){
 			$us = new CUserSession();
 			list($user_id, ) = $us->get();
 			foreach($_REQUEST['join'] as $uid){
-				$pu->addNode(array(
+				$ret = $pu->addNode(array(
 					'priv_group_id' => $_REQUEST['group_id'],
 					'user_id'       => $uid,
 					'creator_id'    => $user_id,
 					'join_ts'       => time()
 				));
+				if(!$ret){
+					$error[] = 'user(id:'.$uid.') already exists';
+				}
 			}
 		}
 		
@@ -69,7 +72,7 @@ if(empty($error)){
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 body, .warpper{background-color:#fff;}
 .content{background-color:#fff;}
@@ -97,14 +100,14 @@ fieldset span{margin-left:5px;}
 <div class="warpper">
 	<div class=header></div>
 	<div class=content>
-		<h1><?=$mbs_cur_actiondef[CModDef::P_TLE]?></h1>
+		<h1><?php echo $mbs_cur_actiondef[CModDef::P_TLE]?></h1>
 		<?php if(!empty($error)){ ?>
-		<div class=error><?php  foreach($error as $e){?><p><?=CStrTools::txt2html($e)?></p><?php }?>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?=$mbs_appenv->lang('close')?></a></div>
+		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a></div>
 		<?php }else if(isset($_REQUEST['join']) || isset($_REQUEST['del'])){?>
-		<div class=success><?=$mbs_appenv->lang('oper_succ')?>
-			<a href="<?=$mbs_appenv->toURL('group_list')?>"><?=$mbs_appenv->lang('group_list')?></a>
-			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?=$mbs_appenv->lang('close')?></a>
+		<div class=success><?php echo $mbs_appenv->lang('oper_succ')?>
+			<a href="<?php echo $mbs_appenv->toURL('group_list')?>"><?php echo $mbs_appenv->lang('group_list')?></a>
+			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a>
 		</div>
 		<?php }?>
 		<div class=left>
@@ -146,7 +149,7 @@ if(isset($_REQUEST['user_id']) && !empty($search_rs)){
 ?>
 			</fieldset>
 			<fieldset style="border-color:rgb(9, 100, 18);margin-top:15px;">
-				<legend><?=$mbs_appenv->lang('joined_user')?></legend>
+				<legend><?php echo $mbs_appenv->lang('joined_user')?></legend>
 				<form action="" method="post">
 				<table cellspacing=0 style="margin-top:0;">
 					<tr>

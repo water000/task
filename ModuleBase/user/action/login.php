@@ -67,7 +67,7 @@ else{
 <html>
 <head>
 <title><?php mbs_title($mbs_appenv->lang('login'))?></title>
-<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 body, .warpper{background-color:#fff;}
 .content{background-color:#fff;}
@@ -93,23 +93,23 @@ img{vertical-align:bottom;margin: 0 6px;}
 <div class="warpper">
 	<div class=header></div>
 	<div class=content>
-		<h1><?=$mbs_appenv->lang('login')?></h1>
+		<h1><?php echo $mbs_appenv->lang('login')?></h1>
 		<?php if(isset($_REQUEST['phone_num'])){if(!empty($error)){ ?>
-		<div class=error><?php  foreach($error as $e){?><p><?=CStrTools::txt2html($e)?></p><?php }?>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?=$mbs_appenv->lang('close')?></a></div>
+		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a></div>
 		<?php }}?>
 		<div class=left></div>
 		<div class=right>
 			<form action="" method="post">
-				<input type="hidden" name="redirect" value="<?=urlencode(REDIRECT_AFTER_LOGIN)?>" />
-				<p class=title><?=$mbs_appenv->lang('phone_num')?></p>
+				<input type="hidden" name="redirect" value="<?php echo urlencode(REDIRECT_AFTER_LOGIN)?>" />
+				<p class=title><?php echo $mbs_appenv->lang('phone_num')?></p>
 				<p><input type="text" class=text name="phone_num" value="" /></p>
-				<p class=title><?=$mbs_appenv->lang('password')?></p>
+				<p class=title><?php echo $mbs_appenv->lang('password')?></p>
 				<p><input type="password" class=text name="password" value="" /></p>
-				<p class=title><?=$mbs_appenv->lang('captcha')?></p>
+				<p class=title><?php echo $mbs_appenv->lang('captcha')?></p>
 				<p><input type="text" class=text name="captcha" style="width:30%;" value="" />
-					<img alt="<?=$mbs_appenv->lang('captcha')?>" src="<?=$mbs_appenv->toURL('img_captcha', 'common')?>" 
-					/><a href="#" onclick="this.previousSibling.src='<?=$mbs_appenv->toURL('img_captcha', 'common')?>?n='+Math.random();"><?=$mbs_appenv->lang('reload_on_unclear')?></a>
+					<img alt="<?php echo $mbs_appenv->lang('captcha')?>" src="<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>" 
+					/><a href="#" onclick="this.previousSibling.src='<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>?n='+Math.random();"><?php echo $mbs_appenv->lang('reload_on_unclear')?></a>
 				</p>
 				<p class=title style="margin-top:30px;"><input class=submit_btn type=submit /></p>
 			</form>

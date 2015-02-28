@@ -19,7 +19,7 @@ tbody td, ul li{border-bottom:1px solid #ddd;padding:5px 3px;color:#333;}
 
 h2{color:#555;margin:0;text-align:center;}
 
-.success, .error{border: 1px solid #ECDBDB;position:relative;padding: 20px 0;text-align: center;background-color: rgb(249, 250, 225);border: 1px solid #ECDBDB;font-size: 14px;width: 90%;margin: 20px auto;}
+.success, .error{position:relative;padding: 20px 0;text-align: center;background-color: rgb(249, 250, 225);border: 1px solid #aaa;font-size: 14px;width: 90%;margin: 20px auto;}
 .success p, .error p{margin-top:3px;}
 .success a.close, .error a.close{position:absolute; top:2px; right:2px; color:#999;font-size:12px;}
 .success a.close:hover, .error a.close:hover{color:#333;}

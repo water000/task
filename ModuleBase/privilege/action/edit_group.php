@@ -47,7 +47,7 @@ if(isset($_REQUEST['group_id'])){
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 body, .warpper{background-color:#fff;}
 .content{background-color:#fff;}
@@ -71,28 +71,28 @@ h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 <div class="warpper">
 	<div class=header></div>
 	<div class=content>
-		<h1><?=$action_def[CModDef::P_TLE]?></h1>
+		<h1><?php echo $action_def[CModDef::P_TLE]?></h1>
 		<?php if(isset($_REQUEST['name'])){if(!empty($error)){ ?>
-		<div class=error><?php  foreach($error as $e){?><p><?=CStrTools::txt2html($e)?></p><?php }?>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?=$mbs_appenv->lang('close')?></a></div>
+		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a></div>
 		<?php }else{?>
-		<div class=success><?=$mbs_appenv->lang('oper_succ')?>
-			<a href="<?=$mbs_appenv->toURL('group_list')?>"><?=$mbs_appenv->lang('group_list')?></a>
-			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?=$mbs_appenv->lang('close')?></a>
+		<div class=success><?php echo $mbs_appenv->lang('oper_succ')?>
+			<a href="<?php echo $mbs_appenv->toURL('group_list')?>"><?php echo $mbs_appenv->lang('group_list')?></a>
+			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a>
 		</div>
 		<?php }}?>
-		<div class=left><?=$mbs_appenv->lang('group_can')?></div>
+		<div class=left><?php echo $mbs_appenv->lang('group_can')?></div>
 		<div class=right>
 			<form action="" method="post">
 				<?php if(isset($_REQUEST['group_id'])){?>
-				<input type=hidden name="group_id" value="<?=$_REQUEST['group_id']?>" />
+				<input type=hidden name="group_id" value="<?php echo $_REQUEST['group_id']?>" />
 				<?php }?>
-				<p class=title><?=$mbs_appenv->lang('group_name')?></p>
-				<p><input type="text" class=text name="name" value="<?=isset($args_value['name'])?$args_value['name']:''?>" /></p>
-				<p class=title><?=$mbs_appenv->lang('group_type')?></p>
+				<p class=title><?php echo $mbs_appenv->lang('group_name')?></p>
+				<p><input type="text" class=text name="name" value="<?php echo isset($args_value['name'])?$args_value['name']:''?>" /></p>
+				<p class=title><?php echo $mbs_appenv->lang('group_type')?></p>
 				<p><?php $args_value['type'] = isset($args_value['type']) ? $args_value['type'] : CPrivilegeDef::TYPE_ALLOW; ?>
-					<input type=radio name=type value=<?=CPrivilegeDef::TYPE_ALLOW?> <?=$args_value['type']==CPrivilegeDef::TYPE_ALLOW ? ' checked':''?> /><?=$mbs_appenv->lang('type_allow')?>
-					<input type=radio name=type value=<?=CPrivilegeDef::TYPE_DENY?> <?=$args_value['type']==CPrivilegeDef::TYPE_DENY ? ' checked':''?> /><?=$mbs_appenv->lang('type_deny')?>
+					<input type=radio name=type value=<?php echo CPrivilegeDef::TYPE_ALLOW?> <?php echo $args_value['type']==CPrivilegeDef::TYPE_ALLOW ? ' checked':''?> /><?php echo $mbs_appenv->lang('type_allow')?>
+					<input type=radio name=type value=<?php echo CPrivilegeDef::TYPE_DENY?> <?php echo $args_value['type']==CPrivilegeDef::TYPE_DENY ? ' checked':''?> /><?php echo $mbs_appenv->lang('type_deny')?>
 				</p>
 				<?php 
 				$mod_list = $mbs_appenv->getModList();
@@ -105,10 +105,10 @@ h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 						continue;
 				?>
 				<div class=allmod>
-					<p class=title><?=$moddef->item(CModDef::MOD, CModDef::G_TL)?></p>
+					<p class=title><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></p>
 					<div class=mod>
 						<?php foreach($mgr_list as $key => $title){?><label>
-							<input type="checkbox" name="priv_list[<?=$mod?>][]" value="<?=$key?>" <?=(isset($_REQUEST['group_id'])&&$priv_group->privExists($mod, $key)) ? ' checked' : ''?> /><?=$title?>
+							<input type="checkbox" name="priv_list[<?php echo $mod?>][]" value="<?php echo $key?>" <?php echo (isset($_REQUEST['group_id'])&&$priv_group->privExists($mod, $key)) ? ' checked' : ''?> /><?php echo $title?>
 						</label><?php }?>
 						<div style="clear: both"></div>
 					</div>

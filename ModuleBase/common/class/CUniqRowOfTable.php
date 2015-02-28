@@ -44,7 +44,7 @@ class CUniqRowOfTable
 		$sql = sprintf('INSERT INTO %s(%s) VALUES(%s)', 
 			$this->tbname, 
 			implode(',', $keys), 
-			substr(str_repeat('?,', count($keys)), 0, -1)
+			str_repeat('?,', count($keys)-1).'?'
 		);
 		try{
 			$pre = $this->oPdoConn->prepare($sql);

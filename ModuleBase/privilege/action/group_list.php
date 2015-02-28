@@ -10,7 +10,7 @@ $all = $priv_group->getDB()->listAll();
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 .content{background-color:#fff}
 .content p.title{padding:2px 0;margin-top:5px;color:green;}
@@ -27,23 +27,23 @@ p.table_title a:hover{text-decoration:underline;color:white;}
 	<div class=header></div>
 	<div class=content>
 		<div class=mg-content>
-			<p class=table_title style="margin-bottom: 16px;"><?=$mbs_appenv->lang('group_list')?>
-				<a href="<?=$mbs_appenv->toURL('edit_group')?>"><?=$mbs_appenv->lang('create_group')?></a></p>
+			<p class=table_title style="margin-bottom: 16px;"><?php echo $mbs_appenv->lang('group_list')?>
+				<a href="<?php echo $mbs_appenv->toURL('edit_group')?>"><?php echo $mbs_appenv->lang('create_group')?></a></p>
 			<table cellspacing=0>
 				<tr>
 					<th  style="width:80px;">NO.</th>
-					<th><?=$mbs_appenv->lang('group_name')?></th>
-					<th><?=$mbs_appenv->lang('creator')?></th>
-					<th><?=$mbs_appenv->lang('create_time')?></th>
-					<th><?=$mbs_appenv->lang('group_type')?></th>
-					<th style="width: 320px;"><?=$mbs_appenv->lang('priv_list')?></th>
+					<th><?php echo $mbs_appenv->lang('group_name')?></th>
+					<th><?php echo $mbs_appenv->lang('creator')?></th>
+					<th><?php echo $mbs_appenv->lang('create_time')?></th>
+					<th><?php echo $mbs_appenv->lang('group_type')?></th>
+					<th style="width: 320px;"><?php echo $mbs_appenv->lang('priv_list')?></th>
 					<th></th>
 				</tr>
 			<?php $no =1; foreach($all as $row){ ?>
-			<tr <?=0==$no%2?' class=even':''?>>
-				<td><?=$no++?></td><td><a href="<?=$mbs_appenv->toURL('edit_group', '', array('group_id'=>$row['id']))?>"><?=CStrTools::txt2html($row['name'])?></a></td>
-				<td><?=$row['creator_id']?></td><td><?=date('Y-m-d', $row['create_ts'])?></td>
-				<td><?=$mbs_appenv->lang($row['type'] == CPrivilegeDef::TYPE_ALLOW ? 'type_allow' : 'type_deny')?></td>
+			<tr <?php echo 0==$no%2?' class=even':''?>>
+				<td><?php echo $no++?></td><td><a href="<?php echo $mbs_appenv->toURL('edit_group', '', array('group_id'=>$row['id']))?>"><?php echo CStrTools::txt2html($row['name'])?></a></td>
+				<td><?php echo $row['creator_id']?></td><td><?php echo date('Y-m-d', $row['create_ts'])?></td>
+				<td><?php echo $mbs_appenv->lang($row['type'] == CPrivilegeDef::TYPE_ALLOW ? 'type_allow' : 'type_deny')?></td>
 				<td>
 <?php 
 $modified_priv = array();
@@ -73,7 +73,7 @@ if(CPrivGroupControl::isTopmost($priv_list)){
 }
 ?>
 				</td>
-				<td><a href="<?=$mbs_appenv->toURL('join_group', '', array('group_id'=>$row['id']))?>"><?=$mbs_appenv->lang('join_group')?></a></td>
+				<td><a href="<?php echo $mbs_appenv->toURL('join_group', '', array('group_id'=>$row['id']))?>"><?php echo $mbs_appenv->lang('join_group')?></a></td>
 			</tr>
 			<?php } ?>
 			</table>

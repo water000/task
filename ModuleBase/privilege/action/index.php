@@ -31,7 +31,7 @@ $priv_group = CPrivGroupControl::decodePrivList($priv_list['priv_list']);
 <!doctype html>
 <html>
 <head>
-<link href="<?=$mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
 body{overflow:hidden;}
 iframe{width:100%;border:0;}
@@ -51,7 +51,7 @@ iframe{width:100%;border:0;}
 <iframe src=""></iframe>
 <div class=actions>
 	<div class="vertical-manu groups">
-	<p class=title><?=$mbs_appenv->lang('mgrlist')?></p>
+	<p class=title><?php echo $mbs_appenv->lang('mgrlist')?></p>
 	<?php 
 	if(isset($priv_group[CPrivGroupControl::PRIV_TOPMOST])){
 		$list = $mbs_appenv->getModList();
@@ -62,14 +62,14 @@ iframe{width:100%;border:0;}
 			if(empty($actions)) continue;
 	?>
 	<a href="#" class=mod>
-		<?=$moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
+		<?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
 	</a><div class=group><?php foreach($actions as $ac => $title){?>
-		<a href="#" onclick="_to('<?=$mbs_appenv->toURL($ac, $mod)?>', this)"><?=$title?></a><?php }?></div>
+		<a href="#" onclick="_to('<?php echo $mbs_appenv->toURL($ac, $mod)?>', this)"><?php echo $title?></a><?php }?></div>
 	<?php } }else{ foreach($priv_group as $mod => $actions){ $moddef=mbs_moddef($mod);if(empty($moddef)) continue; ?>
 	<a href="#" class=mod>
-		<?=$moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
+		<?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
 	</a><div class=group><?php foreach($actions as $ac){?>
-		<a href="#" onclick="_to('<?=$mbs_appenv->toURL($ac, $mod)?>', this)"><?=$moddef->item(CModDef::PAGES, $ac, CModDef::P_TLE)?></a><?php }?></div>
+		<a href="#" onclick="_to('<?php echo $mbs_appenv->toURL($ac, $mod)?>', this)"><?php echo $moddef->item(CModDef::PAGES, $ac, CModDef::P_TLE)?></a><?php }?></div>
 	<?php }} ?>
 	</div>
 </div>

@@ -59,11 +59,11 @@ input{height:25px;padding:0 10px;}
 		<fieldset>
 			<legend><b>安装新模块</b></legend>
 			<?php if(isset($_FILES['newmod'])){  ?>
-			<p><b>安装结果：<?=empty($modinfo)?'失败':'成功'?></b></p>
+			<p><b>安装结果：<?php echo empty($modinfo)?'失败':'成功'?></b></p>
 			<?php if(count($nerror) > 0){ ?>
 			<ul>
 				<?php foreach($nerror as $err){ ?>
-				<li style="color:red;"><?=htmlspecialchars($err)?></li>
+				<li style="color:red;"><?php echo htmlspecialchars($err)?></li>
 				<?php } ?>
 			</ul>
 			<?php } }?>
@@ -73,11 +73,11 @@ input{height:25px;padding:0 10px;}
 		<fieldset>
 			<legend><b>已安装模块</b></legend>
 			<?php if(isset($_FILES['updatemod'])){  ?>
-			<p><b>更新结果：<?=empty($modinfo)?'失败':'成功'?></b></p>
+			<p><b>更新结果：<?php echo empty($modinfo)?'失败':'成功'?></b></p>
 			<?php if(count($uerror) > 0){ ?>
 			<ul>
 				<?php foreach($uerror as $err){ ?>
-				<li style="color:red;"><?=htmlspecialchars($err)?></li>
+				<li style="color:red;"><?php echo htmlspecialchars($err)?></li>
 				<?php } } ?>
 			</ul>
 			<?php }else if(isset($_REQUEST['demod'])){ ?>
@@ -85,20 +85,20 @@ input{height:25px;padding:0 10px;}
 			<?php if(count($derror) > 0){ ?>
 			<ul>
 				<?php foreach($derror as $err){ ?>
-				<li style="color:red;"><?=htmlspecialchars($err)?></li>
+				<li style="color:red;"><?php echo htmlspecialchars($err)?></li>
 				<?php } } ?>
 			</ul>
 			<?php } ?>
 			<table>
 			<?php $modlist = CFileType::getModules(); $i=0; foreach($modlist as $mod){ ++$i; ?>
-				<tr <?=(0 == $i % 2)?'class=bg':''?>>
-					<td><a href="#NTAG_CALL(core,url,core,detail)&mod=<?=$mod?>"><?=$mod?></a></td>
-					<td><?=date('Y-m-d H:i:s', filemtime(CFileType::getDir(CFileType::ENV_COMPILE, $mod, '')))?></td>
+				<tr <?php echo (0 == $i % 2)?'class=bg':''?>>
+					<td><a href="#NTAG_CALL(core,url,core,detail)&mod=<?php echo $mod?>"><?php echo $mod?></a></td>
+					<td><?php echo date('Y-m-d H:i:s', filemtime(CFileType::getDir(CFileType::ENV_COMPILE, $mod, '')))?></td>
 					<td>
 						<form action="" method="post" enctype="multipart/form-data" onsubmit="return this.updatemod.value!='';">
-							<input type="hidden" name="mod" value="<?=$mod?>" />
+							<input type="hidden" name="mod" value="<?php echo $mod?>" />
 							<input type="file" name="updatemod" value="" /><input type="submit" value="修改" />
-							<?php if(!in_array($mod, array('core', 'common'))){ ?>&nbsp;|&nbsp;<a href="#NTAG_CALL(core,url,core,modmgr)&delmod=<?=$mod?>">删除</a><?php } ?>
+							<?php if(!in_array($mod, array('core', 'common'))){ ?>&nbsp;|&nbsp;<a href="#NTAG_CALL(core,url,core,modmgr)&delmod=<?php echo $mod?>">删除</a><?php } ?>
 						</form>
 					</td></tr>
 			<?php } ?>
