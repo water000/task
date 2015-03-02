@@ -73,7 +73,7 @@ class CPrivilegeDef extends CModDef {
 					self::G_DC  => '选择一个或多个用户加入到指定的权限组中， 相应的组在group_list中选择',
 					self::P_MGR => true,
 					self::P_ARGS => array(
-						'group_id' => array(self::PA_TYP=>'integer', self::PA_REQ=>1, 
+						'group_id' => array(self::PA_TYP=>'integer', self::PA_REQ=>0, 
 								self::PA_EMP=>0, self::G_DC=>'选择指定的组id'),
 						'del'  => array(self::PA_TYP=>'array', self::PA_REQ=>0, self::G_DC=>'选择需要删除的用户'),
 						'join' => array(self::PA_TYP=>'array', self::PA_REQ=>0, self::G_DC=>'选择需要加入的用户'),

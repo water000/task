@@ -6,9 +6,26 @@ mbs_import('user', 'CUserControl');
 $error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 if(empty($error)){
 	try {
+		
 		$pg = CPrivGroupControl::getInstance($mbs_appenv, 
-				CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['group_id']);
-		$pg_info = $pg->get();
+				CDbPool::getInstance(), CMemcachedPool::getInstance());
+		$pg_all = $pg->getDB()->listAll();
+		if(empty($pg_all)){
+			echo $mbs_appenv->lang('create_before_join');
+			exit;
+		}
+		
+		if(isset($_REQUEST['group_id'])){
+			foreach($pg_all as $row){
+				if($row['id'] == $_REQUEST['group_id']){
+					$pg_info = $row;
+					break;
+				}
+			}
+		}else{
+			$_REQUEST['group_id'] = $pg_all[0]['id'];
+			$pg_info = $pg_all[0];
+		}		
 		$pg_list = $pg->decodePrivList($pg_info['priv_list']);
 		
 		$pu = CPrivUserControl::getInstance($mbs_appenv,
@@ -78,9 +95,10 @@ body, .warpper{background-color:#fff;}
 .content{background-color:#fff;}
 h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 .left{width:600px;float:left;}
-.right{width:320px;float:right;padding:0 20px 20px;background-color:#eee;}
+.right{width:360px;float:right;}
 .left h2{text-align:center;color:#777;}
 
+.right .group_info{padding:0 20px 20px;background-color:#eee;margin-top:5px;}
 .right p.title{font-weight:bold;padding:2px 0;margin-top:20px;}
 .right .text{width:100%; padding:3px;}
 .right label{width:150px;display:inline-block;float:left;padding:2px 0;}
@@ -177,6 +195,15 @@ if(!empty($pu_list)){
 			</fieldset>
 		</div>
 		<div class=right>
+			<div style="height: 20px"><select style="float: right;" onchange="location.href='<?php echo $mbs_appenv->item('cur_action_url')?>?group_id'+this.options[this.selectedIndex].value">
+				<?php foreach($pg_all as $row){?>
+				<option value="<?php echo $row['id']?>" <?php echo $row['id']==$_REQUEST['group_id']?' selected':''?>>
+					<?php echo CStrTools::txt2html($row['name'])?>
+				</option>
+				<?php }?>
+				</select>
+			</div>
+			<div class=group_info>
 			<p class=title><?php echo $mbs_appenv->lang('group_name')?></p>
 			<p><?php echo $pg_info['name']?></p>
 			<p class=title><?php echo $mbs_appenv->lang('group_type')?></p>
@@ -211,6 +238,7 @@ if(empty($error)){
 }
 ?>
 			</p>
+			</div>
 		</div>
 		<div style="clear: both"></div>
 	</div>

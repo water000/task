@@ -163,6 +163,7 @@ class CAppEnvironment{
 		if(!isset($this->mod_cfg[$mod][$cfg])){
 			$path = $this->getPath('config/'.$cfg.'.php', $mod);
 			if(file_exists($path)){
+				$mbs_appenv = $this;
 				require_once $path;
 				if(isset($$cfg)){
 					$this->mod_cfg[$mod][$cfg] = $$cfg;
