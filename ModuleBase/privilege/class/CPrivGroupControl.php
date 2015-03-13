@@ -30,6 +30,8 @@ class CPrivGroupControl extends CUniqRowControl {
 				throw $e;
 			}
 		}
+		self::$instance->setPrimaryKey($primarykey);
+		
 		return self::$instance;
 	}
 	

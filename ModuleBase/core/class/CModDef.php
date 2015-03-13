@@ -261,7 +261,7 @@ abstract class CModDef {
 							gettype($opt), $arg, $script, self::P_ARGS);
 					else {
 						if(isset($opt[self::PARG_TYP]) && !settype($var, $opt[self::PARG_TYP]))
-							$error[] = sprintf('unsupported type "%s" at arg "%s" on page "%s" in "%s" def', 
+							$error[] = sprintf('unsupported type "%s" on arg "%s" in page "%s" of "%s" def', 
 								$opt[self::PARG_TYP], $arg, $script, self::P_ARGS);
 						if(isset($opt[self::PARG_DEP]) && !isset($parg[$opt[self::PARG_DEP]]))
 							$error[] = sprintf('not existed dep-arg "%s" at arg "%s" on page "%s" in "%s" def', 
@@ -365,7 +365,7 @@ abstract class CModDef {
 		
 		foreach($pages as $action => $p){
 			if(!file_exists(self::$appenv->getActionPath($action, $mod))){
-				$error[] = sprintf('no such action %s', $action);
+				$error[] = sprintf('no such action "%s" found in module "%s"', $action, $mod);
 			}
 		}
 	}
@@ -378,12 +378,11 @@ abstract class CModDef {
 		static $err_func = array(
 			//self::MOD      => '_mod',
 			self::TAG      => '_tag',
-			self::P_ARGS   => '_parg',
+			self::PAGES   => '_parg',
 			self::TBDEF    => '_tbdef',
 			self::LTN      => '_listener',
 			self::LD_FTR   => '_load_filter',
 			self::DEPEXT   => '_depext',
-			self::PAGES    => '_checkpages',
 			self::FTR      => '_tag',
 		);
 

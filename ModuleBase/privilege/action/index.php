@@ -9,16 +9,26 @@ if(empty($user_id)){
 }
 
 mbs_import('privilege', 'CPrivUserControl', 'CPrivGroupControl');
-$up = CPrivUserControl::getInstance($mbs_appenv, 
-	CDbPool::getInstance(), CMemcachedPool::getInstance(), $user_id);
-$user_priv = $up->get();
-if(empty($user_priv)){
+
+$priv_info = null;
+try {
+	$pu = CPrivUserControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance());
+	$priv_info = $pu->getDB()->search(array('user_id' => $user_id));
+} catch (Exception $e) {
+	echo $mbs_appenv->lang('db_exception', 'common');
+	exit();
+}
+if(empty($priv_info)){
 	echo 'access denied(1)';
 	exit(0);
 }
+$priv_info = $priv_info[0];
+
+
 
 $pg = CPrivGroupControl::getInstance($mbs_appenv, CDbPool::getInstance(), 
-	CMemcachedPool::getInstance(), $user_priv['priv_group_id']);
+	CMemcachedPool::getInstance(), $priv_info['priv_group_id']);
 $priv_list = $pg->get();
 if(empty($priv_list)){
 	echo 'access denied(2)';

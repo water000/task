@@ -6,7 +6,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 {
 	protected $skeyname    = '';
 	protected $secondKey  = null;
-	protected $pageId     = 0;
+	protected $pageId     = 1;
 	protected $numPerPage = 20;
 	
 	/*protected */function __construct($oPdoConn, $tbname, 
