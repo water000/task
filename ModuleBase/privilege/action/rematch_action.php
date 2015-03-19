@@ -5,7 +5,34 @@ $priv_group = CPrivGroupControl::getInstance($mbs_appenv,
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
 $all = $priv_group->getDB()->listAll();
 
-$not_found = array();
+$modified = false;
+if(isset($_REQUEST['modify']) || isset($_REQUEST['del'])){
+	foreach($all as $row){
+		$priv_list = CPrivGroupControl::decodePrivList($row['priv_list']);
+		if(!CPrivGroupControl::isTopmost($priv_list)){
+			foreach($priv_list as $mod => &$actions){
+				if(isset($_REQUEST['del'][$mod])){
+					$actions = array_diff($actions, $_REQUEST['del'][$mod]);
+				}
+				if(isset($_REQUEST['modify'][$mod])){
+					foreach($actions as &$ac){
+						if(isset($_REQUEST['modify'][$mod][$ac]) && 
+							!empty($_REQUEST['modify'][$mod][$ac])){
+							$ac = $_REQUEST['modify'][$mod][$ac];
+						}
+					}
+				}
+			}
+			$npriv_list = CPrivGroupControl::encodePrivList($priv_list);
+			if($npriv_list != $row['priv_list']){
+				$priv_group->setPrimaryKey($row['id']);
+				$priv_group->set(array('priv_list'=>$npriv_list));
+				$modified = true;
+			}
+		}
+	}
+}
+
 $mod_items = array();
 foreach($all as $row){
 	$priv_list = CPrivGroupControl::decodePrivList($row['priv_list']);
@@ -19,6 +46,7 @@ foreach($all as $row){
 		}
 	}
 }
+
 ?>
 <!doctype html>
 <html>
@@ -34,6 +62,7 @@ foreach($all as $row){
 .even{background-color:#eee;}
 p.table_title a{background:#3385ff;color:white;padding:4px;margin:0 2px;display:inline-block;float:right;font-size:12px;text-decoration:none;}
 p.table_title a:hover{text-decoration:underline;color:white;}
+.submit_btn{display:block;height:32px;padding:5px 30px;font-weight:bold;margin:0 auto;}
 </style>
 </head>
 <body>
@@ -41,7 +70,14 @@ p.table_title a:hover{text-decoration:underline;color:white;}
 	<div class=header></div>
 	<div class=content>
 		<div class=mg-content>
+			<?php if($modified){ ?>
+			<div class=success><?php echo $mbs_appenv->lang('oper_succ')?>
+				<a href="<?php echo $mbs_appenv->toURL('group_list')?>"><?php echo $mbs_appenv->lang('group_list')?></a>
+				<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a>
+			</div>
+			<?php }?>
 			<p class=table_title style="margin-bottom: 16px;"><?php echo $mbs_appenv->lang('group_list')?></p>
+			<form action="" method="post">
 			<table cellspacing=0>
 				<tr>
 					<th>MODULE</th>
@@ -59,17 +95,19 @@ foreach($mod_items as $mod => &$actions){
 		echo '<tr><td colspan=4>no such module found: ',$mod, '</td></tr>';
 		continue;
 	}
-	$mgr_actions = $moddef->filterActions();
-	$diff = array_diff($actions, array_keys($mgr_actions)); 
+	$mgr_actions = array_keys($moddef->filterActions());
+	$diff = array_diff($actions, $mgr_actions);
+	if(empty($diff))
+		continue;
 	$diff_num += count($diff);
-	$new = array_intersect($actions, $mgr_actions);
+	$new = array_diff($mgr_actions, $actions);
 ?>
 				<tr <?php echo 0==$no++%2?' class=even':''?>>
 					<td><?php echo $mod?></td>
 					<td><?php foreach($diff as $ac){ ?><p><?php echo $ac?></p><?php }?></td>
 					<td>
 					<?php foreach($diff as $ac){ ?>
-						<p><select name="modify[<?php echo $mod?>][<?php echo $ac?>]">
+						<p><select name="modify[<?php echo $mod?>][<?php echo $ac?>]"><option value=''>--changed--</option>
 						<?php foreach($new as $n){?><option value=<?php echo $n?>><?php echo $n?></option><?php }?></select></p>
 					<?php }?>
 					</td>
@@ -80,7 +118,8 @@ foreach($mod_items as $mod => &$actions){
 				</tr>
 <?php } ?>
 			</table>
-			<?php if($diff_num > 0){?><p><input type=submit class=submit_btn /></p><?php }?>
+			<p style="text-align: center;color:#999;font-size:13px;"><?php if($diff_num > 0){?><input type=submit class=submit_btn /><?php }else{?> no action was changed <?php }?></p>
+			</form>
 		</div>
 	</div>
 	<div class=footer></div>

@@ -24,7 +24,7 @@ class CCoreDef extends CModDef{
 						'mod'   => array(self::PA_TYP=>'string', self::PA_REQ=>0, self::G_DC=>'查看指定模块下的action信息'),
 					)
 				),
-				'action_info' => array(
+				'action_info2' => array(
 					self::P_TLE => '页面信息',
 					self::G_DC  => '页面的基本信息，主要是定义在ModDef->PAGES中的，按照最后修改时间排序',
 					self::P_MGR => true,
