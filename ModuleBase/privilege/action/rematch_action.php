@@ -73,7 +73,7 @@ p.table_title a:hover{text-decoration:underline;color:white;}
 			<?php if($modified){ ?>
 			<div class=success><?php echo $mbs_appenv->lang('oper_succ')?>
 				<a href="<?php echo $mbs_appenv->toURL('group_list')?>"><?php echo $mbs_appenv->lang('group_list')?></a>
-				<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a>
+				<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 			</div>
 			<?php }?>
 			<p class=table_title style="margin-bottom: 16px;"><?php echo $mbs_appenv->lang('group_list')?></p>

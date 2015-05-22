@@ -11,6 +11,10 @@ $lang_zh_CN = array(
 	'invalid_phone_num' => '手机号码无效',
 	'invalid_password'  => '密码无效',
 	'invalid_captcha'   => '验证码无效',
+	'remember_me'       => '记住我',
+	'had_login'         => '您已登录！',
+	'login_succeed'     => '登录成功！',
+	'logout_succeed'    => '退出成功！',
 );
 
 ?>

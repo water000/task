@@ -150,6 +150,9 @@ frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
 		}
 		document.title = frame.contentWindow.document.title;
 	}
+	if(frame.contentWindow.document.location.href.indexOf('<?php echo $mbs_appenv->toURL('login', 'user')?>') > 0){
+		document.location = '<?php $mbs_appenv->toURL('login', 'user')?>';
+	}
 }
 
 </script>

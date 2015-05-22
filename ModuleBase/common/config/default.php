@@ -35,6 +35,6 @@ $default = array(
 	'appkeys'    => array(
 		'1.0' => 'v1.0863c6bf0bc0d26257db4edcfdad309c1'
 	)
-)
+);
 
 ?>

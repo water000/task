@@ -9,20 +9,21 @@
 class CUserSession extends CModTag {
 
 	function __construct(){
-		session_start();
+		if('' == session_id())
+			session_start();
 	}
 	
 	function set($user_id, $userinfo=null){
 		$userinfo = empty($userinfo) ? array() : $userinfo;
 		$_SESSION['user_login'] = array($user_id, $userinfo);
 	}
-	
-	function free(){
-		unset($_SESSION['user_login']);
-	}
 
 	function get(){
 		return isset($_SESSION['user_login']) ? $_SESSION['user_login'] : null;
+	}
+
+	function free(){
+		unset($_SESSION['user_login']);
 	}
 	
 	/**

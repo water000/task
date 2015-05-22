@@ -36,7 +36,7 @@ class CPrivilegeDef extends CModDef {
 					priv_group_id int unsigned not null default 0,
 					join_ts int unsigned not null default 0,
 					last_edit_ts int unsigned not null default 0,
-					uniq key(user_id),
+					unique key(user_id),
 					key(priv_group_id)
 				)"
 			),

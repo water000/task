@@ -21,18 +21,25 @@ class CMerchantDef extends CModDef {
 				)',
 				'merchant_product_model'=>'(
 					id int unsigned not null auto_increment,
+					en_name varchar(16) not null, -- used to name of table
 					abstract varchar(32),
 					detail   varchar(128),
-				)'
+				)',
+				'merchant_pm_field_def'=>'(
+					id int unsigned not null auto_increment,
+					en_name varchar(16) not null,
+					cn_name varchar(16) not null, -- used to shown on page
+					abstract varchar(32), not null,
+					value_type tinyint unsigned not null default 0, -- char, int , ...
+					unit_or_size varchar(8) not null default "", -- unit for number , size for string
+					value_opts varchar(128) not null default "",
+					is_multi_opt tinyint not null default 0,
+					default_value varchar(64) not null default "",
+					primary key(id),
+					unique key(en_name)
+				)',
 			),
 			self::PAGES => array(
-				'unionpay_notify' => array(
-					self::P_TLE => '银联支付后回调接口',
-					self::G_DC  => '银联处理完成回调此接口，用于通知支付是否成功(具体流程看银联文档)。即更新表中status字段',
-					self::P_ARGS => array(
-					),
-					self::P_OUT => '{success:0/1, msg:"如果失败， 返回错误提示.成功后返回user_id", user_id:111}',
-				),
 			),
 		);
 	}

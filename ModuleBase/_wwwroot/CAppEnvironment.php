@@ -18,15 +18,15 @@ class CAppEnvironment{
 		'default_module'    => 'common',
 		/********** config end **********/
 		
-		
 		/********** runtime item **********/
 		'app_root'          => '', // assigned by __construct()
 		'web_root'          => '/', // assigned by __construct(). NOTICE: must be '/' if using url-rewrite conditions , else to empty
 		'client_ip'         => '', // assigned by __construct()
+		'client_accept'     => '', // assigned by __construct()
 		'cur_mod'           => '', // assigned by fromURL()
 		'cur_action'        => '', // assigned by fromURL()
 		'cur_action_url'    => '', // assigned by fromURL()
-			
+		
 	);
 	
 	private $mod_cfg = array();
@@ -38,6 +38,18 @@ class CAppEnvironment{
 		$this->env['client_ip'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] 
 			: (isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] 
 			: (isset($_SERVER['REMOTE_ADDR'])? $_SERVER['REMOTE_ADDR'] : '0.0.0.0' ));
+		
+		if(isset($_SERVER['ACCEPT'])){
+			if(stripos($_SERVER['ACCEPT'], 'json') !== false)
+				$this->env['client_accept'] = 'json';
+			else if(stripos($_SERVER['ACCEPT'], 'html') !== false)
+				$this->env['client_accept'] = 'html';
+			else if(stripos($_SERVER['ACCEPT'], 'xml') !== false)
+				$this->env['client_accept'] = 'xml';
+		}
+		if($this->env['client_accept'] != '')
+			header(sprintf('Content-Type: text/%s; charset=%s', 
+				$this->env['client_accept'], $this->env['charset']));
 	}
 	
 	static function getInstance(){
@@ -182,6 +194,54 @@ class CAppEnvironment{
 	function lang($item, $mod=''){
 		$ret = $this->config($item, $mod, 'lang_'.$this->env['lang']);
 		return is_null($ret) ? $item : $ret;
+	}
+	
+	static function _echo_as_xml($arr){
+		foreach ($arr as $k => $val){
+			$item = (is_numeric($k) ? 'item-':'').$k;
+			echo '<', $item, '>';
+			if(is_array($val)){
+				self::_echo_as_xml($val);
+			}else{
+				echo '<![CDATA[',$val,']]>';
+			}
+			echo '</', $item, '>';
+		}
+	}
+	
+	function echoex($data, $errcode='', $redirect_url=''){
+		if('json' == $this->env['client_accept'] 
+			|| 'xml' == $this->env['client_accept'])
+		{
+			$out = array('retcode' => empty($errcode) ? 'SUCCESS': $errcode, 'data' => $data);
+			if('json' == $this->env['client_accept'])
+				echo json_encode($out);
+			else{
+				echo '<?xml version="1.0" standalone="yes"?><response>';
+				self::_echo_as_xml($out);
+				echo '</response>';
+			}
+		}else{
+			$style = $msg = '';
+			if(empty($errcode)){
+				$style = 'success'; 
+				$msg =   is_string($data) ? $data : '';
+			}else{
+				$style = 'error';
+				$msg   = $errcode;
+			}
+			$meta = '';
+			if(empty($msg) && !empty($redirect_url)){
+				header('Location: '.$redirect_url);
+				return ;
+			}
+			else if(!empty($redirect_url)){
+				$meta = '<meta http-equiv="Refresh" content="3;'.$redirect_url.'">';
+				$msg .= sprintf('<p style="text-align:right;font-size: 12px;padding: 0 10px;">%s&nbsp;<a href="%s">%s</a></p>', 
+						$this->lang('click_if_not_redirect', 'common'), $redirect_url, $redirect_url);
+			}
+			echo sprintf($this->lang('notice_page', 'common'), $meta, $style, $msg);
+		}
 	}
 }
 

@@ -218,7 +218,7 @@ function _main($mbs_appenv){
 	}
 	
 	if(function_exists('fastcgi_finish_request'))
-		fastcgi_finish_request();	
+		call_user_func('fastcgi_finish_request');	
 }
 
 _main($mbs_appenv);

@@ -195,7 +195,7 @@ if(!empty($pu_list)){
 			</fieldset>
 		</div>
 		<div class=right>
-			<div style="height: 20px"><select style="float: right;" onchange="location.href='<?php echo $mbs_appenv->item('cur_action_url')?>?group_id'+this.options[this.selectedIndex].value">
+			<div style="height: 20px"><select style="float: right;" onchange="location.href='<?php echo $mbs_appenv->item('cur_action_url')?>?group_id='+this.options[this.selectedIndex].value">
 				<?php foreach($pg_all as $row){?>
 				<option value="<?php echo $row['id']?>" <?php echo $row['id']==$_REQUEST['group_id']?' selected':''?>>
 					<?php echo CStrTools::txt2html($row['name'])?>

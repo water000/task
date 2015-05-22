@@ -498,7 +498,7 @@ abstract class CModDef {
 	}
 		
 	//continue exucuting or abort
-	static function _loadFilters($ftrs){
+	static function _loadFilters($ftrs, &$error){
 		foreach($ftrs as $ftr){
 			list($mod, $ftrname, $isExitOnFilterUndefined) = $ftr;
 			$moddef = mbs_moddef($mod);
@@ -510,18 +510,18 @@ abstract class CModDef {
 				{
 					$objftr = new $ftrsdef[$ftrname][self::G_CS]();
 					if(!$objftr->oper(isset($ftr[3])?$ftr[3]:null, $ftrname)){
-						echo $objftr->getError();
+						$error = $objftr->getError();
 						return false;
 					}
 				}else{
 					if($isExitOnFilterUndefined){
-						trigger_error(sprintf('load filter error on %s.%s', $mod, $ftrname), E_USER_ERROR);
+						$error = sprintf('LD_FTR_DEF_ERR on %s.%s', $mod, $ftrname);
 						return false;
 					}
 				}
 			}else{
 				if($isExitOnFilterUndefined){
-					trigger_error(sprintf('load filter error on %s.%s', $mod, $ftrname), E_USER_ERROR);
+					$error = sprintf('LD_FTR_ERR on %s.%s', $mod, $ftrname);
 					return false;
 				}
 			}
@@ -529,15 +529,28 @@ abstract class CModDef {
 		return true;
 	}
 	
-	function loadFilters($action){
+	function loadFilters($action, &$error=''){
 		if(isset($this->desc[self::LD_FTR])){
-			if(!self::_loadFilters($this->desc[self::LD_FTR]))
+			if(!self::_loadFilters($this->desc[self::LD_FTR], $error))
 				return false;
 		}
 		if(isset($this->desc[self::PAGES][$action][self::LD_FTR])){
-			return self::_loadFilters($this->desc[self::PAGES][$action][self::LD_FTR]);
+			return self::_loadFilters($this->desc[self::PAGES][$action][self::LD_FTR], $error);
 		}
 		return true;
+	}
+	
+	function filter($ftrname, $params=null, &$error=''){
+		if(isset($this->desc[self::FTR][$ftrname][self::G_CS])){
+			$class = $this->desc[self::FTR][$ftrname][self::G_CS];
+			mbs_import($this->desc[self::MOD][self::G_NM], $class);
+			$ftr = new $class();
+			if($ftr->oper($params, $ftrname))
+				return true;
+			$error = $ftr->getError();
+		}
+		
+		return false;
 	}
 
 	function installTables($dbpool, $tabledef){

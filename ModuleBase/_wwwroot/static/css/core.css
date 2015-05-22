@@ -1,27 +1,72 @@
 
-body{font-size:12px;color:#333;font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif"; }
+body{font-size:14px;color:#333;font-family:"Lucida Grande", "Lucida Sans Unicode", "STHeiti", "Helvetica","Arial","Verdana","sans-serif"; }
 body, p, td, ul{margin:0;padding:0;border:0;}
 ul li{list-style-type:none;}
-.header{height: 40px;background: #252525; color:white;border-bottom: 1px solid #eee;}
+.header{}
 .footer{height: 60px;background: #fff;border-top: 1px solid #eee;clear:both;margin-top:50px;}
 .warpper{width:100%;min-height:100%;font-size:12px;position:relative;background-color:#ddd;}
-.content{margin:30px auto 0;margin-top:30px;width:1000px;min-height:600px;}
+.content{margin:30px auto 0;width:1000px;min-height:600px;}
 
 .vertical-manu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
 .vertical-manu p.title{background-color:#fff;font-weight:bold; text-align:center;padding:3px 0;border-bottom:1px solid #bbb;}
 .vertical-manu a{color:rgb(0,100,200);padding:3px 5px; display:block;text-decoration:none;border:1px solid #fff;}
 .vertical-manu a:hover, .vertical-manu .cur{border:1px solid #85BBEF; background-color:#C6E0FA;}
 
-p.table_title{font-size:14px; font-weight:bold;color:#555;text-align:left;padding:3px 5px;}
-table{width:100%;margin-bottom:30px;background-color:#fff;border-top:1px solid #ccc;}
-tbody th, li.head{font-size:12px;border-bottom:1px solid #bbb; border-right:1px solid #C1B4FC;font-weight:bold;text-align:center;padding:5px 0;background-color: #ccccff;min-width:70px;}
-tbody td, ul li{border-bottom:1px solid #ddd;padding:5px 3px;color:#333;}
+.warpper p.table_title{font-size:14px; font-weight:bold;color:#555;text-align:left;padding:3px 5px;}
+.warpper table{width:100%;margin-bottom:30px;background-color:#fff;border-top:1px solid #ccc;}
+.warpper tbody th, .warpper li.head{font-size:12px;border-bottom:1px solid #bbb; border-right:1px solid #C1B4FC;font-weight:bold;text-align:center;padding:5px 0;background-color: #ccccff;min-width:70px;}
+.warpper tbody td, .warpper ul li{border-bottom:1px solid #ddd;padding:5px 3px;color:#333;}
 
-h2{color:#555;margin:0;text-align:center;}
+.warpper h2{color:#555;margin:0;text-align:center;}
 
-.success, .error{position:relative;padding: 20px 0;text-align: center;background-color: rgb(249, 250, 225);border: 1px solid #aaa;font-size: 14px;width: 90%;margin: 20px auto;}
+.success, .error{position:relative;padding: 15px 0;text-align: center;width: 90%;margin: 20px auto;}
 .success p, .error p{margin-top:3px;}
-.success a.close, .error a.close{position:absolute; top:2px; right:5px; color:#999;font-size:12px;}
-.success a.close:hover, .error a.close:hover{color:#666;}
-.success {color: green;}
-.error {color: red;}
+.success a.close, .error a.close{position:absolute; top:2px; right:5px; color:#666;font-size:16px;text-decoration:none;}
+.success a.close:hover, .error a.close:hover{color:#000;}
+.success {  background-color: #dff0d8;}
+.error { background-color: #f2dede;}
+
+
+/*
+ * -- PURE MENU STYLES --
+ * I want to customize how my .pure-menu looks at the top of the page
+ */
+
+.home-menu {
+    padding: 0.5em;
+    box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
+    background: #2d3e50;
+}
+.pure-menu.pure-menu-fixed {
+    /* Fixed menus normally have a border at the bottom. */
+    border-bottom: none;
+    /* I need a higher z-index here because of the scroll-over effect. */
+    z-index: 4;
+}
+
+.home-menu .pure-menu-heading {
+    color: white;
+    font-weight: 400;
+    font-size: 120%;
+}
+
+.home-menu ul{float:right;}
+
+.home-menu .pure-menu-selected a {
+    color: white;
+}
+
+.home-menu a {
+    color: #6FBEF3;
+}
+
+.home-menu li a:hover,
+.home-menu li a:focus {
+    background: none;
+    border: none;
+    color: #AECFE5;
+}
+
+.main-content{margin-top:30px;} /* 100: home menu height */
+
+

@@ -14,23 +14,25 @@ $moddef = mbs_moddef($selected_mod);
 <html>
 <head>
 <title><?php mbs_title()?></title>
+<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+
 <style type="text/css">
 .left{width:150px;float:left;margin-top:80px;}
 .left a{font-size:14px;}
 
 .right{float:left;width:720px;padding:8px 13px;margin:20px;background-color:#fff;box-shadow:0 2px 6px #313131}
-h2{color:#555;margin:0;text-align:center;}
-table , ul{background-color:#fff;}
-ul{float:left;width:110px;word-wrap:break-word;}
+.right h2{color:#555;margin:0;text-align:center;}
+.right table , .right ul{background-color:#fff;}
+.right ul{float:left;width:110px;word-wrap:break-word;}
 
-li.head{}
-.even{background-color:#eee}
+.right li.head{}
+.right .even{background-color:#eee}
 </style>
 </head>
 <body>
+<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="warpper">
-	<div class=header></div>
 	<div class=content>
 		<div class="left vertical-manu" >
 			<p class=title><?php echo $mbs_appenv->lang('mod_list')?></p>
