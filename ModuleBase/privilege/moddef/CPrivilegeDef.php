@@ -17,7 +17,7 @@ class CPrivilegeDef extends CModDef {
 								检测当前用户的权限组是否包含当前action'
 			),
 			self::LD_FTR => array(
-				//array('user', 'checkLogin', true, 1),
+				//array('user', 'checkLogin', true),
 			),
 			self::TBDEF => array(
 				'priv_group' => "(

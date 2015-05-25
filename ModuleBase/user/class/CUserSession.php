@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @include $mbs_appenv, mbs_api_echo(), session 
+ * @include $mbs_appenv, session 
  * @author tiger
  *
  */
@@ -26,23 +26,15 @@ class CUserSession extends CModTag {
 		unset($_SESSION['user_login']);
 	}
 	
-	/**
-	 * 
-	 * @param array $param('is_api'=>0/1)
-	 * @return user id
-	 */
-	function checkLogin($param=array()){
+	function checkLogin(){
 		global $mbs_appenv;
 		
 		if(isset($_SESSION['user_login'])){
 			return $_SESSION['user_login'][0];
 		}
 		
-		if(isset($param['is_api'])){
-			$this->error = mbs_api_echo('login first', array('force_login'=>1), true);
-		}else{
-			header('Location: '.$mbs_appenv->toURL('login', 'user', array('redirect'=>$_SERVER['REQUEST_URI'])));
-		}
+		$mbs_appenv->echoex($mbs_appenv->lang('login_first', 'user'), 'NOT_LOGIN', 
+				$mbs_appenv->toURL('login', 'user', array('redirect'=>$_SERVER['REQUEST_URI'])));
 		
 		return false;
 	}

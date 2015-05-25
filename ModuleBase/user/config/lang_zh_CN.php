@@ -15,6 +15,26 @@ $lang_zh_CN = array(
 	'had_login'         => '您已登录！',
 	'login_succeed'     => '登录成功！',
 	'logout_succeed'    => '退出成功！',
+	'login_first'       => '请先登录',
+		
+	'record_info'       => '录入信息',
+	'edit_info'         => '编辑信息',
+	'name'              => '姓名',
+	'orgnization'       => '单位',
+	'email'             => '邮箱',
+	'VPDN_name'         => 'VPDN 名称',
+	'class'             => '分类',
+	'select_class'      => '获取分类',
+	'add_class'         => '添加分类',
+	'class_name'        => '名称',
+	'class_code'        => '编码',
+	'class_list'        => '列表',
+	'select'            => '选择',
+	'delete'            => '删除',
+	
+	'list'              => '列表',
+	'search'            => '查询',
+	'add'               => '添加',
 );
 
 ?>

@@ -8,13 +8,13 @@ class CApiParamFilter extends CModTag{
 		if(isset($_REQUEST['sign']) && isset($_REQUEST['ts']) && isset($_COOKIE['app_version']))
 			;
 		else{
-			$this->error = mbs_api_echo('missing param:sign/ts/app_version', null, true);
+			$mbs_appenv->echoex('miss param:sign/ts/app_version', 'MISS_PARAM');
 			return false;
 		}
 		
 		$appkeys = $mbs_appenv->config('appkeys', 'common');
 		if(empty($appkeys) || !isset($appkeys[$_COOKIE['app_version']])){
-			$this->error = mbs_api_echo('invalid version', null, true);
+			$mbs_appenv->echoex('invalid version', 'INVALID_VERSION');
 			return false;
 		}
 		
@@ -24,7 +24,7 @@ class CApiParamFilter extends CModTag{
 		}
 		
 		if(md5($str) != $_REQUEST['sign']){
-			$this->error = mbs_api_echo('invalid sign', null, true);
+			$mbs_appenv->echoex('invalid sign', 'INVALID_SIGN');
 			return false;
 		}
 		

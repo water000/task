@@ -39,7 +39,7 @@ abstract class CModDef {
 	CONST PA_DEP = 'pa_depend'; // the arg which appears in the same page. default is null
 	CONST PA_EMP = 'pa_empty';  // allow emmpty on the arg(default is 0). NOTICE: the empty validation only check the length of the trimed arg
 	CONST PA_TRI = 'pa_trim';   // ignore triming on the arg if set to 0. default is 1(trim).
-	CONST PA_RNG = 'pa_range'; // the range of the arg's length. split by comma, like [5,12)
+	CONST PA_RNG = 'pa_range'; // the range of the arg's length. split by comma, like '5,12'.  arg>=5 && arg<12
 	
 	CONST TBDEF  = 'table_def';
 	CONST LTN    = 'listener';
