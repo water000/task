@@ -14,9 +14,9 @@ class CCommonDef extends CModDef{
 					self::P_TLE => '短信验证码',
 					self::G_DC  => '给指定手机发送验证码，并返回当前验证码。每次发送的间隔1分钟',
 					self::P_ARGS => array(
-						'phone_num' => array(self::PA_REQ=>1, self::G_DC=>'手机号码'),
+						'phone' => array(self::PA_REQ=>1, self::G_DC=>'手机号码'),
 						'ts'        => array(self::PA_REQ=>1, self::G_DC=>'请求的时间戳'),
-						'sign'      => array(self::PA_REQ=>1, self::G_DC=>'md5(phone_num+ts+APPKEY)')
+						'sign'      => array(self::PA_REQ=>1, self::G_DC=>'md5(phone+ts+APPKEY)')
 					),
 					self::P_OUT => '{success:0/1, msg:"如果失败，输出错误信息", captcha_num:""}'
 				),

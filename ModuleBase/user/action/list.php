@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<?php if(isset($_REQUEST['phone_num'])){if(!empty($error)){ ?>
+<?php if(isset($_REQUEST['phone'])){if(!empty($error)){ ?>
 <div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
 <a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 </div>
@@ -18,10 +18,10 @@
     		<fieldset>
         		<legend><?php echo $mbs_appenv->lang('search')?></legend>
         		<input type="text" name="name" placeholder="<?php echo $mbs_appenv->lang('name')?>" />
-       			<input type="text" name="phone_num" placeholder="<?php echo $mbs_appenv->lang('phone_num')?>">
+       			<input type="text" name="phone" placeholder="<?php echo $mbs_appenv->lang('phone')?>">
        			<input type="text" name="email" placeholder="<?php echo $mbs_appenv->lang('email')?>">
        			<button type="submit" class="pure-button pure-button-primary"><?php echo $mbs_appenv->lang('search')?></button>
-       			<a href="<?php echo $mbs_appenv->toURL('add')?>" class="button-success pure-button"><?php echo $mbs_appenv->lang('add')?></a>
+       			<a href="<?php echo $mbs_appenv->toURL('edit')?>" class="pure-button-primary pure-button"><?php echo $mbs_appenv->lang('add')?></a>
          	</fieldset>
 		</form>
 		
@@ -29,10 +29,10 @@
 			<table class="pure-table" style="width: 100%;margin-top:1em;">
 			    <thead>
 			        <tr>
-			            <th>#</th>
+			            <th>ID</th>
 			            <th><?php echo $mbs_appenv->lang('class_name')?></th>
-			            <th><?php echo $mbs_appenv->lang('orgnization')?></th>
-			            <th><?php echo $mbs_appenv->lang('phone_num')?></th>
+			            <th><?php echo $mbs_appenv->lang('organization')?></th>
+			            <th><?php echo $mbs_appenv->lang('phone')?></th>
 			            <th><?php echo $mbs_appenv->lang('email')?></th>
 			        </tr>
 			    </thead>

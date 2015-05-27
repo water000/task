@@ -2,6 +2,8 @@
 
 class CUserClassControl extends CUniqRowControl{
 	
+	private static $instance = null;
+	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
 	}

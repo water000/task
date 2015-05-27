@@ -35,7 +35,7 @@ if(empty($error)){
 			$uc = CUserControl::getInstance($mbs_appenv, 
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
 			$search_rs = $search_kv = array();
-			foreach(array('user_id', 'phone_num', 'nick_name') as $k){
+			foreach(array('user_id', 'phone', 'name') as $k){
 				if(isset($_REQUEST[$k]) && strlen($_REQUEST[$k]) != 0){
 					$search_kv[$k] = $_REQUEST[$k];
 				}
@@ -134,10 +134,10 @@ fieldset span{margin-left:5px;}
 				<div>
 					<form action="" method="post" >
 					<span>ID <input type="text" name="user_id" value="<?php echo isset($_REQUEST['user_id']) ? CStrTools::txt2html($_REQUEST['user_id']) : ''?>" /></span>
-					<span><?php echo $mbs_appenv->lang('phone_num')?> 
-						<input type="text" name="phone_num" value="<?php echo isset($_REQUEST['phone_num']) ? CStrTools::txt2html($_REQUEST['phone_num']) : ''?>" /></span>
-					<span><?php echo $mbs_appenv->lang('nick_name')?> 
-						<input type="text" name="nick_name" value="<?php echo isset($_REQUEST['nick_name']) ? CStrTools::txt2html($_REQUEST['nick_name']) : ''?>" /></span>
+					<span><?php echo $mbs_appenv->lang('phone')?> 
+						<input type="text" name="phone" value="<?php echo isset($_REQUEST['phone']) ? CStrTools::txt2html($_REQUEST['phone']) : ''?>" /></span>
+					<span><?php echo $mbs_appenv->lang('name')?> 
+						<input type="text" name="name" value="<?php echo isset($_REQUEST['name']) ? CStrTools::txt2html($_REQUEST['name']) : ''?>" /></span>
 					<input type="submit" class="submit_btn" value="search" />
 					</form>
 				</div>
@@ -147,15 +147,15 @@ if(isset($_REQUEST['user_id']) && !empty($search_rs)){
 				<form action="" method="post">
 				<table cellspacing=0>
 					<tr><th>ID</th>
-						<th><?php echo $mbs_appenv->lang('nick_name')?></th>
-						<th><?php echo $mbs_appenv->lang('phone_num')?></th>
+						<th><?php echo $mbs_appenv->lang('name')?></th>
+						<th><?php echo $mbs_appenv->lang('phone')?></th>
 						<th><?php echo $mbs_appenv->lang('reg_time')?></th>
 					</tr>
 <?php $n = 1; foreach($search_rs as $row){?>
 					<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
 						<td><input style="width:30px;" type="checkbox" name="join[]" value="<?php echo $row['id']?>" /><?php echo $row['id']?></td>
-						<td><?php echo CStrTools::txt2html($row['nick_name'])?></td>
-						<td><?php echo $row['phone_num']?></td>
+						<td><?php echo CStrTools::txt2html($row['name'])?></td>
+						<td><?php echo $row['phone']?></td>
 						<td><?php echo date('Y-m-d', $row['reg_ts'])?></td>
 					</tr>
 <?php }?>
@@ -172,7 +172,7 @@ if(isset($_REQUEST['user_id']) && !empty($search_rs)){
 				<table cellspacing=0 style="margin-top:0;">
 					<tr>
 						<th>USER ID</th>
-						<th><?php echo $mbs_appenv->lang('nick_name')?></th>
+						<th><?php echo $mbs_appenv->lang('name')?></th>
 						<th><?php echo $mbs_appenv->lang('join_ts')?></th>
 					</tr>
 <?php 
@@ -184,7 +184,7 @@ if(!empty($pu_list)){
 ?>
 					<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
 						<td><input style="width:30px;" type="checkbox" name="del[]" value="<?php echo $row['user_id']?>" /><?php echo $row['user_id']?></td>
-						<td><?php echo CStrTools::txt2html($usinfo['nick_name'])?></td>
+						<td><?php echo CStrTools::txt2html($usinfo['name'])?></td>
 						<td><?php echo date('Y-m-d', $row['join_ts'])?></td>
 					</tr>
 <?php }?>

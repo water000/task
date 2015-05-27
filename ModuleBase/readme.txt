@@ -16,31 +16,29 @@ version-require: 5.3 or higher
 user/
 |-class/   (2选1）
 |-action/ (2选1）
-|-js/       （可选）
-|-css/     （可选）
-|-image/（可选)
-|-other/ （可选）
-|-upload/(可选）
-|-CUserDef.php（必须存在, 实现core/IModDef.php接口，类名必须和文件名除后缀外完全一样） 
+|-moddef/CUserDef.php（必须存在, 实现core/IModDef.php接口，类名必须和文件名除后缀外完全一样） 
 |-cache/（系统生成，开发者无须关心）
 
-2.调用方式（url和cli）
+[调用方式（url和cli）]
 url: 例如 /index.php?m=user&a=login&...  这样的url实际会调用user模块下action中的login.php。url的组成方式可以自己定义。
 cli: php index.php m=user&a=login&.. 
 
 
-安装user模块须知：
+[安装模块须知]
+user:
 1. 在moddef/CUserDef.php中，找到install方法，看到里面有个password，修改成安全的密码
 
-开发须知：
+[开发须知]
 1)定义的目录必须在末尾加上'/'
 
-
-global variables：
+[global variables]
 $mbs_appenv, an instance of CAppEnvironment.php
 $mbs_cur_moddef, a current module-def instance of CModDef
 $mbs_cur_actiondef, action-def defined moddef 
 
+
+
+[客户端]
 
 
 

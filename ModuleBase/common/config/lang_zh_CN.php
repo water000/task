@@ -11,7 +11,7 @@ function __header(){
 		$content = '<a href="'.$mbs_appenv->toURL('login', 'user').'" class="pure-menu-link">登录</a>';
 		$welcome = '请';
 	}else{
-		$welcome = $info[1]['nick_name'];
+		$welcome = $info[1]['name'];
 		$content = '<a href="'.$mbs_appenv->toURL('logout', 'user').'" class="pure-menu-link">退出</a>';
 	}
 	
@@ -36,7 +36,7 @@ $_notice_frame = <<<EOT
 %s
 </head>
 <body>
-<div class=%s>%s<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
+<h2 class=%s>%s<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></h2>
 </body>
 </html>
 EOT;
@@ -47,6 +47,16 @@ $lang_zh_CN = array(
 	'header_html'            => __header(),
 	'notice_page'            => $_notice_frame, //%s: meta tag or empty, %s: error/success, %s: msg content
 	'click_if_not_redirect'  => '如果没有跳转，请点击链接',
+		
+	'add'                    => '添加',
+	'edit'                   => '编辑',
+	'delete'                 => '删除',
+	'list'                   => '列表',
+	'search'                 => '查询',
+	'back'                   => '返回',
+	'no_data'                => '暂无数据',
+	'time'                   => '时间',
+	'operation_success'      => '操作成功',
 );
 
 

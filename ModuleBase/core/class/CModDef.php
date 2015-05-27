@@ -251,21 +251,23 @@ abstract class CModDef {
 					gettype($arr), $script, self::P_ARGS);
 				continue;
 			}
-			foreach($arr as $arg => $opt){
-				if(!self::isIdentifier($arg))
-					$error[] = sprintf('invalid identifier "%s" on page "%s" in "%s" def', 
-						$arg, $script, self::P_ARGS);
-				else{
-					if(!is_array($opt))
-						$error[] = sprintf('need ARRAY, "%s" was given at arg "%s" on page "%s" in "%s" def', 
-							gettype($opt), $arg, $script, self::P_ARGS);
-					else {
-						if(isset($opt[self::PARG_TYP]) && !settype($var, $opt[self::PARG_TYP]))
-							$error[] = sprintf('unsupported type "%s" on arg "%s" in page "%s" of "%s" def', 
-								$opt[self::PARG_TYP], $arg, $script, self::P_ARGS);
-						if(isset($opt[self::PARG_DEP]) && !isset($parg[$opt[self::PARG_DEP]]))
-							$error[] = sprintf('not existed dep-arg "%s" at arg "%s" on page "%s" in "%s" def', 
-								$opt[self::PARG_DEP], $arg, $script, self::P_ARGS);
+			if(isset($arr[self::P_ARGS])){
+				foreach($arr[self::P_ARGS] as $arg => $opt){
+					if(!self::isIdentifier($arg))
+						$error[] = sprintf('invalid identifier "%s" on page "%s" in "%s" def', 
+							$arg, $script, self::P_ARGS);
+					else{
+						if(!is_array($opt))
+							$error[] = sprintf('need ARRAY, "%s" was given at arg "%s" on page "%s" in "%s" def', 
+								gettype($opt), $arg, $script, self::P_ARGS);
+						else {
+							if(isset($opt[self::PA_TYP]) && !settype($var, $opt[self::PA_TYP]))
+								$error[] = sprintf('unsupported type "%s" on arg "%s" in page "%s" of "%s" def', 
+									$opt[self::PA_TYP], $arg, $script, self::P_ARGS);
+							if(isset($opt[self::PA_DEP]) && !isset($parg[$opt[self::PA_DEP]]))
+								$error[] = sprintf('not existed dep-arg "%s" at arg "%s" on page "%s" in "%s" def', 
+									$opt[self::PA_DEP], $arg, $script, self::P_ARGS);
+						}
 					}
 				}
 			}
@@ -487,7 +489,7 @@ abstract class CModDef {
 					
 					if($num < $s || ($e !=0 && $num > $e)){
 						$error[$name] = sprintf($error_desc['arg_length_invalid'],
-								$name, $len, $opts[CModDef::PA_RNG] );
+								$name, $num, $s.'-'.$e );
 						continue;
 					}
 				}

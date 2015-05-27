@@ -1,14 +1,16 @@
 <?php 
 
 mbs_import('', 'CUserClassControl');
-$uc = CUserClassControl::getInstance($mbs_appenv, CDbPool::getInstance(), null);
+$uc = CUserClassControl::getInstance($mbs_appenv, 
+		CDbPool::getInstance(), CMemcachedPool::getInstance());
 
-if(isset($_REQUEST['class_name'])){
+if(isset($_REQUEST['name'])){
 	$error = $mbs_cur_moddef->checkargs('class');
 	if(empty($error)){
 		$uc->add(array(
-			'class_name' => $_REQUEST['class_name'],
-			'class_code' => $_REQUEST['class_code']
+			'name' => $_REQUEST['name'],
+			'code' => $_REQUEST['code'],
+			'create_time' => time()
 		));
 	}
 }
@@ -25,13 +27,14 @@ $list = $uc->getDB()->listAll();
 </head>
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<?php if(isset($_REQUEST['class_name']) && !empty($error)){ ?>
-<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
-<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
-</div>
-<?php }?>
 <div class="pure-g" style="margin-top: 20px;color:#777;">
     <div class="pure-u-1-2 align-center" >
+    	<?php if(isset($_REQUEST['name']) && !empty($error)){ ?>
+		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+		</div>
+		<?php }?>
+		
     	<form class="pure-form" method="post">
     		<fieldset>
         		<legend><?php echo $mbs_appenv->lang('add_class')?></legend>
@@ -41,32 +44,52 @@ $list = $uc->getDB()->listAll();
          	</fieldset>
 		</form>
 		
-		<form class="pure-form" method="post">
+		<form name="_form" class="pure-form" method="post" action="<?php echo $mbs_appenv->toURL('class_edit')?>">
 			<table class="pure-table" style="width: 100%;margin-top:1em;">
 			    <thead>
 			        <tr>
-			            <th>#</th>
+			            <th>ID</th>
 			            <th><?php echo $mbs_appenv->lang('class_name')?></th>
 			            <th><?php echo $mbs_appenv->lang('class_code')?></th>
+			            <th><?php echo $mbs_appenv->lang(array('add', 'time'), 'common')?></th>
 			        </tr>
 			    </thead>
 			
 			    <tbody>
 			    <?php foreach($list as $k=>$row){?>
-			        <tr <?php echo $k>0 && 0 == $k%2 ? 'class=pure-table-odd':'' ?>>
-			            <td><input type="checkbox" name="select_id[]" value="<?php echo $row['id']?>" /><?php echo $k+1?></td>
+			        <tr <?php echo 1 == $k%2 ? 'class=pure-table-odd':'' ?>>
+			            <td><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /><?php echo $k+1?></td>
 			            <td><?php echo $row['name']?></td>
 			            <td><?php echo $row['code']?></td>
+			            <td><?php echo date('Y-m-d H:i', $row['create_time'])?></td>
 			        </tr>
 			    <?php }?>
 			    </tbody>
 			</table>
+			<div style="margin-top:10px;">
+				<?php if(isset($_REQUEST['popwin'])){?>
+				<script type="text/javascript">
+				document._form.onsubmit=function(e){return false;}
+				function _selected(){
+					var ems = document._form.elements, i, j, sel=[];
+					for(i=0; i<ems.length; i++){
+						if("id[]" == ems[i].name && ems[i].checked){
+							sel.push(ems[i].value, ems[i].parentNode.parentNode.cells[1].innerHTML);
+						}
+					}
+					if(window.opener.cb_class_selected){
+						window.opener.cb_class_selected(sel, window);
+					}
+				}
+				</script>
+				<button class="button-success pure-button" onclick="_selected()"><?php echo $mbs_appenv->lang('select')?></button>
+				<?php }?>
+				<button class="pure-button pure-button-primary" name="edit" type="submit"><?php echo $mbs_appenv->lang('edit')?></button>
+				<button class="button-error pure-button" name="delete" type="submit"><?php echo $mbs_appenv->lang('delete')?></button>
+			</div>
 		</form>
 		
-		<div style="margin-top:10px;">
-			<button class="button-success pure-button"><?php echo $mbs_appenv->lang('select')?></button>
-			 <button class="button-error pure-button"><?php echo $mbs_appenv->lang('delete')?></button>
-		</div>
+		
     </div>
 </div>
 <div class=footer></div>

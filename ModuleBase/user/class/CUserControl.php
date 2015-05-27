@@ -3,7 +3,7 @@
 class CUserControl extends CUniqRowControl {
 	
 	private static $instance   = null;
-	private static $searchKeys = array('phone_num'=>'', 'id'=>'', 'nick_name'=>'');
+	private static $searchKeys = array('phone'=>'', 'id'=>'', 'name'=>'');
 	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);

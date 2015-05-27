@@ -39,12 +39,12 @@ class CAppEnvironment{
 			: (isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] 
 			: (isset($_SERVER['REMOTE_ADDR'])? $_SERVER['REMOTE_ADDR'] : '0.0.0.0' ));
 		
-		if(isset($_SERVER['ACCEPT'])){
-			if(stripos($_SERVER['ACCEPT'], 'json') !== false)
+		if(isset($_SERVER['HTTP_ACCEPT'])){
+			if(stripos($_SERVER['HTTP_ACCEPT'], 'json') !== false)
 				$this->env['client_accept'] = 'json';
-			else if(stripos($_SERVER['ACCEPT'], 'html') !== false)
+			else if(stripos($_SERVER['HTTP_ACCEPT'], 'html') !== false)
 				$this->env['client_accept'] = 'html';
-			else if(stripos($_SERVER['ACCEPT'], 'xml') !== false)
+			else if(stripos($_SERVER['HTTP_ACCEPT'], 'xml') !== false)
 				$this->env['client_accept'] = 'xml';
 		}
 		if($this->env['client_accept'] != '')
@@ -188,12 +188,22 @@ class CAppEnvironment{
 			}
 		}
 		
-		return isset($this->mod_cfg[$mod][$cfg][$item]) ? $this->mod_cfg[$mod][$cfg][$item] : null;
+		if(is_string($item)){
+			return isset($this->mod_cfg[$mod][$cfg][$item]) ? $this->mod_cfg[$mod][$cfg][$item] : $item;
+		}
+		else if(is_array($item)){
+			$ret = '';
+			foreach($item as $e){
+				$ret .= isset($this->mod_cfg[$mod][$cfg][$e]) ? $this->mod_cfg[$mod][$cfg][$e] : $e;
+			}
+			return $ret;
+		}else{
+			return $item;
+		}
 	}
 	
 	function lang($item, $mod=''){
-		$ret = $this->config($item, $mod, 'lang_'.$this->env['lang']);
-		return is_null($ret) ? $item : $ret;
+		return $this->config($item, $mod, 'lang_'.$this->env['lang']);
 	}
 	
 	static function _echo_as_xml($arr){
@@ -228,7 +238,7 @@ class CAppEnvironment{
 				$msg =   is_string($data) ? $data : '';
 			}else{
 				$style = 'error';
-				$msg   = $errcode;
+				$msg   = $data.'('.$errcode.')';
 			}
 			$meta = '';
 			if(empty($msg) && !empty($redirect_url)){
@@ -236,7 +246,7 @@ class CAppEnvironment{
 				return ;
 			}
 			else if(!empty($redirect_url)){
-				$meta = '<meta http-equiv="Refresh" content="3;'.$redirect_url.'">';
+				//$meta = '<meta http-equiv="Refresh" content="3;'.$redirect_url.'">';
 				$msg .= sprintf('<p style="text-align:right;font-size: 12px;padding: 0 10px;">%s&nbsp;<a href="%s">%s</a></p>', 
 						$this->lang('click_if_not_redirect', 'common'), $redirect_url, $redirect_url);
 			}

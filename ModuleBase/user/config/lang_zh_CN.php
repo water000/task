@@ -4,11 +4,11 @@ $lang_zh_CN = array(
 	'oper_succ'     => '操作成功&nbsp;!&nbsp;&nbsp;您可以继续编辑或者浏览',
 	'close'         => '关闭',
 	'login'         => '登录',
-	'phone_num'     => '手机号码',
+	'phone'         => '手机号码',
 	'password'      => '密码',
 	'captcha'       => '验证码',
 	'reload_on_unclear' => '看不清，换一个',
-	'invalid_phone_num' => '手机号码无效',
+	'invalid_phone' => '手机号码无效',
 	'invalid_password'  => '密码无效',
 	'invalid_captcha'   => '验证码无效',
 	'remember_me'       => '记住我',
@@ -20,7 +20,7 @@ $lang_zh_CN = array(
 	'record_info'       => '录入信息',
 	'edit_info'         => '编辑信息',
 	'name'              => '姓名',
-	'orgnization'       => '单位',
+	'organization'       => '单位',
 	'email'             => '邮箱',
 	'VPDN_name'         => 'VPDN 名称',
 	'class'             => '分类',
@@ -35,6 +35,7 @@ $lang_zh_CN = array(
 	'list'              => '列表',
 	'search'            => '查询',
 	'add'               => '添加',
+	'edit'              => '编辑',
 );
 
 ?>

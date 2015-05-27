@@ -5,15 +5,15 @@ define('REDIRECT_AFTER_LOGIN', isset($_REQUEST['redirect']) ? urldecode($_REQUES
 mbs_import('', 'CUserSession');
 
 
-if(isset($_REQUEST['phone_num'])){
+if(isset($_REQUEST['phone'])){
 	$error = array();
 	
 	if(!isset($_COOKIE['is_cookie_available'])){
 		$error[] = 'cookie is unavailable on your browser';
 	}
 	
-	if(!CStrTools::isValidPhone($_REQUEST['phone_num'])){
-		$error[] = $mbs_appenv->lang('invalid_phone_num');
+	if(!CStrTools::isValidPhone($_REQUEST['phone'])){
+		$error[] = $mbs_appenv->lang('invalid_phone');
 	}
 	if(!CStrTools::isValidPassword($_REQUEST['password'])){
 		$error[] = $mbs_appenv->lang('invalid_password');
@@ -42,12 +42,12 @@ if(isset($_REQUEST['phone_num'])){
 		$uc = CUserControl::getInstance($mbs_appenv, CDbPool::getInstance(), CMemcachedPool::getInstance());
 		$rs = null;
 		try {
-			$rs = $uc->search(array('phone_num'=>$_REQUEST['phone_num']));
+			$rs = $uc->search(array('phone'=>$_REQUEST['phone']));
 		} catch (Exception $e) {
 			$error[] = $mbs_appenv->lang('db_exception', 'common');
 		}
 		if(empty($rs)){
-			$error[] = $mbs_appenv->lang('invalid_phone_num');
+			$error[] = $mbs_appenv->lang('invalid_phone');
 		}
 		else if(!CUserControl::checkPassword($_REQUEST['password'], $rs[0]['password'])){
 			$error[] = $mbs_appenv->lang('invalid_password');
@@ -59,7 +59,6 @@ if(isset($_REQUEST['phone_num'])){
 			exit(0);
 		}
 	}
-	
 	if(!empty($error) && $mbs_appenv->item('client_accept') != 'html'){
 		$mbs_appenv->echoex(implode(';', $error), 'LOGIN_FAILED');
 		exit(0);
@@ -93,7 +92,7 @@ img{vertical-align:bottom;margin: 0 6px;}
 </head>
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<?php if(isset($_REQUEST['phone_num'])){if(!empty($error)){ ?>
+<?php if(isset($_REQUEST['phone'])){if(!empty($error)){ ?>
 <div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
 <a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 </div>
@@ -106,8 +105,8 @@ img{vertical-align:bottom;margin: 0 6px;}
 		    <fieldset>
 		    	<legend style="font-size: 1.5em;"><?php echo $mbs_appenv->lang('login')?></legend>
 		    	
-		        <label for="phone_num"><?php echo $mbs_appenv->lang('phone_num')?></label>
-		        <input id=phone_num name="phone_num" class="pure-input-1-2"  /><br />
+		        <label for="phone"><?php echo $mbs_appenv->lang('phone')?></label>
+		        <input id=phone name="phone" class="pure-input-1-2"  /><br />
 		
 		        <label for="password"><?php echo $mbs_appenv->lang('password')?></label>
 		        <input id="password" type="password" name="password" class="pure-input-1-2" /><br />

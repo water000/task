@@ -21,8 +21,8 @@ $lang_zh_CN = array(
 			<p><b>更方便操作功能：</b>将特定的功能组合成一个组，然后加入的用户可以访问组下面的功能</p>',
 		
 	'search_user'   => '搜索用户',
-	'phone_num'     => '手机号码',
-	'nick_name'     => '昵称',
+	'phone'     => '手机号码',
+	'name'     => '昵称',
 	'reg_time'      => '注册时间',
 	'joined_user'   => '已加入用户',
 	'join_ts'       => '加入时间',
