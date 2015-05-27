@@ -79,6 +79,9 @@ class CMultiRowOfTable extends CUniqRowOfTable
 		try{
 			$pdos = $this->oPdoConn->prepare($sql);
 			$ret = $pdos->execute(array_values($param));
+			if($ret === false){
+				$this->_seterror($pdos);
+			}
 		}catch(Exception $e){
 			throw $e;
 		}
@@ -100,6 +103,9 @@ class CMultiRowOfTable extends CUniqRowOfTable
 		try {
 			$pre = $this->oPdoConn->prepare($sql);
 			$ret = $pre->execute(array_values($param));
+			if($ret === false){
+				$this->_seterror($pre);
+			}
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -128,6 +134,9 @@ class CMultiRowOfTable extends CUniqRowOfTable
  			
  		try {
 			$ret = $this->oPdoConn->exec($sql);
+			if($ret === false){
+				$this->_seterror($this->oPdoConn);
+			}
 		} catch (Exception $e) {
 			throw $e;
 		}

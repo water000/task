@@ -57,7 +57,7 @@ class CStrTools {
 	}
 	
 	static function isValidPassword($pwd){
-		if(strlen($pwd) > 6)
+		if(strlen($pwd) >= 6)
 			return true;
 		
 		return false;

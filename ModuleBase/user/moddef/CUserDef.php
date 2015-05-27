@@ -54,6 +54,24 @@ class CUserDef extends CModDef {
 				)'
 			),
 			self::PAGES => array(
+				'login' => array(
+					self::P_TLE => '登录',
+					self::G_DC  => '用户登录系统的入口',
+					self::P_ARGS => array(
+						'phone'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'手机', self::PA_RNG=>'11, 16'),
+						'password'      => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6, 32'),
+						'captcha'       => array(self::PA_REQ=>0, self::G_DC=>'第一次登录没有验证码，当登录失败后会出现，客户端需要做相应处理', self::PA_RNG=>'4,5'),
+						'remember_me'   => array(self::PA_REQ=>0, self::G_DC=>'记住我！延长用户登录的有效期'),
+						'IMEI'          => array(self::PA_REQ=>0, self::G_DC=>'当系统中记录时，需要提供。主要用于检测移动设备的有效性'),
+						'IMSI'          => array(self::PA_REQ=>0, self::G_DC=>'同IMEI'),
+					),
+					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG", data:{user:{详见user_info表中字段列表}, token:32为的字符串}',
+				),
+				'logout' => array(
+					self::P_TLE => '注销',
+					self::G_DC  => '注销当前已登录的用户',
+					self::P_OUT => '{retcode:"SUCCESS"}'
+				),
 				'edit' => array(
 					self::P_TLE => '编辑',
 					self::G_DC  => '编辑用户信息',
@@ -63,8 +81,8 @@ class CUserDef extends CModDef {
 						'organization' => array(self::PA_REQ=>0, self::G_DC=>'单位', self::PA_RNG=>'2, 32'),
 						'phone'        => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'手机', self::PA_RNG=>'11, 12'),
 						'email'        => array(self::PA_REQ=>0, self::G_DC=>'邮箱', self::PA_RNG=>'6, 255'),
-						'IMEI'         => array(self::PA_REQ=>0, self::G_DC=>'邮箱', self::PA_RNG=>'6, 32'),
-						'IMSI'         => array(self::PA_REQ=>0, self::G_DC=>'邮箱', self::PA_RNG=>'6, 32'),
+						'IMEI'         => array(self::PA_REQ=>0, self::G_DC=>'IMEI', self::PA_RNG=>'6, 32'),
+						'IMSI'         => array(self::PA_REQ=>0, self::G_DC=>'IMSI', self::PA_RNG=>'6, 32'),
 						'VPDN_name'    => array(self::PA_REQ=>0, self::G_DC=>'VPDN名称', self::PA_RNG=>'6, 32'),
 						'VPDN_pass'    => array(self::PA_REQ=>0, self::G_DC=>'VPDN密码', self::PA_RNG=>'6, 32'),
 					),
@@ -79,6 +97,48 @@ class CUserDef extends CModDef {
 				),
 			),
 		);
+	}
+	
+	function install($dbpool, $mempool=null){
+		parent::install($dbpool, $mempool);
+		
+		mbs_import('', 'CUserControl');
+		try {
+			$ins = CUserControl::getInstance(self::$appenv, $dbpool, $mempool);
+			$uid = $ins->add(array(
+				'id'        => 1,
+				'name'      => 'tiger',
+				'password'  => CUserControl::formatPassword('123321'),
+				'phone'     => '15312999188',
+				'reg_time'  => time(),
+				'reg_ip'    => self::$appenv->item('client_ip')
+			));
+			
+			$uid = $ins->add(array(
+				'id'        => 2,
+				'name'      => 'developer',
+				'password'  => CUserControl::formatPassword('123123'),
+				'phone'     => '13888888888',
+				'reg_time'  => time(),
+				'reg_ip'    => self::$appenv->item('client_ip')
+			));
+			
+			$uid = $ins->add(array(
+				'id'        => 3,
+				'name'      => 'tester',
+				'password'  => CUserControl::formatPassword('123123'),
+				'phone'     => '13666666666',
+				'reg_time'  => time(),
+				'IMEI'      => '358882041675207',
+				'IMSI'      => '460003044165002',
+				'class_id'  => 1,
+				'reg_ip'    => self::$appenv->item('client_ip')
+			));
+			
+			
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
 }
 

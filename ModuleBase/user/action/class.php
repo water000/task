@@ -68,8 +68,8 @@ $list = $uc->getDB()->listAll();
 			</table>
 			<div style="margin-top:10px;">
 				<?php if(isset($_REQUEST['popwin'])){?>
+				<input type="hidden" name="popwin" value=1 />
 				<script type="text/javascript">
-				document._form.onsubmit=function(e){return false;}
 				function _selected(){
 					var ems = document._form.elements, i, j, sel=[];
 					for(i=0; i<ems.length; i++){
@@ -80,9 +80,10 @@ $list = $uc->getDB()->listAll();
 					if(window.opener.cb_class_selected){
 						window.opener.cb_class_selected(sel, window);
 					}
+					document._form.onsubmit=function(e){return false;}
 				}
 				</script>
-				<button class="button-success pure-button" onclick="_selected()"><?php echo $mbs_appenv->lang('select')?></button>
+				<button class="button-success pure-button" onclick="return _selected()"><?php echo $mbs_appenv->lang('select')?></button>
 				<?php }?>
 				<button class="pure-button pure-button-primary" name="edit" type="submit"><?php echo $mbs_appenv->lang('edit')?></button>
 				<button class="button-error pure-button" name="delete" type="submit"><?php echo $mbs_appenv->lang('delete')?></button>

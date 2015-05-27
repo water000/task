@@ -8,6 +8,7 @@ class CUniqRowOfTable
 	protected        $keyname    = null;
 	protected        $tbname     = null;
 	protected static $pdos       = null;
+	protected        $error      = '';
 
 	/*protected*/ function __construct($oPdoConn, $tbname, $keyname, $primaryKey)
 	{
@@ -34,6 +35,15 @@ class CUniqRowOfTable
 		return $this->oPdoConn;
 	}
 	
+	protected function _seterror($src){
+		$error = $src->errorInfo();
+		$this->error = sprintf('[%s:%s]%s', $error[0], $error[1], $error[2]);
+	}
+	
+	function error(){
+		return $this->error;
+	}
+	
 	/**
 	 * the method must return a primary key
 	 * @param array $param the key-pair array, if some keys(like primary key) are not set,
@@ -48,7 +58,11 @@ class CUniqRowOfTable
 		);
 		try{
 			$pre = $this->oPdoConn->prepare($sql);
-			$pre->execute(array_values($param));
+			$ret = $pre->execute(array_values($param));
+			if($ret === false){
+				$this->_seterror($pre);
+				return 0;
+			}
 			$this->primaryKey = $this->oPdoConn->lastInsertId();
 		}catch(Exception $e){
 			throw $e;
@@ -103,6 +117,9 @@ class CUniqRowOfTable
 		try {
 			$pdos = $this->oPdoConn->prepare($sql);
 			$ret = $pdos->execute(array_values($param));
+			if($ret === false){
+				$this->_seterror($pdos);
+			}
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -117,6 +134,9 @@ class CUniqRowOfTable
  			
  		try {
 			$ret = $this->oPdoConn->exec($sql);
+			if($ret === false){
+				$this->_seterror($this->oPdoConn);
+			}
 		} catch (Exception $e) {
 			throw $e;
 		}

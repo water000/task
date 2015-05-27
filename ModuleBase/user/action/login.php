@@ -8,8 +8,13 @@ mbs_import('', 'CUserSession');
 if(isset($_REQUEST['phone'])){
 	$error = array();
 	
-	if(!isset($_COOKIE['is_cookie_available'])){
-		$error[] = 'cookie is unavailable on your browser';
+	if(isset($_REQUEST['need_testing_cookie'])){
+		if(!isset($_COOKIE['is_cookie_available'])){
+			$error[] = 'cookie is unavailable on your browser!re-configure and <a href="">retry</a>';
+			define('NEED_TESTING_COOKIE', 1);
+		}else{
+			setcookie('is_cookie_available', '', time()-1000);
+		}
 	}
 	
 	if(!CStrTools::isValidPhone($_REQUEST['phone'])){
@@ -23,17 +28,19 @@ if(isset($_REQUEST['phone'])){
 		session_set_cookie_params(time()+15*24*3600);
 	}
 	
-	//"$_SESSION['common_img_captcha']" defined in common/action/img_captcha.php
 	session_start();
 	
 	$us = new CUserSession();
 	$user_info = $us->get();
 	if(!empty($user_info)){
-		$mbs_appenv->echoex($mbs_appenv->lang('had_login'), '', REDIRECT_AFTER_LOGIN);
+		//$mbs_appenv->echoex($mbs_appenv->lang('had_login'), 'HAD_LOGIN', REDIRECT_AFTER_LOGIN);
+		$mbs_appenv->echoex(array('user'=>$user_info[1], 'token'=>session_id()), '', REDIRECT_AFTER_LOGIN);
 		exit(0);
 	}
 	
-	if(strtoupper($_REQUEST['captcha']) != $_SESSION['common_img_captcha']){
+	//"$_SESSION['common_img_captcha']" defined in common/action/img_captcha.php
+	if(isset($_SESSION['common_img_captcha']) && 
+		strtoupper($_REQUEST['captcha']) != $_SESSION['common_img_captcha']){
 		$error[] = $mbs_appenv->lang('invalid_captcha');
 	}
 	
@@ -53,21 +60,33 @@ if(isset($_REQUEST['phone'])){
 			$error[] = $mbs_appenv->lang('invalid_password');
 		}
 		else{
-			$us->set($rs[0]['id'], $rs[0]);
-			setcookie('is_cookie_available', '', time()-1000);
-			$mbs_appenv->echoex($rs, '', REDIRECT_AFTER_LOGIN);
-			exit(0);
+			$rs = $rs[0];
+			if(!empty($rs['IMEI'])){
+				if(isset($_REQUEST['IMEI']) && isset($_REQUEST['IMSI']) 
+					&& $_REQUEST['IMEI'] == $rs['IMEI'] && $_REQUEST['IMSI'] == $rs['IMSI'])
+				{
+					;
+				}
+				else{
+					$error[] = 'invalid device';
+				}
+			}
+			if(empty($error)){
+				$us->set($rs['id'], $rs);
+				$mbs_appenv->echoex(array('user'=>$rs, 'token'=>session_id()), '', REDIRECT_AFTER_LOGIN);
+				exit(0);
+			}
 		}
 	}
 	if(!empty($error) && $mbs_appenv->item('client_accept') != 'html'){
 		$mbs_appenv->echoex(implode(';', $error), 'LOGIN_FAILED');
 		exit(0);
 	}
-	
 }
 else{
-	if(!isset($_COOKIE['is_cookie_available'])){
+	if(empty($_COOKIE)){
 		setcookie('is_cookie_available', 'yes'); // for checking whether the client supporting cookies
+		define('NEED_TESTING_COOKIE', 1);
 	}
 	
 	session_start();
@@ -102,6 +121,7 @@ img{vertical-align:bottom;margin: 0 6px;}
     <div class="pure-u-1-3">
     	<form class="pure-form pure-form-stacked" method="post">
     		<input type="hidden" name="redirect" value="<?php echo urlencode(REDIRECT_AFTER_LOGIN)?>" />
+    		<?php if(defined('NEED_TESTING_COOKIE')){?><input type="hidden" name="need_testing_cookie" value=1 /><?php }?>
 		    <fieldset>
 		    	<legend style="font-size: 1.5em;"><?php echo $mbs_appenv->lang('login')?></legend>
 		    	
@@ -111,7 +131,7 @@ img{vertical-align:bottom;margin: 0 6px;}
 		        <label for="password"><?php echo $mbs_appenv->lang('password')?></label>
 		        <input id="password" type="password" name="password" class="pure-input-1-2" /><br />
 		        
-		        
+		        <?php if((isset($_REQUEST['phone']) && !empty($error) || isset($_SESSION['common_img_captcha']))){?>
 		        <label for=captcha><?php echo $mbs_appenv->lang('captcha')?></label>
 		        <div class="pure-u-1-3">
 		        <input id="captcha" type="text" name="captcha" class="pure-input-1" />
@@ -119,6 +139,7 @@ img{vertical-align:bottom;margin: 0 6px;}
 				<img alt="<?php echo $mbs_appenv->lang('captcha')?>"  src="<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>" 
 				/><a href="#"  style="vertical-align: bottom;" onclick="this.previousSibling.src='<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>?n='+Math.random();"><?php echo $mbs_appenv->lang('reload_on_unclear')?></a>
 				<br />
+				<?php } ?>
 				
 		        <label for="remember" class="pure-checkbox" style="font-size: 12px;">
 		            <input id="remember" type="checkbox" />&nbsp;<?php echo $mbs_appenv->lang('remember_me')?>

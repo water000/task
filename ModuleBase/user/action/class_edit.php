@@ -56,8 +56,11 @@ if(isset($_REQUEST['id'])){
 		<?php }?>
 		
 		<form class="pure-form" method="post">
+			<?php if(isset($_REQUEST['popwin'])){?>
+			<input type="hidden" name="popwin" value=1 />
+			<?php }?>
         	<h3><?php echo $mbs_appenv->lang('edit')?>
-        		<a class=back href="<?php echo $mbs_appenv->toURL('class')?>">&lt;<?php echo $mbs_appenv->lang('back', 'common')?></a>
+        		<a class=back href="<?php echo $mbs_appenv->toURL('class', '', isset($_REQUEST['popwin']) ? array('popwin'=>1) : null)?>">&lt;<?php echo $mbs_appenv->lang('back', 'common')?></a>
         	</h3>
 			<table class="pure-table" style="width: 100%;margin:1em 0;">
 			    <thead>

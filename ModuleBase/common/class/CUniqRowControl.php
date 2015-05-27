@@ -9,6 +9,7 @@ class CUniqRowControl
 	protected $oCache     = null;
 	protected $primaryKey = null;
 	protected $arrBuf     = array();
+	protected $error      = '';
 	
 	/**
 	 * 
@@ -65,11 +66,16 @@ class CUniqRowControl
 		return $this->primaryKey;
 	}
 	
+	function error(){
+		return $this->oDB->error();
+	}
+	
 	function add($arr)
 	{
 		try
 		{
 			$prikey = $this->oDB->add($arr);
+			
 			$this->append($prikey);
 			if($this->oCache)
 				$this->oCache->set($arr); // use the 'set' to replace 'add' which that the multi-add will cause failure

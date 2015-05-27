@@ -2,7 +2,7 @@
 
 date_default_timezone_set('Asia/Shanghai');
 
-define('RTM_DEBUG', true);
+define('RTM_DEBUG', false);
 error_reporting(RTM_DEBUG ? E_ALL : 0);
 	
 define('IN_INDEX', 1); //ref file: CAppEnvironment.php
@@ -212,6 +212,7 @@ function _main($mbs_appenv){
 		
 		$path = $mbs_appenv->getActionPath($action, $mod);
 		if(!file_exists($path)){
+			header('HTTP/1.1 400');
 			trigger_error('Invalid request: '.$mod.'.'.$action, E_USER_ERROR);
 		}
 		require $path;

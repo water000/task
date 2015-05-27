@@ -3,9 +3,31 @@ $page_title = $mbs_appenv->lang(isset($_REQUEST['id']) ? 'edit_info' : 'record_i
 
 mbs_import('', 'CUserControl');
 
-$user = array(
-	'name'=>'', 'organization'=>'',
-);
+$user = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
+
+if(isset($_REQUEST['id'])){
+	$_REQUEST['id'] = intval($_REQUEST['id']);
+	$user_ins = CUserControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['id']);
+	if(isset($_REQUEST['name'])){
+		$user = array_intersect_key($_REQUEST, $user);
+		$ret = $user_ins->set($user);
+	}else{
+		$user_spec = $user_ins->get();
+		if(empty($user_spec)){
+			$mbs_appenv->echoex('no such user', 'NO_USER');
+			exit(0);
+		}
+		$user = array_intersect_key($user_spec, $user);
+	}
+}
+else if(isset($_REQUEST['name'])){
+	$user = array_intersect_key($_REQUEST, $user);
+	$user_ins = CUserControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance());
+	$ret = $user_ins->add($user);
+}
+
 ?>
 
 <!doctype html>
@@ -19,10 +41,12 @@ $user = array(
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="pure-g" style="margin-top: 20px;color:#777;">
     <div class="pure-u-1-2 align-center">
-	    <?php if(isset($_REQUEST['phone'])){if(!empty($error)){ ?>
-		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
+	    <?php if(isset($ret)){ if(false === $ret){ ?>
+		<div class=error><p><?php echo $user_ins->error()?></p>
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 		</div>
+		<?php }else {?>
+		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?></div>
 		<?php }}?>
 		
     	<form name="_form" class="pure-form pure-form-aligned" method="post">
@@ -32,40 +56,58 @@ $user = array(
 		    	
 		        <div class="pure-control-group">
 		            <label for="name"><?php echo $mbs_appenv->lang('name')?></label>
-		            <input id="name" name="name" type="text" required />
+		            <input id="name" name="name" type="text" value="<?php echo $user['name']?>" required />
 		        </div>
 		        <div class="pure-control-group">
 		            <label for="organization"><?php echo $mbs_appenv->lang('organization')?></label>
-		            <input id="organization" name="organization" type="text" />
+		            <input id="organization" name="organization" type="text" value="<?php echo $user['organization']?>" />
 		        </div>
 		        <div class="pure-control-group">
 		            <label for="phone"><?php echo $mbs_appenv->lang('phone')?></label>
-		            <input id="phone" name="phone" type="text" required />
+		            <input id="phone" name="phone" type="text" value="<?php echo $user['phone']?>" required />
 		        </div>
 		        <div class="pure-control-group">
-		            <label for="name"><?php echo $mbs_appenv->lang('email')?></label>
-		            <input id="email" name="email" type="email" />
+		            <label for="password"><?php echo $mbs_appenv->lang(array('login', 'password'))?></label>
+		            <input id="password" name="password" type="text" value="<?php echo $user['password']?>" required />
+		        </div>
+		        <div class="pure-control-group">
+		            <label for="email"><?php echo $mbs_appenv->lang('email')?></label>
+		            <input id="email" name="email" type="email" value="<?php echo $user['email']?>" />
 		        </div>
 		        <div class="pure-control-group">
 		            <label for="IMEI">IMEI</label>
-		            <input id="IMEI" name="IMEI" type="text" />
+		            <input id="IMEI" name="IMEI" type="text" value="<?php echo $user['IMEI']?>" />
 		        </div>
 		        <div class="pure-control-group">
 		            <label for="IMSI">IMSI</label>
-		            <input id="IMSI" name="IMSI" type="text" />
+		            <input id="IMSI" name="IMSI" type="text" value="<?php echo $user['IMSI']?>" />
 		        </div>
 		        <div class="pure-control-group">
 		            <label for="VPDN_name"><?php echo $mbs_appenv->lang('VPDN_name')?></label>
-		            <input id="VPDN_name" name="VPDN_name" type="text" />
+		            <input id="VPDN_name" name="VPDN_name" type="text" value="<?php echo $user['VPDN_name']?>" />
 		        </div>
 		        <div class="pure-control-group">
 		            <label for="VPDN_pass">VPDN <?php echo $mbs_appenv->lang('password')?></label>
-		            <input id="VPDN_pass" name="VPDN_pass" type="text" />
+		            <input id="VPDN_pass" name="VPDN_pass" type="text" value="<?php echo $user['VPDN_pass']?>" />
 		        </div>
 		        <div class="pure-control-group">
 		            <label for="class"><?php echo $mbs_appenv->lang('class')?></label>
-		            <input id="class" name="class" type="text" style="color: #aaa;" disabled />
-		            <input type="hidden" name="class_id" value="" />
+		            <?php 
+		            $class_value=''; 
+		            if($user['class_id'] > 0){
+						mbs_import('user', 'CUserClassControl');
+						$class_ins = CUserClassControl::getInstance($mbs_appenv, 
+							CDbPool::getInstance(), CMemcachedPool::getInstance(), $user['class_id']);
+						$class_info = $class_ins->get();
+						if(empty($class_info)){
+							$user['class_id'] = $class_value = '';
+						}else{
+							$class_value = $class_info['name'];
+						}
+					}
+		            ?>
+		            <input id="class" name="class" type="text" style="color: #aaa;" value="<?php echo $class_value?>" disabled />
+		            <input type="hidden" name="class_id" value="<?php echo $user['class_id']?>" />
 		            <a href="javascript:window.open('<?=$mbs_appenv->toURL('class', '', array('popwin'=>1))?>', '_blank,_top', 'height=400,width=600,location=no', true);" 
 		            	style="vertical-align: bottom;margin-left:20px;">
 		            	<?php echo $mbs_appenv->lang('select_class')?>

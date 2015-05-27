@@ -42,7 +42,9 @@ class CAppEnvironment{
 		if(isset($_SERVER['HTTP_ACCEPT'])){
 			if(stripos($_SERVER['HTTP_ACCEPT'], 'json') !== false)
 				$this->env['client_accept'] = 'json';
-			else if(stripos($_SERVER['HTTP_ACCEPT'], 'html') !== false)
+			else if(stripos($_SERVER['HTTP_ACCEPT'], 'html') !== false ||
+				stripos($_SERVER['HTTP_ACCEPT'], 'xhtml') !== false || 
+				stripos($_SERVER['HTTP_ACCEPT'], '*/*') !== false)
 				$this->env['client_accept'] = 'html';
 			else if(stripos($_SERVER['HTTP_ACCEPT'], 'xml') !== false)
 				$this->env['client_accept'] = 'xml';
@@ -224,6 +226,11 @@ class CAppEnvironment{
 			|| 'xml' == $this->env['client_accept'])
 		{
 			$out = array('retcode' => empty($errcode) ? 'SUCCESS': $errcode, 'data' => $data);
+			if(empty($errcode)){
+				$out = array('retcode'=>'SUCCESS', 'data'=>$data);
+			}else{
+				$out = array('retcode'=>$errcode, 'error'=>$data, 'data'=>null);
+			}
 			if('json' == $this->env['client_accept'])
 				echo json_encode($out);
 			else{
@@ -246,7 +253,7 @@ class CAppEnvironment{
 				return ;
 			}
 			else if(!empty($redirect_url)){
-				//$meta = '<meta http-equiv="Refresh" content="3;'.$redirect_url.'">';
+				$meta = '<meta http-equiv="Refresh" content="3;'.$redirect_url.'">';
 				$msg .= sprintf('<p style="text-align:right;font-size: 12px;padding: 0 10px;">%s&nbsp;<a href="%s">%s</a></p>', 
 						$this->lang('click_if_not_redirect', 'common'), $redirect_url, $redirect_url);
 			}
