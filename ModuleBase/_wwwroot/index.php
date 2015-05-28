@@ -2,7 +2,7 @@
 
 date_default_timezone_set('Asia/Shanghai');
 
-define('RTM_DEBUG', false);
+define('RTM_DEBUG', true);
 error_reporting(RTM_DEBUG ? E_ALL : 0);
 	
 define('IN_INDEX', 1); //ref file: CAppEnvironment.php
@@ -36,20 +36,6 @@ mbs_import('common', 'CDbPool', 'CMemcachedPool', 'CUniqRowControl', 'CStrTools'
 if(!class_exists('Memcached', false))
 	mbs_import('common', 'Memcached');
 
-if(RTM_DEBUG){
-	CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
-	CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
-	
-	register_shutdown_function(function(){
-		if(false !== strpos(PHP_SAPI, 'cli')){
-			CDbPool::getInstance()->cli();
-			CMemcachedPool::getInstance()->cli();
-		}else{
-			CDbPool::getInstance()->html();
-			CMemcachedPool::getInstance()->html();
-		}
-	});
-}
 
 function mbs_moddef($mod){
 	global $mbs_appenv;
@@ -99,19 +85,6 @@ function mbs_title($action='', $mod='', $system=''){
 	}else{
 		echo $action , '-', $mod, '-', $system;
 	}
-}
-
-function mbs_api_echo($err, $arr=array(), $return = false){
-	static $output = array('success'=>0, 'error'=>'');
-	
-	$output['success'] = empty($err) ? 1 : 0;
-	$output['error']   = $err;
-	$output = array_merge($output, $arr);
-	
-	if($return)
-		return json_encode($output);
-	else 
-		echo json_encode($output);
 }
 
 function _main($mbs_appenv){
@@ -180,6 +153,25 @@ function _main($mbs_appenv){
 	}
 
 	$mbs_appenv->config('', 'common');
+	
+	if(RTM_DEBUG){
+		CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
+		CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
+	
+		register_shutdown_function(function(){
+			global $mbs_appenv;
+			if(false !== strpos(PHP_SAPI, 'cli')){
+				CDbPool::getInstance()->cli();
+				CMemcachedPool::getInstance()->cli();
+			}else if('html' == $mbs_appenv->item('client_accept')){
+				CDbPool::getInstance()->html();
+				CMemcachedPool::getInstance()->html();
+			}
+		});
+	
+			mbs_import('core', 'CLogAPI');
+			$mbs_appenv->setLogAPI(new CDBLogAPI(CDbPool::getInstance()->getDefaultConnection()));
+	}
 	
 	if('install' == $action){
 		$err = '';

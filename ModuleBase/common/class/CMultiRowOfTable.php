@@ -9,6 +9,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 	protected $pageId     = 1;
 	protected $numPerPage = 20;
 	
+	
 	/*protected */function __construct($oPdoConn, $tbname, 
 									$pkeyname, $primaryKey, 
 									$skeyname, $secondKey=null)
@@ -49,7 +50,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 			($this->pageId-1)*$this->numPerPage, $this->numPerPage);
 		try {
 			$pdos = $this->oPdoConn->query($sql);
-			$ret = $pdos->fetchAll();
+			$ret = $pdos->fetchAll($this->fetch_type);
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -61,7 +62,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 				$this->tbname, $this->keyname, $this->primaryKey);
 		try {
 			$pdos = $this->oPdoConn->query($sql);
-			$ret = $pdos->fetchAll();
+			$ret = $pdos->fetchAll($this->fetch_type);
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -119,7 +120,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 			$this->skeyname, $this->secondKey);
 		try {
 			$pdos = $this->oPdoConn->query($sql);
-			$ret = $pdos->fetchAll();
+			$ret = $pdos->fetchAll($this->fetch_type);
 			$ret = empty($ret) ? array() : $ret[0];
 		} catch (Exception $e) {
 			throw $e;

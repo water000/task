@@ -1,7 +1,26 @@
+<?php 
+
+mbs_import('', 'CUserControl');
+$user_ins = CUserControl::getInstance($mbs_appenv,
+	CDbPool::getInstance(), CMemcachedPool::getInstance());
+
+define('ROWS_PER_PAGE', 20);
+define('PAGE_ID',  isset($_REQUEST['page_id']) ? intval($_REQUEST['page_id']) : 1);
+define('ROWS_OFFSET', (PAGE_ID-1)*ROWS_PER_PAGE);
+$search_keys = array('name'=>'', 'phone'=>'', 'email'=>'');
+$req_search_keys = array_intersect_key($_REQUEST, $search_keys);
+if(count($req_search_keys) > 0){
+	$list = $user_ins->getDB()->search($search_keys, ROWS_OFFSET, ROWS_PER_PAGE);
+}else{
+	$list = $user_ins->getDB()->listAll(ROWS_OFFSET, ROWS_PER_PAGE);
+}
+
+?>
+
 <!doctype html>
 <html>
 <head>
-<title><?php mbs_title($mbs_appenv->lang('list'))?></title>
+<title><?php mbs_title()?></title>
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 </head>
@@ -30,28 +49,24 @@
 			    <thead>
 			        <tr>
 			            <th>ID</th>
-			            <th><?php echo $mbs_appenv->lang('class_name')?></th>
+			            <th><?php echo $mbs_appenv->lang('name')?></th>
 			            <th><?php echo $mbs_appenv->lang('organization')?></th>
 			            <th><?php echo $mbs_appenv->lang('phone')?></th>
 			            <th><?php echo $mbs_appenv->lang('email')?></th>
 			        </tr>
 			    </thead>
-			
 			    <tbody>
-			        <tr>
-			            <td><input type="checkbox" name="" />1</td>
-			            <td>Honda</td>
-			            <td>Accord</td>
-			            <td>Honda</td>
-			            <td>Accord</td>
+			    	<?php foreach($list as $k => $row){ ?>
+			        <tr <?php echo 1 == $k%2 ? 'class=pure-table-odd':'' ?>>
+			            <td><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /><?php echo $row['id']?></td>
+			            <td><?php echo CStrTools::txt2html($row['name'])?></td>
+			            <td><?php echo CStrTools::txt2html($row['organization'])?></td>
+			            <td><?php echo $row['phone']?></td>
+			            <td><?php echo $row['email']?></td>
 			        </tr>
-			        <tr class="pure-table-odd">
-			            <td>1</td>
-			            <td>Honda</td>
-			            <td>Accord</td>
-			            <td>Honda</td>
-			            <td>Accord</td>
-			        </tr>
+			     	<?php } if(empty($list)){ ?>
+			     	<tr><td colspan=5 class=no-data><?php echo $mbs_appenv->lang('no_data', 'common')?></td></tr>
+			     	<?php }?>
 			      </tbody>
 			</table>
 		</form>

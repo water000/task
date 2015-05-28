@@ -31,6 +31,8 @@ class CAppEnvironment{
 	
 	private $mod_cfg = array();
 	
+	private $log_api = null; // an instance of core.CLogAPI
+	
 	private function __construct(){
 		$this->env['app_root'] = realpath(dirname(__FILE__).'/..').'/';
 		$this->env['web_root'] = empty($this->env['web_root']) ? 
@@ -67,6 +69,10 @@ class CAppEnvironment{
 	
 	function getDir($mod, $file_type=''){
 		return $this->env['app_root'].$mod.'/'.(empty($file_type) ? '' : $file_type.'/');
+	}
+	
+	function setLogAPI($log){
+		$this->log_api = $log;
 	}
 	
 	function getPath($filename, $mod=''){
@@ -237,6 +243,15 @@ class CAppEnvironment{
 				echo '<?xml version="1.0" standalone="yes"?><response>';
 				self::_echo_as_xml($out);
 				echo '</response>';
+			}
+			if($this->log_api != null){
+				if(function_exists('ob_start')){
+					ob_start();
+					CDbPool::getInstance()->cli();
+					CMemcachedPool::getInstance()->cli();
+					$other = ob_get_clean();
+				}
+				$this->log_api->write($out, $other);
 			}
 		}else{
 			$style = $msg = '';

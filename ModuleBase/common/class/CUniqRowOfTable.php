@@ -9,6 +9,7 @@ class CUniqRowOfTable
 	protected        $tbname     = null;
 	protected static $pdos       = null;
 	protected        $error      = '';
+	protected        $fetch_type = PDO::FETCH_ASSOC;
 
 	/*protected*/ function __construct($oPdoConn, $tbname, $keyname, $primaryKey)
 	{
@@ -42,6 +43,10 @@ class CUniqRowOfTable
 	
 	function error(){
 		return $this->error;
+	}
+
+	function setTetchType($type){
+		$this->fetch_type = $type;
 	}
 	
 	/**
@@ -144,34 +149,39 @@ class CUniqRowOfTable
 		return $ret;
  	}
  	
- 	function listAll(){
+ 	function listAll($offset=0, $limit=0){
  		$ret = null;
+ 		$sql = 'SELECT * FROM '.$this->tbname;
+ 		if($limit > 0){
+ 			$sql .= ' LIMIT '.$offset.','.$limit;
+ 		}
  		
  		try {
- 			$pdos = $this->oPdoConn->query('SELECT * FROM '.$this->tbname);
- 			$ret  = $pdos->fetchAll();
- 			 
+ 			$pdos = $this->oPdoConn->query($sql);
  		} catch (Exception $e) {
  			throw $e;
  		}
  		
- 		return $ret;
+ 		return $pdos;
  	}
  	
  	function tbname(){
  		return $this->tbname;
  	}
  	
- 	function search($keyval){
- 		$sql = sprintf('SELECT * FROM %s WHERE '.implode('=?,', array_keys($keyval)).'=?', $this->tbname());
+ 	function search($keyval,$offset=0, $limit=0){
+ 		$sql = sprintf('SELECT * FROM %s WHERE '.implode('=? AND ', array_keys($keyval)).'=?', $this->tbname());
+ 		if($limit > 0){
+ 			$sql .= ' LIMIT '.$offset.','.$limit;
+ 		}
  		try{
  			$pdos = $this->oPdoConn->prepare($sql);
- 			$pdos->execute(array_values($keyval));
- 			return $pdos->fetchAll();
+ 			$ret = $pdos->execute(array_values($keyval));
+ 			return false === $ret ? array() : $pdos;
  		}catch (Exception $e){
  			throw $e;
  		}
- 		return null;
+ 		return array();
  	}
 }
 

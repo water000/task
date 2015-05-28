@@ -1,4 +1,4 @@
-Yee.ajax = function(opt)
+window.ajax = function(opt)
 {
 	var defopt = {
 		type:"GET",dataType:"xml",url:"",data:null,
@@ -22,10 +22,11 @@ Yee.ajax = function(opt)
 	var pre_ok = function()
 	{
 		var d = opt.dataType=="xml"?xhr.responseXML:xhr.responseText;
-		if(null===d){ opt.error("error on parsing or sending");} else {if(Yee.debug(d, opt)) opt.success(d);}
+		if(null===d){ opt.error("error on parsing or sending");} else {opt.success(d);}
 	}
 	xhr.open(mt, opt.url, opt.async);
 	var hd = opt.headers || {};
+	hd["Accept"] = "text/"+opt.dataType;
 	if(mt == "POST")
 		hd["Content-Type"] = "application/x-www-form-urlencoded";
 	for(var k in hd)
@@ -62,7 +63,7 @@ Yee.ajax = function(opt)
 		pre_ok();
 	}
 }
-Yee.formSubmit = function(conf){
+window.formSubmit = function(conf){
 	 var conf = conf || {}, mx = conf.maxlen || {}, mi = conf.minlen || {}, j, k, len, bLoad = conf.bLoad === false ? false : true,
 	 	fd = conf.fldDesc || {}, req = conf.required || [], errorFunc = conf.errorFunc || $.error, submitName = conf.submitName || 'submit';
 	 for(k in mx){
@@ -70,19 +71,19 @@ Yee.formSubmit = function(conf){
 		 if(0 == len)
 			 continue;
 		 if(len > mx[k]){
-			 errorFunc("<u><b>"+fd[k]+"</b></u>µÄ×ÖÊý²»ÄÜ³¬¹ý"+mx[k]+"¸ö", this[k]);
+			 errorFunc("<u><b>"+fd[k]+"</b></u>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü³ï¿½ï¿½ï¿½"+mx[k]+"ï¿½ï¿½", this[k]);
 			 return false;
 		 }
 	 }
 	 for(k in mi){
 		 if(this[k].value.length < mi[k]){
-			 errorFunc("<u><b>"+fd[k]+"</b></u>µÄ×ÖÊý²»ÄÜÐ¡ÓÚ"+mi[k]+"¸ö", this[k]);
+			 errorFunc("<u><b>"+fd[k]+"</b></u>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½"+mi[k]+"ï¿½ï¿½", this[k]);
 			 return false;
 		 }
 	 }
 	 for(j=0,k=req.length; j<k; j++){
 		 if('' == this[req[j]].value){
-			 errorFunc("<u><b>"+fd[req[j]]+"</b></u>²»ÄÜÎª¿Õ", this[req[j]]);
+			 errorFunc("<u><b>"+fd[req[j]]+"</b></u>ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½", this[req[j]]);
 			 return false;
 		 }
 	 }
