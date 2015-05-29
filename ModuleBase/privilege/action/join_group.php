@@ -85,6 +85,7 @@ h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 .right label{width:150px;display:inline-block;float:left;padding:2px 0;}
 .right .allmod{padding:0 5px;}
 .right .mod{padding:0 3px;}
+.mod span{margin-right:10px;}
 .right .allmod p{color:#000;margin-top:10px;}
 
 table{margin:10px 0 0;}
