@@ -1,48 +1,16 @@
 <?php
-class CPDOStatement extends PDOStatement
+class CPDOStatement implements Iterator 
 {
 	private $oPdos=null;
 	private $oPdo = null;
+	
+	private $ptr  = 0;
+	private $cur = null;
 	
 	function __construct($oPdos, $oPdo)
 	{
 		$this->oPdos = $oPdos;
 		$this->oPdo = $oPdo;
-	}
-	
-	function bindColumn ( $column , &$param, $type=0 , $maxlen=0 , $driverdata=NULL)
-	{
-		return $this->oPdos->bindColumn($column, $param, $type, $maxlen, $driverdata);
-	}
-	
-	function bindParam ( $parameter , &$variable , $type=0 , $maxlen=0 , $driverdata=NULL)
-	{
-		return $this->oPdos->bindColumn($parameter, $variable, $type, $maxlen, $driverdata);
-	}
-	
-	function bindValue ( $parameter , $value , $data_type =0 )
-	{
-		return $this->oPdos->bindValue($parameter, $value, $data_type);
-	}
-	
-	function closeCursor ()
-	{
-		return $this->oPdos->closeCursor();
-	}
-	
-	function columnCount ()
-	{
-		return $this->oPdos->columnCount();
-	}
-	
-	function errorCode ()
-	{
-		return $this->oPdos->errorCode();
-	}
-	
-	function errorInfo ()
-	{
-		return $this->oPdos->errorInfo();
 	}
 	
 	function execute ($input_parameters=array())
@@ -74,58 +42,56 @@ class CPDOStatement extends PDOStatement
 		return $ret;
 	}
 	
-	function fetch ($fetch_style=PDO::FETCH_BOTH , $cursor_orientation=PDO::FETCH_ORI_NEXT , $cursor_offset=0 )
-	{
-		return $this->oPdos->fetch($fetch_style, $cursor_orientation, $cursor_offset);
+	function __call ( $name , $arguments ){
+		$num = count($arguments);
+		if($num < 1)
+			return $this->oPdos->$name();
+		else if($num < 2)
+			return $this->oPdos->$name($arguments[0]);
+		else if($num < 3)
+			return $this->oPdos->$name($arguments[0],$arguments[1]);
+		else if($num < 4)
+			return $this->oPdos->$name($arguments[0],$arguments[1],$arguments[2]);
+		else if($num < 5)
+			return $this->oPdos->$name($arguments[0],$arguments[1],$arguments[2],$arguments[3]);
+		else
+			return $this->oPdos->$name($arguments[0],$arguments[1],$arguments[2],$arguments[3], $arguments[4]);
+	}
+	static function __callStatic ( string $name , array $arguments ){
+		$num = count($arguments);
+		if($num < 1)
+			PDOStatement::$name();
+		if($num < 2)
+			PDOStatement::$name($arguments[0]);
+		else if($num < 3)
+			PDOStatement::$name($arguments[0],$arguments[1]);
+		else if($num < 4)
+			PDOStatement::$name($arguments[0],$arguments[1],$arguments[2]);
+		else if($num < 5)
+			PDOStatement::$name($arguments[0],$arguments[1],$arguments[2],$arguments[3]);
+		else
+			PDOStatement::$name($arguments[0],$arguments[1],$arguments[2],$arguments[3], $arguments[4]);
 	}
 	
-	function fetchAll ($fetch_style=PDO::FETCH_BOTH)
-	{
-		return $this->oPdos->fetchAll($fetch_style);
+	function current (){
+		return $this->cur;
+	}
+	function key (){
+		return $this->ptr;
+	}
+	function next (){
+		++$this->ptr;
+	}
+	function rewind ( ){
+		$this->ptr = 0;
+		$this->cur = null;
+	}
+	function valid ( ){
+		$this->cur = $this->oPdos->fetch();
+		return $this->cur === false ? false : true;
 	}
 	
 	
-	function fetchColumn ($column_number=0)
-	{
-		return $this->oPdos->fetchColumn($column_number);
-	}
-	
-	function fetchObject ($class_name , $ctor_args )
-	{
-		return $this->oPdos->fetchObject($class_name, $ctor_args);
-	}
-	
-	
-	function getAttribute ( $attribute )
-	{
-			return $this->oPdos->getAttribute($attribute);
-	}
-	
-	function getColumnMeta ( $column )
-	{
-			return $this->oPdos->getColumnMeta($column);
-	}
-	
-	function nextRowset ()
-	{
-		return $this->oPdos->nextRowset();
-	}
-	
-	function rowCount ()
-	{
-		return $this->oPdos->rowCount();
-	}
-	
-	function setAttribute ( $attribute , $value )
-	{
-		return $this->oPdos->setAttribute($attribute, $value);
-	}
-	
-	function setFetchMode ( $mode )
-	{
-		return $this->oPdos->setFetchMode($mode);
-	}
-		
 }
 
 ?>

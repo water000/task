@@ -19,7 +19,7 @@ try {
 	echo $mbs_appenv->lang('db_exception', 'common');
 	exit();
 }
-if(empty($priv_info)){
+if(empty($priv_info) || !($priv_info = $priv_info->fetchAll(PDO::FETCH_ASSOC))){
 	echo 'access denied(1)';
 	exit(0);
 }
@@ -46,7 +46,7 @@ $priv_group = CPrivGroupControl::decodePrivList($priv_list['priv_list']);
 body{overflow:hidden;}
 iframe{width:100%;border:0;}
 .actions{width:160px;padding:8px;position:fixed;left:10px;;bottom:50px;}
-.actions div.groups{width:140px;}
+.actions div.groups{width:140px;font-size:80%;}
 
 .actions a{color:rgb(0,100,200);}
 .actions a.mod{font-weight:bold;}

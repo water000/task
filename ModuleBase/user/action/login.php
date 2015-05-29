@@ -10,7 +10,7 @@ if(isset($_REQUEST['phone'])){
 	
 	if(isset($_REQUEST['need_testing_cookie'])){
 		if(!isset($_COOKIE['is_cookie_available'])){
-			$error[] = 'cookie is unavailable on your browser!re-configure and <a href="">retry</a>';
+			$error[] = 'cookie is unavailable on your browser!configured and <a href="">retry</a>';
 			define('NEED_TESTING_COOKIE', 1);
 		}else{
 			setcookie('is_cookie_available', '', time()-1000);
@@ -53,15 +53,15 @@ if(isset($_REQUEST['phone'])){
 		} catch (Exception $e) {
 			$error[] = $mbs_appenv->lang('db_exception', 'common');
 		}
-		if(empty($rs)){
+		if(empty($rs) || !($rs = $rs->fetchAll(PDO::FETCH_ASSOC))){
 			$error[] = $mbs_appenv->lang('invalid_phone');
-		}
-		else if(!CUserControl::checkPassword($_REQUEST['password'], $rs[0]['password'])){
-			$error[] = $mbs_appenv->lang('invalid_password');
 		}
 		else{
 			$rs = $rs[0];
-			if(!empty($rs['IMEI'])){
+			if(!CUserControl::checkPassword($_REQUEST['password'], $rs['password'])){
+				$error[] = $mbs_appenv->lang('invalid_password');
+			}
+			else if(!empty($rs['IMEI'])){
 				if(isset($_REQUEST['IMEI']) && isset($_REQUEST['IMSI']) 
 					&& $_REQUEST['IMEI'] == $rs['IMEI'] && $_REQUEST['IMSI'] == $rs['IMSI'])
 				{

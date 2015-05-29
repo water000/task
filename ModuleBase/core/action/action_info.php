@@ -71,6 +71,7 @@ $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0',
 .action table{margin-bottom:20px;overflow-x:scroll;}
 td{word-wrap:break-word;word-break:break-all;}
 .filter select, .filter span{float:right;margin-left:10px;}
+.basic_info th{width:90px;}
 .even{background-color:#eee;}
 </style>
 </head>
@@ -78,7 +79,7 @@ td{word-wrap:break-word;word-break:break-all;}
 <div class="warpper">
 	<div class=header></div>
 	<div class=content>
-		<h2 style="padding-bottom:30px;">Actions Info</h2>
+		<h2>Actions Info</h2>
 		<div class=filter>
 			<form action="<?php echo $mbs_appenv->item('cur_action_url')?>" method="get">
 				<select name=mod onchange="this.form.submit();">
@@ -126,7 +127,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 				<div class=desc><?php echo CStrTools::txt2html(CStrTools::cutstr($def[CModDef::G_DC], 45, $mbs_appenv->item('charset')))?></div>
 				<div class="action" style="display: none;">
 					<p class=table_title>Basic Info</p>
-					<table cellspacing=0>
+					<table cellspacing=0 class=basic_info>
 						<tr><th>URL</th><td><?php echo $mbs_appenv->toURL($all_actions[$i]['_name'], $all_actions[$i]['_mod'])?></td></tr>
 						<tr><th>Last Modify</th><td><?php echo 0==$fmtime ? '' : date('m-d H:i', $fmtime)?></td></tr>
 						<tr><th>Desc</th><td><?php echo CStrTools::txt2html($def[CModDef::G_DC])?></td></tr>
@@ -138,7 +139,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 							<?php foreach(array_keys($pageargs) as $pa){?><th><?php echo $mbs_appenv->lang($pa)?></th><?php }?>
 							<th width=40%><?php echo $mbs_appenv->lang(CModDef::G_DC)?></th>
 						</tr>
-							<?php $n=1; foreach($def[CModDef::P_ARGS] as $key => $args){?>
+							<?php $n=1; if(isset($def[CModDef::P_ARGS])){foreach($def[CModDef::P_ARGS] as $key => $args){?>
 							<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
 							<td><?php echo $key?></td>
 							<?php next($pageargs); foreach($pageargs as $pa=>$defval){ ?>
@@ -146,7 +147,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 							<?php } ?>
 							<td><?php echo CStrTools::txt2html($args[CModDef::G_DC])?></td>
 							</tr>
-							<?php } ?>
+							<?php }} ?>
 					</table>
 					<p class=table_title><?php echo $mbs_appenv->lang(CModDef::P_OUT)?></p>
 					<table><tr><td style="font-size: 13px;background-color:#fff9ea;">

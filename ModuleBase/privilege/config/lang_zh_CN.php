@@ -26,8 +26,10 @@ $lang_zh_CN = array(
 	'reg_time'      => '注册时间',
 	'joined_user'   => '已加入用户',
 	'join_ts'       => '加入时间',
-	'exit_user'     => '退出用户',
+	'exit_user'     => '移出用户',
 	'create_before_join' => '在加入用户前需要先<a href="'.$mbs_appenv->toURL('edit_group').'">创建权限组</a>',
+	'join_user'   => '加入用户',
+	'select_user' => '选择用户',
 );
 
 

@@ -57,6 +57,8 @@ $lang_zh_CN = array(
 	'no_data'                => '暂无数据',
 	'time'                   => '时间',
 	'operation_success'      => '操作成功',
+	'existed'                => '已存在',
+	'confirmed'              => '确认吗？操作完成后数据将无法恢复！',
 );
 
 

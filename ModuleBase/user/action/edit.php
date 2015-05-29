@@ -11,7 +11,13 @@ if(isset($_REQUEST['id'])){
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['id']);
 	if(isset($_REQUEST['name'])){
 		$user = array_intersect_key($_REQUEST, $user);
-		$ret = $user_ins->set($user);
+		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
+		if(empty($error)){
+			$ret = $user_ins->set($user);
+			if(empty($ret)){
+				$error[] = $mbs_appenv->lang('existed'. 'common').':'.$_REQUEST['phone'];
+			}
+		}
 	}else{
 		$user_spec = $user_ins->get();
 		if(empty($user_spec)){
@@ -21,11 +27,22 @@ if(isset($_REQUEST['id'])){
 		$user = array_intersect_key($user_spec, $user);
 	}
 }
-else if(isset($_REQUEST['name'])){
-	$user = array_intersect_key($_REQUEST, $user);
-	$user_ins = CUserControl::getInstance($mbs_appenv,
-			CDbPool::getInstance(), CMemcachedPool::getInstance());
-	$ret = $user_ins->add($user);
+else if(isset($_REQUEST['__timeline'])){
+	$new_user = array_intersect_key($_REQUEST, $user);
+	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
+	if(empty($error)){
+		$user_ins = CUserControl::getInstance($mbs_appenv,
+				CDbPool::getInstance(), CMemcachedPool::getInstance());
+		$ret = $user_ins->add($new_user);
+		if(empty($ret)){
+			$error[] = $mbs_appenv->lang('existed'. 'common').':'.$_REQUEST['phone'];
+			$user = $new_user;
+		}
+	}else{
+		$user = $new_user;
+	}
+}else{
+	$user = array_merge($user, array_intersect_key($_REQUEST, $user));
 }
 
 ?>
@@ -41,15 +58,17 @@ else if(isset($_REQUEST['name'])){
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="pure-g" style="margin-top: 20px;color:#777;">
     <div class="pure-u-1-2 align-center">
-	    <?php if(isset($ret)){ if(false === $ret){ ?>
-		<div class=error><p><?php echo $user_ins->error()?></p>
+	    <?php if(isset($_REQUEST['__timeline'])){ if(!empty($error)){ ?>
+		<div class=error><p><?php echo implode('<br/>', $error)?></p>
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 		</div>
 		<?php }else {?>
-		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?></div>
+		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?>
+			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
 		<?php }}?>
 		
     	<form name="_form" class="pure-form pure-form-aligned" method="post">
+    		<input type="hidden" name="__timeline" value="<?php echo time()?>" />
 		    <fieldset>
 		    	<legend style="font-size: 150%;"><?php echo $page_title?>
 		    		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang('back', 'common')?></a></legend>

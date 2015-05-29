@@ -29,7 +29,7 @@ class CPrivFilter extends CModTag{
 			$this->error = $mbs_appenv->lang('db_exception', 'common');
 			return false;
 		}
-		if(empty($priv_info)){
+		if(empty($priv_info) || !($priv_info = $priv_info->fetchAll(PDO::FETCH_ASSOC))){
 			$this->error = 'access denied';
 			return false;
 		}

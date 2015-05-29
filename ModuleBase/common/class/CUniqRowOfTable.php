@@ -177,7 +177,7 @@ class CUniqRowOfTable
  		try{
  			$pdos = $this->oPdoConn->prepare($sql);
  			$ret = $pdos->execute(array_values($keyval));
- 			return false === $ret ? array() : $pdos;
+ 			return false === $ret ? false : $pdos;
  		}catch (Exception $e){
  			throw $e;
  		}

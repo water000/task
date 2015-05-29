@@ -33,15 +33,15 @@ h1{text-align:center;margin-bottom:15px;letter-spacing:normal;}
 ._title{font-weight:bold; font-size:120%;text-align:center;}
 ._title .pure-u-1-4{border:1px solid #ddd;padding:5px 0;}
 .bg_gray{background-color:#eee;}
-#STATUS_BAR{width:20%;margin-left:78%;font-size:70%;padding:0.3%;background-color:green;color:white;text-align:center;letter-spacing:normal;}
-.pure-u-1-4{width:28%;margin:1% 0 1% 1%;word-break: break-word;}
+#STATUS_BAR{position:fixed;bottom:0;right:0;width:25%;font-size:80%;padding:0.3%;background-color:green;color:white;text-align:center;letter-spacing:normal;}
+#STATUS_BAR a{color:yellow;}
+.pure-u-1-4{width:27%;margin:1% 0 0 1%;word-break: break-word;}
 .pure-u-1-10{width:9%;}
 </style>
 </head>
 <body>
 <div id="IDD_WIN" class="pure-g">
     	<h1>API LOG</h1>
-    	<div id="STATUS_BAR"></div>
     	<div class="pure-g _title">
     		<div class="pure-u-1-4">INPUT</div>
     		<div class="pure-u-1-4">OUTPUT</div>
@@ -57,11 +57,12 @@ h1{text-align:center;margin-bottom:15px;letter-spacing:normal;}
     	</div>
     	<?php } ?>
 </div>
+<div id="STATUS_BAR"></div>
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('ajax.js')?>"></script>
 <script type="text/javascript">
 var g_num = <?php echo isset($k) ? $k : -1;?>, g_win=document.getElementById("IDD_WIN"), 
 		g_status_bar = document.getElementById("STATUS_BAR"), 
-		g_obefore = g_win.getElementsByTagName("div")[6]||null, g_timeline=<?php echo time()?>;
+		g_obefore = g_win.getElementsByTagName("div")[5]||null, g_timeline=<?php echo time()?>;
 var _draw = function(list){
 	var div, hr = document.createElement("hr");
 
@@ -80,7 +81,7 @@ var _draw = function(list){
 		g_obefore = div;
 	}
 }
-var g_req_count = 0, g_sec_interval = 10, g_def_msg = 'loading...('+g_sec_interval+' seconds)';
+var g_req_count = 0, g_sec_interval = 10, g_def_msg = 'waiting '+g_sec_interval+' seconds...';
 g_status_bar.innerHTML = g_def_msg;
 var g_thandle;
 var _start = function(){
@@ -94,8 +95,9 @@ var _start = function(){
 				if("SUCCESS" == _return.retcode && _return.data.length > 0){
 					_draw(_return.data);
 				}
-				g_status_bar.innerHTML += "&nbsp;[" + ++g_req_count 
-					+ "]&nbsp;&nbsp;<a href='javascript:;' onclick='_aclick(this)'>pause</a>";
+				g_status_bar.innerHTML = "[" + ++g_req_count 
+					+ "]&nbsp;"+g_status_bar.innerHTML+"(ret-num:"+(_return.data||[]).length
+					+")&nbsp;<a href='javascript:;' onclick='_aclick(this)'>pause</a>";
 			}
 		});
 		g_timeline += 10;

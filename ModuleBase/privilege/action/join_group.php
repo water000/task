@@ -10,7 +10,7 @@ if(empty($error)){
 		$pg = CPrivGroupControl::getInstance($mbs_appenv, 
 				CDbPool::getInstance(), CMemcachedPool::getInstance());
 		$pg_all = $pg->getDB()->listAll();
-		if(empty($pg_all)){
+		if(empty($pg_all) || !($pg_all = $pg_all->fetchAll(PDO::FETCH_ASSOC))){
 			echo $mbs_appenv->lang('create_before_join');
 			exit;
 		}
@@ -31,26 +31,7 @@ if(empty($error)){
 		$pu = CPrivUserControl::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['group_id']);
 		
-		if(isset($_REQUEST['user_id'])){
-			$uc = CUserControl::getInstance($mbs_appenv, 
-					CDbPool::getInstance(), CMemcachedPool::getInstance());
-			$search_rs = $search_kv = array();
-			foreach(array('user_id', 'phone', 'name') as $k){
-				if(isset($_REQUEST[$k]) && strlen($_REQUEST[$k]) != 0){
-					$search_kv[$k] = $_REQUEST[$k];
-				}
-			}
-			
-			if(!empty($search_kv)){
-				if(isset($search_kv['user_id'])){
-					$search_kv['id'] = $search_kv['user_id'];
-					unset($search_kv['user_id']);
-				}
-				
-				$search_rs = $uc->search($search_kv);
-			}
-		}
-		else if(isset($_REQUEST['del'])){
+		if(isset($_REQUEST['del'])){
 			foreach($_REQUEST['del'] as $uid){
 				$pu->setSecondKey($uid);
 				$pu->delNode();
@@ -129,52 +110,14 @@ fieldset span{margin-left:5px;}
 		</div>
 		<?php }?>
 		<div class=left>
-			<fieldset>
-				<legend><?php echo $mbs_appenv->lang('search_user')?></legend>
-				<div>
-					<form action="" method="post" >
-					<span>ID <input type="text" name="user_id" value="<?php echo isset($_REQUEST['user_id']) ? CStrTools::txt2html($_REQUEST['user_id']) : ''?>" /></span>
-					<span><?php echo $mbs_appenv->lang('phone')?> 
-						<input type="text" name="phone" value="<?php echo isset($_REQUEST['phone']) ? CStrTools::txt2html($_REQUEST['phone']) : ''?>" /></span>
-					<span><?php echo $mbs_appenv->lang('name')?> 
-						<input type="text" name="name" value="<?php echo isset($_REQUEST['name']) ? CStrTools::txt2html($_REQUEST['name']) : ''?>" /></span>
-					<input type="submit" class="submit_btn" value="search" />
-					</form>
-				</div>
-<?php 
-if(isset($_REQUEST['user_id']) && !empty($search_rs)){
-?>
-				<form action="" method="post">
-				<table cellspacing=0>
-					<tr><th>ID</th>
-						<th><?php echo $mbs_appenv->lang('name')?></th>
-						<th><?php echo $mbs_appenv->lang('phone')?></th>
-						<th><?php echo $mbs_appenv->lang('reg_time')?></th>
-					</tr>
-<?php $n = 1; foreach($search_rs as $row){?>
-					<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
-						<td><input style="width:30px;" type="checkbox" name="join[]" value="<?php echo $row['id']?>" /><?php echo $row['id']?></td>
-						<td><?php echo CStrTools::txt2html($row['name'])?></td>
-						<td><?php echo $row['phone']?></td>
-						<td><?php echo date('Y-m-d', $row['reg_ts'])?></td>
-					</tr>
-<?php }?>
-				</table>
-				<div style="margin-top:10px;"><input type="submit" style="width: 80px;" class="submit_btn" value="<?php echo $mbs_appenv->lang('join_group')?>" /></div>
-				</form>
-<?php
-}
-?>
-			</fieldset>
-			<fieldset style="border-color:rgb(9, 100, 18);margin-top:15px;">
-				<legend><?php echo $mbs_appenv->lang('joined_user')?></legend>
-				<form action="" method="post">
-				<table cellspacing=0 style="margin-top:0;">
-					<tr>
-						<th>USER ID</th>
-						<th><?php echo $mbs_appenv->lang('name')?></th>
-						<th><?php echo $mbs_appenv->lang('join_ts')?></th>
-					</tr>
+			<h3><?php echo $mbs_appenv->lang('joined_user')?></h3>
+			<form action="" method="post">
+			<table cellspacing=0 style="margin-bottom:10px;">
+				<tr>
+					<th>USER ID</th>
+					<th><?php echo $mbs_appenv->lang('name')?></th>
+					<th><?php echo $mbs_appenv->lang('join_ts')?></th>
+				</tr>
 <?php 
 if(!empty($pu_list)){
 	$n = 1; 
@@ -182,20 +125,59 @@ if(!empty($pu_list)){
 		$usctr->setPrimaryKey($row['user_id']); 
 		$usinfo = $usctr->get(); 
 ?>
-					<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
-						<td><input style="width:30px;" type="checkbox" name="del[]" value="<?php echo $row['user_id']?>" /><?php echo $row['user_id']?></td>
-						<td><?php echo CStrTools::txt2html($usinfo['name'])?></td>
-						<td><?php echo date('Y-m-d', $row['join_ts'])?></td>
-					</tr>
+				<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
+					<td><input style="width:30px;" type="checkbox" name="del[]" value="<?php echo $row['user_id']?>" /><?php echo $row['user_id']?></td>
+					<td><?php echo CStrTools::txt2html($usinfo['name'])?></td>
+					<td><?php echo date('Y-m-d', $row['join_ts'])?></td>
+				</tr>
 <?php }?>
-				</table>
-				<div style="margin-top:10px;"><input type="submit" style="width: 80px;" class="submit_btn" value="<?php echo $mbs_appenv->lang('exit_user')?>" /></div>
-				</form>
-<?php }?>
-			</fieldset>
+				<tr><td colspan=3 style="border:0;padding-top:10px;">
+					<input type="submit" style="width: 80px;" class="submit_btn" value="<?php echo $mbs_appenv->lang('exit_user')?>" /></td></tr>
+<?php }else{?>
+				<tr><td colspan=3><?php echo $mbs_appenv->lang('no_data', 'common')?></td></tr>
+<?php } ?>
+			</table>
+			</form>
+			
+			<h3 style="margin-top:30px;"><?php echo $mbs_appenv->lang('join_user')?>
+				&nbsp;&nbsp;<a href="javascript:window.open('<?=$mbs_appenv->toURL('list', 'user', array('popwin'=>1))?>', '_blank,_top', 'height=600,width=900,location=no', true);">
+				<?php echo $mbs_appenv->lang('select_user')?></a>
+			</h3>
+			<form action="" method="post">
+			<table cellspacing=0 style="margin-bottom:10px;" id="IDT_JOIN_LIST">
+				<tr>
+					<th>USER ID</th>
+					<th><?php echo $mbs_appenv->lang('name')?></th>
+					<th><?php echo $mbs_appenv->lang('delete', 'common')?></th>
+				</tr>
+				<tr><td colspan=2 style="border:0;padding-top:10px;"> <input type="submit" style="width: 80px;" class="submit_btn" value="<?php echo $mbs_appenv->lang('join_user')?>" /></td></tr>
+			</table>
+			</form>
+<script type="text/javascript">
+var g_join_list = document.getElementById("IDT_JOIN_LIST"), g_selected_user=[];
+function _del(oa){
+	delete g_selected_user[oa.previousSibling.value];
+	oa.parentNode.parentNode.parentNode.removeChild(oa.parentNode.parentNode);
+}
+window.cb_class_selected = function(selected_class, popwin){
+	if(selected_class.length > 0){
+		for(var i=0, j=selected_class.length/2; i<j; i++){
+			if("undefined" == typeof g_selected_user[selected_class[i*2]]){
+				var tr = g_join_list.insertRow(g_join_list.rows.length-1);
+				tr.insertCell().innerHTML = selected_class[i*2];
+				tr.insertCell().innerHTML = selected_class[i*2+1];
+				tr.insertCell().innerHTML = "<input type=hidden name='join[]' value='"+selected_class[i*2]
+					+"' /><a href='javascript:;' onclick='_del(this)'><?php echo $mbs_appenv->lang('delete', 'common')?></a>";
+				g_selected_user[selected_class[i*2]] = 1;
+			}
+		}
+		popwin.close();
+	}
+}
+</script>
 		</div>
 		<div class=right>
-			<div style="height: 20px"><select style="float: right;" onchange="location.href='<?php echo $mbs_appenv->item('cur_action_url')?>?group_id='+this.options[this.selectedIndex].value">
+			<div><select style="float: right;" onchange="location.href='<?php echo $mbs_appenv->item('cur_action_url')?>?group_id='+this.options[this.selectedIndex].value">
 				<?php foreach($pg_all as $row){?>
 				<option value="<?php echo $row['id']?>" <?php echo $row['id']==$_REQUEST['group_id']?' selected':''?>>
 					<?php echo CStrTools::txt2html($row['name'])?>
@@ -203,6 +185,7 @@ if(!empty($pu_list)){
 				<?php }?>
 				</select>
 			</div>
+			<div style="clear: both"></div>
 			<div class=group_info>
 			<p class=title><?php echo $mbs_appenv->lang('group_name')?></p>
 			<p><?php echo $pg_info['name']?></p>
