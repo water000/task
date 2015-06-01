@@ -9,6 +9,9 @@ class CInfoDef extends CModDef {
 				self::G_TL=>'用户信息',
 				self::G_DC=>'提供用户的基本信息，包括注册，登录，认证，修改信息等'
 			),
+			self::LD_FTR => array(
+				array('user', 'checkLogin', true)
+			),
 			self::TBDEF => array(
 				'user_info' => '(
 					id                   int unsigned auto_increment not null,

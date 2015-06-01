@@ -169,8 +169,8 @@ function _main($mbs_appenv){
 			}
 		});
 	
-			mbs_import('core', 'CLogAPI');
-			$mbs_appenv->setLogAPI(new CDBLogAPI(CDbPool::getInstance()->getDefaultConnection()));
+		mbs_import('core', 'CLogAPI');
+		$mbs_appenv->setLogAPI(new CDBLogAPI(CDbPool::getInstance()->getDefaultConnection()));
 	}
 	
 	if('install' == $action){
@@ -195,7 +195,7 @@ function _main($mbs_appenv){
 					mbs_import($ftr[1], $ftr[2]);
 					$obj = new $ftr[2]();
 					if(!$obj->oper(null)){
-						echo $obj->getError();
+						$mbs_appenv->echoex($obj->getError(), 'AC_FTR_ERROR');
 						exit(1);
 					}
 				}

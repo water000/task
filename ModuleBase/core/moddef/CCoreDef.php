@@ -32,6 +32,16 @@ class CCoreDef extends CModDef{
 						'mod' => array(self::PA_TYP=>'string', self::PA_REQ=>0, self::G_DC=>'可以查看指定模块'),
 						'otype' => array(self::PA_TYP=>'string', self::PA_REQ=>0, self::G_DC=>'查看指定输出类型的action，分为html,not_html(json,xml,...)'),
 					)
+				),
+				'dev_about' => array(
+					self::P_TLE => '开发相关',
+					self::G_DC  => '项目开发过程中的一些约定、规则和问题',
+					self::P_MGR => true
+				),
+				'api_log'   => array(
+					self::P_TLE => '接口访问日志',
+					self::G_DC  => '接口访问的日志，记录了输入、输出、、时间、以及其他相关信息',
+					self::P_MGR => true
 				)
 			),
 		 	self::TBDEF => array(

@@ -43,6 +43,7 @@ ul li{padding:5px 0;}
 	    		2.全局变量:$mbs_appenv, an instance of CAppEnvironment.php; <br/>
 	    		$mbs_cur_moddef, a current module-def instance of CModDef<br />
 	    		$mbs_cur_actiondef, action-def defined moddef <br />
+	    		3.由于app端使用cookie有问题，改成由app端在header中加入X-LOGIN-TOKEN, 然后在 common/config/default.php中做出相应处理
 	    	</li>
 	    	<li>
 	    		[模块安装]<br />
@@ -57,7 +58,8 @@ ul li{padding:5px 0;}
     <div class="pure-u-1-2" >
     	<h3>客户端</h3>
 	    <ul>
-	    	<li>登录完成后，服务端会产生cookie发送到客户端作为客户端登录凭证，每次请求接口的时候，需要将所有cookie再回传</li>
+	    	<li>*停用*登录完成后，服务端会产生cookie发送到客户端作为客户端登录凭证，每次请求接口的时候，需要将所有cookie再回传</li>
+	    	<li>登录完成后，系统返回token， 以后发起请求的时候，在http head中加入X-LOGIN-TOKEN: ****</li>
 	    	<li>如果需要非html的返回输出，在http头中加入Accept，例如Accept， Accept:text/json</li>
 	    	<li>需要在http头中加入当前客户端的版本，例如 Accept:text/json;version=1.0</li>
 	    	<li>返回值结构，['retcode':'SUCCESS/ERROR', 'error':'DESC', 'data':data]，
@@ -65,4 +67,5 @@ ul li{padding:5px 0;}
 	    </ul>
     </div>
 </div>
+<div style="clear:both"></div>
 </body></html>

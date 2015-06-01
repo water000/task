@@ -25,12 +25,13 @@ class CLogAPI{
 			'REQUEST_URI'    => '',
 			'REMOTE_ADDR'    => '',
 			'REQUEST_METHOD' => '',
+			'HTTP_X_LOGIN_TOKEN'  => '',
 		);
 		$this->elems = array(
 			'input'  => '[SERVER]'."\n".self::_format(array_intersect_key($_SERVER, $need))."\r\n"
 						.'[COOKIE]'."\n".self::_format($_COOKIE)."\r\n"
 						.'[POST]'."\n".self::_format($_POST),
-			'output' => var_export($output, true),
+			'output' => var_export($output, true)."\n[headers]\n".var_export(headers_list(), true),
 			'time'   => time(),
 			'other'  => $other,
 		);

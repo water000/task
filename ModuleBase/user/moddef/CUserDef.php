@@ -75,6 +75,7 @@ class CUserDef extends CModDef {
 				'edit' => array(
 					self::P_TLE => '编辑',
 					self::G_DC  => '编辑用户信息',
+					self::P_MGR => true,
 					self::P_ARGS => array(
 						'name'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2, 17'),
 						'password'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6, 17'),
@@ -88,14 +89,36 @@ class CUserDef extends CModDef {
 						'VPDN_pass'    => array(self::PA_REQ=>0, self::G_DC=>'VPDN密码', self::PA_RNG=>'6, 32'),
 					),
 				),
+				'list' => array(
+					self::P_TLE => '列表',
+					self::G_DC  => '用户的列表，也可以搜索用户(phone, name, email)，都是精确查询，不支持模糊查询',
+					self::P_MGR => true
+				),
+				'delete' => array(
+					self::P_TLE => '删除',
+					self::G_DC => '删除指定的用户，id前3的不删除',
+					self::P_MGR => true,
+					self::P_LNK => false,
+				),
 				'class' => array(
 					self::P_TLE => '分类',
-					self::G_DC  => '获取、编辑用户分类',
+					self::G_DC  => '获取、删除用户分类',
+					self::P_MGR => true,
 					self::P_ARGS => array(
 						'name'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2, 16'),
 						'code'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'编码', self::PA_RNG=>'2, 32'),
 					),
 				),
+				'class_edit' => array(
+					self::P_TLE => '分类编辑',
+					self::G_DC => '对分类进行批量编辑',
+					self::P_MGR => true,
+				),
+				'department' => array(
+					self::P_TLE => '部门',
+					self::G_DC => '添加、删除、部门，及获取列表',
+					self::P_MGR => true,
+				)
 			),
 		);
 	}

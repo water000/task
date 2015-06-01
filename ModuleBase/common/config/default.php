@@ -7,6 +7,10 @@
 //ini_set('session.save_path',    'tcp://127.0.0.1:11211');
 ini_set('session.use_only_cookies', 1);
 
+if(isset($_SERVER['HTTP_X_LOGIN_TOKEN']) && !empty($_SERVER['HTTP_X_LOGIN_TOKEN'])){ // only for app request
+	$_COOKIE[session_name()] = $_SERVER['HTTP_X_LOGIN_TOKEN'];
+}
+
 $default = array(
 	'table_prefix'         => 'mbs_',
 	'database'             => array(

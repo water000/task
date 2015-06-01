@@ -20,7 +20,7 @@ abstract class CModDef {
 	//an valid identifier([_a-zA-Z][_a-zA-Z0-9]*)
 	CONST G_NM = 'name';
 	CONST G_CS = 'class';
-	CONST G_TL = 'title'; // the page's title where displayed in <title></title>
+	CONST G_TL = 'title'; // the page's title in <title></title>
 	CONST G_DC = 'desc';
 	
 	CONST MOD  = 'module';
@@ -31,8 +31,9 @@ abstract class CModDef {
 	
 	CONST PAGES  = 'pages';  // the pages in the module.
 	CONST P_TLE  = 'p_title'; // the page's title where displayed in <title></title>
-	CONST P_MGR  = 'p_mgr'; // indicate wether the page is a managment page
+	CONST P_MGR  = 'p_mgr'; // indicate whether the page is a managment page
 	CONST P_OUT  = 'p_out'; // output something like json format to mobile app
+	CONST P_LNK  = 'p_link'; // the page whether be a hyper link singly
 	CONST P_ARGS = 'p_args'; // the page's arguments appeared in $_REQUEST, $args, $_FILES
 	CONST PA_TYP = 'pa_type';    // the arg's type what appears in gettype(). default is 'string'
 	CONST PA_REQ = 'pa_required';// the arg MUST be required in the page. default is 1
@@ -117,9 +118,26 @@ abstract class CModDef {
 	
 	function filterActions($condKey=CModDef::P_MGR){
 		$ret = array();
+		$num = func_num_args();
+		$args = func_get_args();
+		
+		if(0 == $num){
+			$num = 1;
+			$args = array(CModDef::P_MGR);
+		}
 		
 		foreach($this->desc[self::PAGES] as $ac => $def){
-			if(isset($def[$condKey]))
+			for($i=0; $i<$num; ++$i){
+				if(is_array($args[$i])){
+					if(!isset($def[key($args[$i])]) 
+						|| $def[key($args[$i])] == current($args[$i]))
+						break;
+				}else{
+					if(!isset($def[$args[$i]]))
+						break;
+				}
+			}
+			if($i == $num)
 				$ret[$ac] = $def[CModDef::P_TLE];
 		}
 		

@@ -2,7 +2,7 @@
 class CCommonDef extends CModDef{
 	protected function desc(){
 		return array(
-		    self::MOD => array(self::G_NM=>'common', self::M_CS=>'gbk', ),
+		    self::MOD => array(self::G_NM=>'common', self::G_CS=>'公共模块', self::M_CS=>'gbk', ),
 		    /*self::FTR => array(
 		    	self::G_NM => array(G_CS => '', G_DC => ''),
 		    ),*/

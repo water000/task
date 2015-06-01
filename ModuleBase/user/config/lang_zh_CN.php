@@ -36,6 +36,8 @@ $lang_zh_CN = array(
 	'search'            => '查询',
 	'add'               => '添加',
 	'edit'              => '编辑',
+		
+	'add_department'    => '添加部门',
 );
 
 ?>

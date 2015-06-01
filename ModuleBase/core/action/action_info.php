@@ -130,7 +130,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 					<table cellspacing=0 class=basic_info>
 						<tr><th>URL</th><td><?php echo $mbs_appenv->toURL($all_actions[$i]['_name'], $all_actions[$i]['_mod'])?></td></tr>
 						<tr><th>Last Modify</th><td><?php echo 0==$fmtime ? '' : date('m-d H:i', $fmtime)?></td></tr>
-						<tr><th>Desc</th><td><?php echo CStrTools::txt2html($def[CModDef::G_DC])?></td></tr>
+						<tr><th>Desc</th><td><?php echo isset($def[CModDef::G_DC]) ? CStrTools::txt2html($def[CModDef::G_DC]):''?></td></tr>
 						<?php if(isset($def[CModDef::P_MGR])){?><tr><th>admin</th><td>yes</td></tr><?php }?>
 					</table>
 					<p class=table_title><?php echo $mbs_appenv->lang(CModDef::P_ARGS)?></p>

@@ -12,7 +12,7 @@ if(isset($_REQUEST['timeline'])){
 	$ret->setFetchMode(PDO::FETCH_ASSOC);
 	foreach($ret as $row){
 		unset($row['id']);
-		$row['time'] = date('H:i:s');
+		$row['time'] = date('H:i:s', $row['time']);
 		$out[] = $row;
 	}
 	$mbs_appenv->echoex($out);
@@ -63,6 +63,9 @@ h1{text-align:center;margin-bottom:15px;letter-spacing:normal;}
 var g_num = <?php echo isset($k) ? $k : -1;?>, g_win=document.getElementById("IDD_WIN"), 
 		g_status_bar = document.getElementById("STATUS_BAR"), 
 		g_obefore = g_win.getElementsByTagName("div")[5]||null, g_timeline=<?php echo time()?>;
+var _txt2html = function(txt){
+	return txt.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;");
+}
 var _draw = function(list){
 	var div, hr = document.createElement("hr");
 
@@ -73,9 +76,9 @@ var _draw = function(list){
 		g_num++;
 		div = document.createElement("div");
 		div.className = "pure-g" + (1==g_num%2?" bg_gray":"");
-		div.innerHTML += '<div class="pure-u-1-4">'+list[i]["input"].replace(/\n/g, "<br/>")+'</div';
-		div.innerHTML += '<div class="pure-u-1-4">'+list[i]["output"].replace(/\n/g, "<br/>")+'</div';
-		div.innerHTML += '<div class="pure-u-1-4">'+list[i]["other"].replace(/\n/g, "<br/>")+'</div';
+		div.innerHTML += '<div class="pure-u-1-4">'+_txt2html(list[i]["input"])+'</div';
+		div.innerHTML += '<div class="pure-u-1-4">'+_txt2html(list[i]["output"])+'</div';
+		div.innerHTML += '<div class="pure-u-1-4">'+_txt2html(list[i]["other"])+'</div';
 		div.innerHTML += '<div class="pure-u-1-4 pure-u-1-10">'+list[i]["time"].replace(/\n/g, "<br/>")+'</div';
 		g_win.insertBefore(div, g_obefore);
 		g_obefore = div;

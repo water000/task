@@ -25,8 +25,6 @@ if(empty($priv_info) || !($priv_info = $priv_info->fetchAll(PDO::FETCH_ASSOC))){
 }
 $priv_info = $priv_info[0];
 
-
-
 $pg = CPrivGroupControl::getInstance($mbs_appenv, CDbPool::getInstance(), 
 	CMemcachedPool::getInstance(), $priv_info['priv_group_id']);
 $priv_list = $pg->get();
@@ -45,8 +43,8 @@ $priv_group = CPrivGroupControl::decodePrivList($priv_list['priv_list']);
 <style type="text/css">
 body{overflow:hidden;}
 iframe{width:100%;border:0;}
-.actions{width:160px;padding:8px;position:fixed;left:10px;;bottom:50px;}
-.actions div.groups{width:140px;font-size:80%;}
+.actions{width:160px;padding:8px;position:fixed;left:10px;;bottom:10px;}
+.actions div.groups{width:140px;font-size:80%;position:relative;}
 
 .actions a{color:rgb(0,100,200);}
 .actions a.mod{font-weight:bold;}
@@ -55,32 +53,47 @@ iframe{width:100%;border:0;}
 .actions div.group a{padding-left: 15px;}
 .actions .blur_a{background-color:#fff;}
 
+.change_win{width:15px;position:absolute;padding:0;}
 </style>
+<script type="text/javascript">
+function _change(oa){
+	if("&lt;" == oa.innerHTML){
+		oa.parentNode.getElementsByTagName("div")[0].style.display = "none";
+		oa.innerHTML = "&gt;";
+	}else{
+		oa.parentNode.getElementsByTagName("div")[0].style.display = "block";
+		oa.innerHTML = "&lt;";
+	}
+}
+</script>
 </head>
 <body>
 <iframe src=""></iframe>
 <div class=actions>
 	<div class="vertical-manu groups">
-	<p class=title><?php echo $mbs_appenv->lang('mgrlist')?></p>
-	<?php 
-	if(isset($priv_group[CPrivGroupControl::PRIV_TOPMOST])){
-		$list = $mbs_appenv->getModList();
-		foreach($list as $mod){ 
-			$moddef=mbs_moddef($mod);
-			if(empty($moddef)) continue;
-			$actions = $moddef->filterActions(CModDef::P_MGR);
-			if(empty($actions)) continue;
-	?>
-	<a href="#" class=mod>
-		<?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
-	</a><div class=group><?php foreach($actions as $ac => $title){?>
-		<a href="#" onclick="_to('<?php echo $mbs_appenv->toURL($ac, $mod)?>', this)"><?php echo $title?></a><?php }?></div>
-	<?php } }else{ foreach($priv_group as $mod => $actions){ $moddef=mbs_moddef($mod);if(empty($moddef)) continue; ?>
-	<a href="#" class=mod>
-		<?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
-	</a><div class=group><?php foreach($actions as $ac){?>
-		<a href="#" onclick="_to('<?php echo $mbs_appenv->toURL($ac, $mod)?>', this)"><?php echo $moddef->item(CModDef::PAGES, $ac, CModDef::P_TLE)?></a><?php }?></div>
-	<?php }} ?>
+		<a class=change_win href="#" onclick="_change(this);">&lt;</a>
+		<p class=title><?php echo $mbs_appenv->lang('mgrlist')?></p>
+			<div>
+			<?php 
+			if(isset($priv_group[CPrivGroupControl::PRIV_TOPMOST])){
+				$list = $mbs_appenv->getModList();
+				foreach($list as $mod){ 
+					$moddef=mbs_moddef($mod);
+					if(empty($moddef)) continue;
+					$actions = $moddef->filterActions(CModDef::P_MGR);
+					if(empty($actions)) continue;
+			?>
+			<a href="#" class=mod>
+				<?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
+			</a><div class=group><?php foreach($actions as $ac => $title){?>
+				<a href="#" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)"><?php echo $title?></a><?php }?></div>
+			<?php } }else{ foreach($priv_group as $mod => $actions){ $moddef=mbs_moddef($mod);if(empty($moddef)) continue; ?>
+			<a href="#" class=mod>
+				<?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
+			</a><div class=group><?php foreach($actions as $ac){?>
+				<a href="#" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)"><?php echo $moddef->item(CModDef::PAGES, $ac, CModDef::P_TLE)?></a><?php }?></div>
+			<?php }} ?>
+		</div>
 	</div>
 </div>
 <script type="text/javascript">
@@ -109,20 +122,27 @@ function _pull_mod(mod){
 	}
 }
 
-function _to(url, link, mod, ac){
+function _to(link, is_redirect){
+	var url = link.getAttribute("data");
+
+	is_redirect = 1 == arguments.length ? true : is_redirect;
+	
 	if(prev != null){
 		prev.className = '';
 	}
-	frame.src = url;
 	link.className = "cur";
 	prev = link;
+	
+	if(is_redirect)
+		frame.src = url;
+	
 }
 
 var frame = document.getElementsByTagName("iframe")[0], prev = null, visit_actions = [];
 var links = document.getElementsByTagName("a"), i, j=0, firstlink=null;
 for(i=0; i<links.length; i++){
 	if("mod" == links[i].className){
-		if(++j<3)
+		if(j++<3)
 			links[i].nextSibling.style.display = "block";
 		links[i].onclick = function(e){
 			if("none" == this.nextSibling.style.display){
@@ -149,9 +169,18 @@ frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
 				prev.className = "cur blur_a";
 		}
 		document.title = frame.contentWindow.document.title;
-	}
-	if(frame.contentWindow.document.location.href.indexOf('<?php echo $mbs_appenv->toURL('login', 'user')?>') > 0){
-		document.location = '<?php $mbs_appenv->toURL('login', 'user')?>';
+		
+		if(prev.getAttribute("data") != frame.contentWindow.document.location.pathname){
+			for(var i=0; i<links.length; i++){
+				if(links[i].getAttribute("data") == frame.contentWindow.document.location.pathname){
+					_to(links[i], false);
+					break;
+				}
+			}
+			if(i == links.length){
+				document.location = frame.contentWindow.document.location.href;
+			}
+		}
 	}
 }
 
