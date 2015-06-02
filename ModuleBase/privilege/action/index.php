@@ -43,35 +43,25 @@ $priv_group = CPrivGroupControl::decodePrivList($priv_list['priv_list']);
 <style type="text/css">
 body{overflow:hidden;}
 iframe{width:100%;border:0;}
-.actions{width:160px;padding:8px;position:fixed;left:10px;;bottom:10px;}
-.actions div.groups{width:140px;font-size:80%;position:relative;}
+.actions{width:160px;padding:8px;position:fixed;right:10px;;bottom:35px;}
+.actions div.groups{width:140px;font-size:12px;position:relative;}
 
 .actions a{color:rgb(0,100,200);}
-.actions a.mod{font-weight:bold;}
+.actions a.mod{font-weight:bold;border-top:1px solid #e1e1e1;}
 .actions a.mod span{margin-left:2px;color:#777;font-size:12px;float:right;}
 .actions div.group{display:none;}
 .actions div.group a{padding-left: 15px;}
 .actions .blur_a{background-color:#fff;}
 
-.change_win{width:15px;position:absolute;padding:0;}
+.change_win{width:15px;position:absolute;right:0;top:0;padding:0;}
+.vertical-menu p.title{border-bottom:0;}
 </style>
-<script type="text/javascript">
-function _change(oa){
-	if("&lt;" == oa.innerHTML){
-		oa.parentNode.getElementsByTagName("div")[0].style.display = "none";
-		oa.innerHTML = "&gt;";
-	}else{
-		oa.parentNode.getElementsByTagName("div")[0].style.display = "block";
-		oa.innerHTML = "&lt;";
-	}
-}
-</script>
 </head>
 <body>
 <iframe src=""></iframe>
 <div class=actions>
 	<div class="vertical-manu groups">
-		<a class=change_win href="#" onclick="_change(this);">&lt;</a>
+		<a class=change_win href="#" onclick="_change(this);">-</a>
 		<p class=title><?php echo $mbs_appenv->lang('mgrlist')?></p>
 			<div>
 			<?php 
@@ -97,7 +87,7 @@ function _change(oa){
 	</div>
 </div>
 <script type="text/javascript">
-var visit_mod_list = [];
+var visit_mod_list = [], g_max_mod_num = 3;
 
 function _push_mod(mod){
 	var i;
@@ -106,7 +96,7 @@ function _push_mod(mod){
 			return;
 		}
 	}
-	if(3 == visit_mod_list.length){
+	if(g_max_mod_num == visit_mod_list.length){
 		var m = visit_mod_list.shift();
 		m.style.display = "none";
 	}
@@ -119,6 +109,15 @@ function _pull_mod(mod){
 			visit_mod_list.splice(i, 1);
 			return;
 		}
+	}
+}
+function _change(oa){
+	if("-" == oa.innerHTML){
+		oa.parentNode.getElementsByTagName("div")[0].style.display = "none";
+		oa.innerHTML = "+";
+	}else{
+		oa.parentNode.getElementsByTagName("div")[0].style.display = "block";
+		oa.innerHTML = "-";
 	}
 }
 
@@ -140,10 +139,8 @@ function _to(link, is_redirect){
 
 var frame = document.getElementsByTagName("iframe")[0], prev = null, visit_actions = [];
 var links = document.getElementsByTagName("a"), i, j=0, firstlink=null;
-for(i=0; i<links.length; i++){
+for(var i=0, j=0; i<links.length; i++){
 	if("mod" == links[i].className){
-		if(j++<3)
-			links[i].nextSibling.style.display = "block";
 		links[i].onclick = function(e){
 			if("none" == this.nextSibling.style.display){
 				this.nextSibling.style.display = "block";
@@ -153,6 +150,11 @@ for(i=0; i<links.length; i++){
 				_pull_mod(this.nextSibling);
 			}
 		}
+		if(j++<g_max_mod_num){
+			links[i].nextSibling.style.display = "block";
+			_push_mod(links[i].nextSibling);
+		}
+			
 	}else{
 		if("group" == links[i].parentNode.className && null == firstlink){
 			firstlink = links[i];
@@ -160,6 +162,7 @@ for(i=0; i<links.length; i++){
 		}
 	}
 }
+
 
 frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-5)+"px";
 frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
@@ -180,6 +183,18 @@ frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
 			if(i == links.length){
 				document.location = frame.contentWindow.document.location.href;
 			}
+		}
+
+		document.onkeydown = frame.contentWindow.document.onkeydown = function(e){
+			e = e || this.parentWindow.event;
+			if(116 == (e.keyCode || e.which)){ // forriden F5 key in parent window
+				frame.contentWindow.location.reload();
+				e.returnValue = false;
+				e.cancelBubble = true;
+				e.keyCode = 0;
+				return false;
+			}
+			
 		}
 	}
 }

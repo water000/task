@@ -27,7 +27,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 	{
 		return $this->secondKey;
 	}
-	function setPageId($pid=0)
+	function setPageId($pid=1)
 	{
 		$this->pageId = $pid;
 	}
@@ -50,11 +50,10 @@ class CMultiRowOfTable extends CUniqRowOfTable
 			($this->pageId-1)*$this->numPerPage, $this->numPerPage);
 		try {
 			$pdos = $this->oPdoConn->query($sql);
-			$ret = $pdos->fetchAll($this->fetch_type);
 		} catch (Exception $e) {
 			throw $e;
 		}
-		return $ret;
+		return $pdos;
 	}
 	
 	function getAll(){
@@ -62,11 +61,10 @@ class CMultiRowOfTable extends CUniqRowOfTable
 				$this->tbname, $this->keyname, $this->primaryKey);
 		try {
 			$pdos = $this->oPdoConn->query($sql);
-			$ret = $pdos->fetchAll($this->fetch_type);
 		} catch (Exception $e) {
 			throw $e;
 		}
-		return $ret;
+		return $pdos;
 	}
 	
 	function addNode($param){	

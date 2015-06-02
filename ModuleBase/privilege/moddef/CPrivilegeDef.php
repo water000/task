@@ -19,6 +19,9 @@ class CPrivilegeDef extends CModDef {
 			self::LD_FTR => array(
 				array('user', 'checkLogin', true),
 			),
+			self::FTR => array(
+				'privFtr' => array(self::G_CS => 'CPrivFilter', self::G_DC => '对当前用户的访问权限进行判断和过滤'),
+			),
 			self::TBDEF => array(
 				'priv_group' => "(
 		  			id int unsigned not null auto_increment,

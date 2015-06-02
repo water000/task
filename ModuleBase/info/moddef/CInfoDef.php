@@ -6,8 +6,8 @@ class CInfoDef extends CModDef {
 			self::MOD => array(
 				self::G_NM=>'user',
 				self::M_CS=>'utf-8',
-				self::G_TL=>'用户信息',
-				self::G_DC=>'提供用户的基本信息，包括注册，登录，认证，修改信息等'
+				self::G_TL=>'消息快报',
+				self::G_DC=>'提供消息的编辑、下发、查询等'
 			),
 			self::LD_FTR => array(
 				array('user', 'checkLogin', true)
@@ -33,8 +33,8 @@ class CInfoDef extends CModDef {
 			
 			),
 			self::PAGES => array(
-				'list' => array(
-					self::P_TLE => '消息列表',
+				'push_list' => array(
+					self::P_TLE => '消息下发列表',
 					self::G_DC  => '返回当前用户未读的消息列表',
 					self::P_ARGS => array(
 						'type'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'消息类型, IMG/VDO/TXT中的一个'),
@@ -58,6 +58,21 @@ class CInfoDef extends CModDef {
 					),
 					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG"}',
 				),
+				'edit' => array(
+					self::P_TLE => '编辑消息',
+					self::G_DC => '添加、编辑、删除消息',
+					self::P_MGR => true,
+				),
+				'list' => array(
+					self::P_TLE => '消息列表',
+					self::G_DC => '仅限当前用户编辑过的消息列表',
+					self::P_MGR => true,
+				),
+				'push' => array(
+					self::P_TLE => '下发消息',
+					self::G_DC => '下发选中的消息，选择相应的接收用户进行下发',
+					self::P_MGR => true,
+				)
 			),
 		);
 	}

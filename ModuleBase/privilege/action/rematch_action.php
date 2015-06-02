@@ -53,6 +53,7 @@ foreach($all as $row){
 <head>
 <title><?php mbs_title()?></title>
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <style type="text/css">
 .content{background-color:#fff}
 .content p.title{padding:2px 0;margin-top:5px;color:green;}
@@ -66,8 +67,8 @@ p.table_title a:hover{text-decoration:underline;color:white;}
 </style>
 </head>
 <body>
+<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="warpper">
-	<div class=header></div>
 	<div class=content>
 		<div class=mg-content>
 			<?php if($modified){ ?>

@@ -31,7 +31,6 @@ $moddef = mbs_moddef($selected_mod);
 </style>
 </head>
 <body>
-<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="warpper">
 	<div class=content>
 		<div class="left vertical-manu" >

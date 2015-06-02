@@ -51,6 +51,23 @@ class CUserDef extends CModDef {
 					primary key (id),
 					unique key(name),
 					unique key(code)
+				)',
+				'user_department' => '(
+					id                   int unsigned auto_increment not null,
+					name                 varchar(16),
+					password             char(32),
+					edit_time            int unsigned,
+					primary key (id),
+					unique key(name)
+				)',
+				'user_department_member' => '(
+					id                   int unsigned auto_increment not null,
+					user_id              int unsigned,
+					dep_id               int unsigned,
+					join_time            int unsigned,
+					primary key (id),
+					unique key(user_id),
+					key(dep_id)
 				)'
 			),
 			self::PAGES => array(
@@ -116,9 +133,18 @@ class CUserDef extends CModDef {
 				),
 				'department' => array(
 					self::P_TLE => '部门',
-					self::G_DC => '添加、删除、部门，及获取列表',
+					self::G_DC => '添加、删除部门，及获取列表',
 					self::P_MGR => true,
-				)
+					self::P_ARGS => array(
+						'name'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2,16'),
+						'password' => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6,'),
+					)
+				),
+				'dep_edit' => array(
+					self::P_TLE => '部门编辑',
+					self::G_DC => '对部门进行批量编辑, 以及加入指定用户到当前部门',
+					self::P_MGR => true,
+				),
 			),
 		);
 	}

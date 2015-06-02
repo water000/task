@@ -11,6 +11,9 @@ if(isset($_REQUEST['id'])){
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['id']);
 	if(isset($_REQUEST['name'])){
 		$user = array_intersect_key($_REQUEST, $user);
+		if($user['password'] != '******'){
+			CUserControl::formatPassword($user['password']);
+		}
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 		if(empty($error)){
 			$ret = $user_ins->set($user);
@@ -25,6 +28,7 @@ if(isset($_REQUEST['id'])){
 			exit(0);
 		}
 		$user = array_intersect_key($user_spec, $user);
+		$user['password'] = '******';
 	}
 }
 else if(isset($_REQUEST['__timeline'])){
@@ -127,7 +131,7 @@ else if(isset($_REQUEST['__timeline'])){
 		            ?>
 		            <input id="class" name="class" type="text" style="color: #aaa;" value="<?php echo $class_value?>" disabled />
 		            <input type="hidden" name="class_id" value="<?php echo $user['class_id']?>" />
-		            <a href="javascript:window.open('<?=$mbs_appenv->toURL('class', '', array('popwin'=>1))?>', '_blank,_top', 'height=400,width=600,location=no', true);" 
+		            <a href="javascript:;" onclick="window.open('<?=$mbs_appenv->toURL('class', '', array('popwin'=>1))?>', '_blank,_top', 'height=400,width=600,location=no', true)"
 		            	style="vertical-align: bottom;margin-left:20px;">
 		            	<?php echo $mbs_appenv->lang('select_class')?>
 		            </a>

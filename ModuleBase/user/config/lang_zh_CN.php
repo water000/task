@@ -38,6 +38,9 @@ $lang_zh_CN = array(
 	'edit'              => '编辑',
 		
 	'add_department'    => '添加部门',
+	'dep_exists'        => '部门已存在',
+	'dep_member'        => '部门成员',
+	'join_time'         => '加入时间',
 );
 
 ?>

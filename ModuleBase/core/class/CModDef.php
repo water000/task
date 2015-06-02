@@ -459,7 +459,7 @@ abstract class CModDef {
  				if($opts[CModDef::PA_REQ]){
  					if('file' == strtolower($opts[self::PA_TYP]) && !isset($_FILES[$opts[self::PA_TYP]])){
  						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
- 								(isset($opts[self::G_DC]) ? $opts[self::G_DC].':' : '').$name);
+ 								$name.(isset($opts[self::G_DC]) ? '('.$opts[self::G_DC].')' : ''));
  						continue;
  					}
  					else if(!isset($_REQUEST[$name])){
@@ -507,7 +507,7 @@ abstract class CModDef {
 					
 					if($num < $s || ($e !=0 && $num > $e)){
 						$error[$name] = sprintf($error_desc['arg_length_invalid'],
-								$name, $num, $s.'-'.$e );
+								$name, $num, $s.'-'.(0==$e?'':$e) );
 						continue;
 					}
 				}

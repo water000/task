@@ -17,11 +17,11 @@ function __header(){
 	
 	return <<<EOT
 <div class="home-menu pure-menu pure-menu-horizontal">
-        <a class="pure-menu-heading" href="#">消息推送</a>
         <ul class="pure-menu-list">
         	<li class="pure-menu-item"><span style="color:white;">欢迎您，$welcome</span></li>
             <li class="pure-menu-item">$content</li>
         </ul>
+       <a class="pure-menu-heading" href="#">消息推送</a>
     </div>
 EOT;
 }
@@ -58,6 +58,7 @@ $lang_zh_CN = array(
 	'time'                   => '时间',
 	'operation_success'      => '操作成功',
 	'existed'                => '已存在',
+	'selected'               => '已选择',
 	'confirmed'              => '确认吗？操作完成后数据将无法恢复！',
 	'miss_args'              => '缺少参数',
 	'name'                   => '名称',

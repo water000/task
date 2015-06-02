@@ -2,7 +2,7 @@
 
 mbs_import('common', 'CMultiRowControl');
 
-class CPrivUserControl extends CMultiRowControl {
+class CUserDepMemberControl extends CMultiRowControl {
 	private static $instance = null;
 	
 	protected function __construct($db, $cache, $primarykey = null, $secondKey = null){
@@ -16,23 +16,23 @@ class CPrivUserControl extends CMultiRowControl {
 	 * @param CMemcachePool $mempool
 	 * @param string $primarykey
 	 */
-	static function getInstance($mbs_appenv, $dbpool, $mempool, $priv_group_id = null){
+	static function getInstance($mbs_appenv, $dbpool, $mempool, $primarykey = null){
 		if(empty(self::$instance)){
 			try {
 				$memconn = $mempool->getConnection();
-				self::$instance = new CPrivUserControl(
+				self::$instance = new CUserDepMemberControl(
 						new CMultiRowOfTable($dbpool->getDefaultConnection(),
-								mbs_tbname('priv_user'), 'priv_group_id', $priv_group_id, 'user_id'),
-						$memconn ? new CMultiRowOfCache($memconn, $priv_group_id, 'CPrivUserControl') : null
+								mbs_tbname('user_department_member'), 'dep_id', $primarykey, 'user_id'),
+						$memconn ? new CMultiRowOfCache($memconn, $primarykey, 'CUserDepMemberControl') : null
 				);
 			} catch (Exception $e) {
 				throw $e;
 			}
 		}
-		self::$instance->setPrimaryKey($priv_group_id);
+		self::$instance->setPrimaryKey($primarykey);
 		
 		return self::$instance;
 	}
-}
+} 
 
 ?>

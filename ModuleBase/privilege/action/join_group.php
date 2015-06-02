@@ -71,6 +71,7 @@ if(empty($error)){
 <head>
 <title><?php mbs_title()?></title>
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <style type="text/css">
 body, .warpper{background-color:#fff;}
 .content{background-color:#fff;}
@@ -97,8 +98,8 @@ fieldset span{margin-left:5px;}
 </style>
 </head>
 <body>
+<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="warpper">
-	<div class=header></div>
 	<div class=content>
 		<h1><?php echo $mbs_cur_actiondef[CModDef::P_TLE]?></h1>
 		<?php if(!empty($error)){ ?>
@@ -141,7 +142,7 @@ if(!empty($pu_list)){
 			</form>
 			
 			<h3 style="margin-top:30px;"><?php echo $mbs_appenv->lang('join_user')?>
-				&nbsp;&nbsp;<a href="javascript:window.open('<?=$mbs_appenv->toURL('list', 'user', array('popwin'=>1))?>', '_blank,_top', 'height=600,width=900,location=no', true);">
+				&nbsp;&nbsp;<a href="javascript:;" onclick="window.open('<?=$mbs_appenv->toURL('list', 'user')?>', '_blank,_top', 'height=600,width=900,location=no', true)">
 				<?php echo $mbs_appenv->lang('select_user')?></a>
 			</h3>
 			<form action="" method="post">

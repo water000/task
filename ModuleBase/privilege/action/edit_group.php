@@ -48,6 +48,7 @@ if(isset($_REQUEST['group_id'])){
 <head>
 <title><?php mbs_title()?></title>
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <style type="text/css">
 body, .warpper{background-color:#fff;}
 .content{background-color:#fff;}
@@ -68,8 +69,8 @@ h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 </style>
 </head>
 <body>
+<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="warpper">
-	<div class=header></div>
 	<div class=content>
 		<h1><?php echo $action_def[CModDef::P_TLE]?></h1>
 		<?php if(isset($_REQUEST['name'])){if(!empty($error)){ ?>
