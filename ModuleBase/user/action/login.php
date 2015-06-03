@@ -1,6 +1,7 @@
 <?php 
 
-define('REDIRECT_AFTER_LOGIN', isset($_REQUEST['redirect']) ? urldecode($_REQUEST['redirect']) : '/privilege/index');
+define('REDIRECT_AFTER_LOGIN', isset($_REQUEST['redirect']) 
+	? urldecode($_REQUEST['redirect']) : $mbs_appenv->toURL('index', 'privilege'));
 
 mbs_import('', 'CUserSession');
 

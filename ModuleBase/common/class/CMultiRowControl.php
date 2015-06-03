@@ -109,8 +109,8 @@ class CMultiRowControl extends CUniqRowControl
 	{
 		try
 		{
-			$param = $this->oDB->addNode($param);
-			if($this->oCache)
+			$ret = $this->oDB->addNode($param);
+			if($this->oCache && $ret !== false)
 			{
 				$ret = $this->oCache->get();
 				if($ret !== false)
@@ -129,7 +129,7 @@ class CMultiRowControl extends CUniqRowControl
 		{
 			throw $e;
 		}
-		return $param;
+		return $ret;
 	}
 	
 	function setNode($param)

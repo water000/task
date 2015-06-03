@@ -50,7 +50,6 @@ else if(isset($_REQUEST['__timeline'])){
 }
 
 ?>
-
 <!doctype html>
 <html>
 <head>

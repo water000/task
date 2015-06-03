@@ -68,7 +68,7 @@ $list = $dep_ins->getDB()->listAll();
 			    <?php $k=-1; foreach($list as $k=>$row){?>
 			        <tr <?php echo 1 == $k%2 ? 'class=pure-table-odd':'' ?>>
 			            <td><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /><?php echo $row['id']?></td>
-			            <td><?php echo $row['name']?></td>
+			            <td><a href="<?php echo $mbs_appenv->toURL('dep_edit', '', array('id[]'=>$row['id']))?>"><?php echo $row['name']?></a></td>
 			            <td><?php echo $row['password']?></td>
 			            <td><?php echo date('Y-m-d H:i', $row['edit_time'])?></td>
 			        </tr>
@@ -78,8 +78,9 @@ $list = $dep_ins->getDB()->listAll();
 			<?php if(-1 == $k){ echo '<p class=no-data>', $mbs_appenv->lang('no_data', 'common'), '</p>'; 
     		}else{ ?>
     		<div style="margin-top:10px;">
-				<button class="pure-button pure-button-primary" name="edit" type="submit"><?php echo $mbs_appenv->lang('edit')?></button>
-				<button class="button-error pure-button" name="delete" type="submit"><?php echo $mbs_appenv->lang('delete')?></button>
+				<button class="pure-button pure-button-primary" type="submit"><?php echo $mbs_appenv->lang('edit')?></button>
+				<button class="button-error pure-button" name="delete" type="submit" 
+				 onclick="return confirm('<?php echo $mbs_appenv->lang('confirmed')?>');" ><?php echo $mbs_appenv->lang('delete')?></button>
 			</div>
     		<?php }?>
 			

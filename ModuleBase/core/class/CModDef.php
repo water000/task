@@ -208,6 +208,8 @@ abstract class CModDef {
 				if(!self::isIdentifier($mod[self::G_NM]))
 					$error[] = sprintf('invalid identifier "%s" on "%s" in "%s"', 
 						$mod[self::G_NM], self::G_NM, self::MOD);
+				else if(self::$appenv->item('cur_mod') != $mod[self::G_NM])
+					$error[] = sprintf('submited "%s" missmatch "%s" in G_NM mod def', $mod[self::G_NM], self::$appenv->item('cur_mod'));
 				else $modname = $mod[self::G_NM];
 			}else $error[] = sprintf('"%s" not def in "%s"', self::G_NM, self::MOD);
 			
@@ -349,10 +351,10 @@ abstract class CModDef {
 					var_export($arr, true), self::LD_FTR);
 				continue;
 			}
-			if(is_dir($this->appenv->getDir($arr[0]))){
-				$moddef = mbs_moddef($mod);
+			if(is_dir(self::$appenv->getDir($arr[0]))){
+				$moddef = mbs_moddef($arr[0]);
 				$info = $moddef->item(self::FTR);
-				if(!is_null($info) && isset($info[$arr[1]]))
+				if(!empty($info) && isset($info[$arr[1]]))
 					;
 				else
 					$error[] = sprintf('filter "%s" not exists in mod "%s" on "%s" in "%s" def',
@@ -407,11 +409,13 @@ abstract class CModDef {
 		);
 
 		self::_mod($this->desc, $modname, $error, $warning);
-		foreach($this->desc as $key => $def){
-			if(isset($err_func[$key])){
-				//call_user_func(array('CModDef', $err_func[$key]),
-				//	$def, $modname, $error, $warning);
-				self::$err_func[$key]($def, $modname, $error, $warning);
+		if(empty($error)){
+			foreach($this->desc as $key => $def){
+				if(isset($err_func[$key])){
+					//call_user_func(array('CModDef', $err_func[$key]),
+					//	$def, $modname, $error, $warning);
+					self::$err_func[$key]($def, $modname, $error, $warning);
+				}
 			}
 		}
 		

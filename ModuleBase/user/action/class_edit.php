@@ -70,7 +70,7 @@ if(isset($_REQUEST['id'])){
 			    <tbody>
 			    <?php $k = -1; foreach($list as $k=>$row){?>
 			    	<input type="hidden" name="id[]" value="<?php echo $row['id']?>" />
-			        <tr <?php echo $k>0 && 0 == $k%2 ? 'class=pure-table-odd':'' ?>>
+			        <tr <?php echo 1 == $k%2 ? 'class=pure-table-odd':'' ?>>
 			            <td><input type="text" name="name[]" value="<?php echo $row['name']?>" /></td>
 			            <td><input type="text" name="code[]" value="<?php echo $row['code']?>" /></td>
 			        </tr>

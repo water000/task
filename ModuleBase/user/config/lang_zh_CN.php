@@ -39,8 +39,11 @@ $lang_zh_CN = array(
 		
 	'add_department'    => '添加部门',
 	'dep_exists'        => '部门已存在',
+	'member_exists'     => '成员已存在，或已加入其它部门',
 	'dep_member'        => '部门成员',
 	'join_time'         => '加入时间',
+	'confirmed'         => '确认删除此部门和部门下所有的成员吗？删除后，操作无法撤销',
+	'dep_login'         => '部门登录',
 );
 
 ?>

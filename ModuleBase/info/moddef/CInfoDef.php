@@ -4,7 +4,7 @@ class CInfoDef extends CModDef {
 	protected function desc() {
 		return array(
 			self::MOD => array(
-				self::G_NM=>'user',
+				self::G_NM=>'info',
 				self::M_CS=>'utf-8',
 				self::G_TL=>'消息快报',
 				self::G_DC=>'提供消息的编辑、下发、查询等'
@@ -13,24 +13,37 @@ class CInfoDef extends CModDef {
 				array('user', 'checkLogin', true)
 			),
 			self::TBDEF => array(
-				'user_info' => '(
-					id                   int unsigned auto_increment not null,
-				    name                 varchar(8),
-				    password             char(38),
-				    organization         varchar(32),
-				    phone                char(11),
-				    email                varchar(255),
-				    IMEI                 varchar(32),
-				    IMSI                 varchar(32),
-				    VPDN_name            varchar(32),
-				    VPDN_pass            varchar(32),
-				    class_id             int unsigned,
-				    reg_time             int unsigned,
-				    reg_ip               varchar(32),
-					primary key(id),
-					unique key(phone)
+				'info' => '(
+				   id                   int unsigned auto_increment not null,
+				   title                varchar(32) not null,
+				   abstract             varchar(255),
+				   attach_format        tinyint,
+				   attach_path          varchar(255),
+				   attach_name          varchar(32),
+				   create_time          int unsigned,
+				   secure_level         tinyint,
+				   creator_id           int unsigned,
+				   dep_id               int unsigned,
+				   primary key (id)
 				)',
-			
+				'info_push_event' => '(
+					id                   int unsigned auto_increment not null,
+				    pusher_uid           int unsigned,
+				    recv_uid             int unsigned,
+				    push_time            int unsigned,
+				    info_id              int unsigned,
+				    status               tinyint,
+				    request_time         int unsigned,
+				    primary key (id)
+				)',
+				'info_comment' => '(
+					id                   int unsigned auto_increment not null,
+				    info_id              int unsigned,
+				    comment_uid          int unsigned,
+				    comment_time         int unsigned,
+				    comment_content      text,
+				    primary key (id)
+				)'
 			),
 			self::PAGES => array(
 				'push_list' => array(
@@ -62,16 +75,30 @@ class CInfoDef extends CModDef {
 					self::P_TLE => '编辑消息',
 					self::G_DC => '添加、编辑、删除消息',
 					self::P_MGR => true,
+					self::LD_FTR => array(
+						array('user', 'checkDepLogin', true)
+					),
+					self::P_ARGS => array(
+						'title'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'标题', self::PA_RNG=>'6,33'),
+						'abstract'  => array(self::PA_EMP=>0, self::G_DC=>'概要', self::PA_RNG=>'6,255'),
+						'attachment' => array(self::PA_REQ=>1, self::PA_EMP=>0, self::PA_TYP=>'file', self::G_DC=>'附件'),
+					)
 				),
 				'list' => array(
 					self::P_TLE => '消息列表',
 					self::G_DC => '仅限当前用户编辑过的消息列表',
 					self::P_MGR => true,
+					self::LD_FTR => array(
+						array('user', 'checkDepLogin', true)
+					),
 				),
 				'push' => array(
 					self::P_TLE => '下发消息',
 					self::G_DC => '下发选中的消息，选择相应的接收用户进行下发',
 					self::P_MGR => true,
+					self::LD_FTR => array(
+						array('user', 'checkDepLogin', true)
+					),
 				)
 			),
 		);
