@@ -170,13 +170,29 @@ class CUniqRowOfTable
  	}
  	
  	function search($keyval,$offset=0, $limit=0){
- 		$sql = sprintf('SELECT * FROM %s WHERE '.implode('=? AND ', array_keys($keyval)).'=?', $this->tbname());
+ 		$sql = sprintf('SELECT * FROM %s WHERE 1', $this->tbname());
+ 		$values = array();
+ 		foreach ($keyval as $key => $val){
+ 			if(is_array($val)){
+ 				$sql .= sprintf(' AND %s>=? AND %s<?', $key, $key);
+ 				array_push($values, $val[0], $val[1]);
+ 			}
+ 			else{
+ 				if(is_string($val) && 
+ 					('%' == $val[0] || '%' == $val[strlen($val)-1])){
+ 					$sql .= sprintf(' AND %s LIKE ?', $key);
+ 				}else{
+ 					$sql .= sprintf(' AND %s = ?', $key);
+ 				}
+ 				$values[] = $val;
+ 			}
+ 		}
  		if($limit > 0){
  			$sql .= ' LIMIT '.$offset.','.$limit;
  		}
  		try{
  			$pdos = $this->oPdoConn->prepare($sql);
- 			$ret = $pdos->execute(array_values($keyval));
+ 			$ret = $pdos->execute($values);
  			return false === $ret ? false : $pdos;
  		}catch (Exception $e){
  			throw $e;

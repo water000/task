@@ -178,6 +178,22 @@ class CAppEnvironment{
 		return $list;
 	}
 	
+	function mkdirUpload($subdir=''){
+		$dest = dirname(__FILE__).'/upload/'.$this->item('cur_mod').'/'.$subdir.'/';
+		if(file_exists($dest)){
+			return $dest;
+		}
+		return mkdir($dest, '0755', true) ? $dest : false;
+	}
+	
+	function uploadURL($filename, $mod='', $host=''){
+		return $host.'/upload/'.(empty($mod)?$this->item('cur_mod'):$mod).'/'.$filename;
+	}
+	
+	function uploadPath($filename, $mod=''){
+		return dirname(__FILE__).'/upload/'.(empty($mod)?$this->item('cur_mod'):$mod).'/'.$filename;
+	}
+
 	function config($item, $mod='', $cfg='default'){
 		$mod = empty($mod) ? $this->env['cur_mod'] : $mod;
 		if(!isset($this->mod_cfg[$mod][$cfg])){
@@ -192,12 +208,12 @@ class CAppEnvironment{
 					trigger_error('no such config item defined: '.$cfg, E_USER_WARNING);
 				}
 			}else{
-				trigger_error('no such config file found: '.$mod.'.'.$cfg, E_USER_ERROR);
+				trigger_error('no such config file found: '.$mod.'.'.$cfg, E_USER_WARNING);
 			}
 		}
 		
 		if(is_string($item)){
-			return isset($this->mod_cfg[$mod][$cfg][$item]) ? $this->mod_cfg[$mod][$cfg][$item] : $item;
+			return isset($this->mod_cfg[$mod][$cfg][$item]) ? $this->mod_cfg[$mod][$cfg][$item] : false;
 		}
 		else if(is_array($item)){
 			$ret = '';
@@ -206,12 +222,21 @@ class CAppEnvironment{
 			}
 			return $ret;
 		}else{
-			return $item;
+			return false;
 		}
 	}
 	
 	function lang($item, $mod=''){
-		return $this->config($item, $mod, 'lang_'.$this->env['lang']);
+		$ret = $this->config($item, $mod, 'lang_'.$this->env['lang']);
+		if($ret === false){
+			if(empty($mod)){
+				$ret = $this->config($item, 'common', 'lang_'.$this->env['lang']);
+				$ret = $ret === false ? $item : $ret;
+			}else{
+				$ret = $item;
+			}
+		}
+		return $ret;
 	}
 	
 	static function _echo_as_xml($arr){

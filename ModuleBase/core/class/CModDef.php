@@ -281,7 +281,8 @@ abstract class CModDef {
 							$error[] = sprintf('need ARRAY, "%s" was given at arg "%s" on page "%s" in "%s" def', 
 								gettype($opt), $arg, $script, self::P_ARGS);
 						else {
-							if(isset($opt[self::PA_TYP]) && !settype($var, $opt[self::PA_TYP]))
+							if(isset($opt[self::PA_TYP]) && 'file' != strtolower($opt[self::PA_TYP]) 
+								&& !settype($var, $opt[self::PA_TYP]))
 								$error[] = sprintf('unsupported type "%s" on arg "%s" in page "%s" of "%s" def', 
 									$opt[self::PA_TYP], $arg, $script, self::P_ARGS);
 							if(isset($opt[self::PA_DEP]) && !isset($parg[$opt[self::PA_DEP]]))
@@ -461,14 +462,16 @@ abstract class CModDef {
  				}
 	 			
  				if($opts[CModDef::PA_REQ]){
- 					if('file' == strtolower($opts[self::PA_TYP]) && !isset($_FILES[$opts[self::PA_TYP]])){
- 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
- 								$name.(isset($opts[self::G_DC]) ? '('.$opts[self::G_DC].')' : ''));
- 						continue;
+ 					if('file' == strtolower($opts[self::PA_TYP])){
+ 						if(!isset($_FILES[$name])){
+	 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
+	 								(isset($opts[self::G_DC]) ? $opts[self::G_DC].'/-' : '').$name);
+	 						continue;
+ 						}
  					}
  					else if(!isset($_REQUEST[$name])){
  						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
- 								(isset($opts[self::G_DC]) ? $opts[self::G_DC].':' : '').$name);
+ 								(isset($opts[self::G_DC]) ? $opts[self::G_DC].'/' : '').$name);
  						continue;
  					}
  				}
@@ -511,7 +514,8 @@ abstract class CModDef {
 					
 					if($num < $s || ($e !=0 && $num > $e)){
 						$error[$name] = sprintf($error_desc['arg_length_invalid'],
-								$name, $num, $s.'-'.(0==$e?'':$e) );
+								(isset($opts[self::G_DC]) ? $opts[self::G_DC].'/' : '').$name, 
+								$num, $s.'-'.(0==$e?'':$e) );
 						continue;
 					}
 				}

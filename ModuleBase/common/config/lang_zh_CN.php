@@ -55,13 +55,15 @@ $lang_zh_CN = array(
 	'search'                 => '查询',
 	'back'                   => '返回',
 	'no_data'                => '暂无数据',
-	'time'                   => '时间',
 	'operation_success'      => '操作成功',
 	'existed'                => '已存在',
 	'selected'               => '已选择',
 	'confirmed'              => '确认吗？操作完成后数据将无法恢复！',
 	'miss_args'              => '缺少参数',
 	'name'                   => '名称',
+	'time'                   => '时间',
+	'content'                => '内容',
+	'all'                    => '所有',
 );
 
 

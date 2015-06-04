@@ -1,38 +1,67 @@
 <?php 
-$page_title = $mbs_appenv->lang(isset($_REQUEST['id']) ? 'edit_info' : 'add_info');
 
+$page_title = $mbs_appenv->lang(isset($_REQUEST['id']) ? 'edit_info' : 'add_info');
 $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 
+$req_info = null;
+if(isset($_REQUEST['id'])){
+	mbs_import('', 'CInfoControl');
+	$infoctr = CInfoControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['id']);
+	$info = $req_info = $infoctr->get();
+	if(empty($req_info)){
+		$mbs_appenv->echoex('invalid info id: '.$_REQUEST['id'], 'NO_SUCH_ID');
+		exit(0);
+	}
+}
+
 if(isset($_REQUEST['__timeline'])){
+	mbs_import('', 'CInfoControl');
+
 	$info = array_intersect_key($_REQUEST, $info);
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
-	$atype = CInfoControl::getAttchType($_FILES['attachment']['name']);
-	if(0 == $atype){
-		$error[] = $mbs_appenv->lang('unsupport_attach_type')
-		.'('.$_FILES['attachment']['name'].')';
+	if($_FILES['attachment']['size'] > 0){
+		$atype = CInfoControl::getAttachType($_FILES['attachment']['name']);
+		if(0 == $atype){
+			$error[] = $mbs_appenv->lang('unsupport_attach_type')
+			.'('.$_FILES['attachment']['name'].')';
+		}else{
+			$info['attach_format']         = $atype;
+			$info['attach_name']           = $_FILES['attachment']['name'];
+			$info['attach_path']           = CInfoControl::moveAttachment(
+					'attachment', $atype, $mbs_appenv);
+			if(false === $info['attach_path']){
+				$error[] = 'Move attachment error';
+			}
+		}
 	}
 	
 	if(empty($error)){
-		mbs_import('', 'CInfoControl');
-		mbs_import('user', 'CUserDepSession', 'CUserSession');
-		
-		$udepsess = new CUserDepSession();
-		$usess = new CUserSession();
-		
-		$info['attach_format'] = $atype;
-		$info['attach_name']   = $_FILES['attachment']['name'];
-		$info['attach_path']   = CInfoControl::moveAttachment($_FILES['attachment']['tmp_name']);
-		$info['creator_id']    = $usess->get()[0];
-		$info['dep_id']        = $udepsess->get()[0];
-		$info['create_time']   = time();
-		
-		$infoctr = CInfoControl::getInstance($mbs_appenv, 
-				CDbPool::getInstance(), CMemcachedPool::getInstance());
-		$infoctr->add($info);
-		
+		if(isset($_REQUEST['id'])){
+			$ret = $infoctr->set($info);
+			if($ret !== false && $_FILES['attachment']['size']>0
+				&& !empty($req_info['attach_name'])){
+				unlink($mbs_appenv->uploadPath($req_info['attach_path']));
+			}
+		}else{
+			mbs_import('user', 'CUserDepSession', 'CUserSession');
+			
+			$udepsess = new CUserDepSession();
+			$usess = new CUserSession();
+			
+			list($info['creator_id'], )    = $usess->get();
+			list($info['dep_id'], )        = $udepsess->get();
+			$info['create_time']           = time();
+			
+			$infoctr = CInfoControl::getInstance($mbs_appenv,
+					CDbPool::getInstance(), CMemcachedPool::getInstance());
+			$ret = $infoctr->add($info);
+			$info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
+		}
+		if(empty($ret)){
+			$error[] = $mbs_appenv->lang('db_exception', 'common').'('.$infoctr->error().')';
+		}
 	}
-	
-	
 }
 
 ?>
@@ -56,7 +85,7 @@ if(isset($_REQUEST['__timeline'])){
 			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
 		<?php }}?>
 		
-    	<form name="_form" class="pure-form pure-form-stacked" method="post">
+    	<form name="_form" class="pure-form pure-form-stacked" enctype="multipart/form-data" method="post">
     		<input type="hidden" name="__timeline" value="<?php echo time()?>" />
 		    <fieldset>
 		    	<legend style="font-size: 150%;"><?php echo $page_title?>
@@ -66,13 +95,12 @@ if(isset($_REQUEST['__timeline'])){
 		            <input id="title" class="pure-input-1-2" name="title" type="text" value="<?php echo $info['title']?>" required />
 		            <br/>
 		            <label for="abstract"><?php echo $mbs_appenv->lang('abstract')?></label>
-		            <textarea id="abstract" class="pure-input-1-2" name="abstract" type="text" value="<?php echo $info['abstract']?>" >
-		            	<?php echo CStrTools::txt2html($info['abstract'])?>
-		            </textarea>
+		            <textarea id="abstract" class="pure-input-1-2" style="height: 100px;"
+		            	name="abstract"><?php echo CStrTools::txt2html($info['abstract'])?></textarea>
 		            <br/>
 		            <label for="attachment"><?php echo $mbs_appenv->lang('attachment')?></label>
 		            <?php echo isset($info['attach_name']) ? $info['attach_name'] : ''?>
-		            <input id="attachment" name="attachment" type="file"  required />
+		            <input id="attachment" name="attachment" type="file" />
 		       	 	<br/>
 		            <button type="submit" class="pure-button pure-button-primary"><?php echo $page_title?></button>
 		    </fieldset>

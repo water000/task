@@ -24,7 +24,8 @@ class CInfoDef extends CModDef {
 				   secure_level         tinyint,
 				   creator_id           int unsigned,
 				   dep_id               int unsigned,
-				   primary key (id)
+				   primary key (id),
+				   key(creator_id)
 				)',
 				'info_push_event' => '(
 					id                   int unsigned auto_increment not null,
@@ -81,7 +82,7 @@ class CInfoDef extends CModDef {
 					self::P_ARGS => array(
 						'title'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'标题', self::PA_RNG=>'6,33'),
 						'abstract'  => array(self::PA_EMP=>0, self::G_DC=>'概要', self::PA_RNG=>'6,255'),
-						'attachment' => array(self::PA_REQ=>1, self::PA_EMP=>0, self::PA_TYP=>'file', self::G_DC=>'附件'),
+						'attachment' => array(self::PA_EMP=>0, self::PA_TYP=>'file', self::G_DC=>'附件'),
 					)
 				),
 				'list' => array(
