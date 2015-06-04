@@ -99,9 +99,11 @@ if(isset($_REQUEST['__timeline'])){
 		            	name="abstract"><?php echo CStrTools::txt2html($info['abstract'])?></textarea>
 		            <br/>
 		            <label for="attachment"><?php echo $mbs_appenv->lang('attachment')?></label>
-		            <?php echo isset($info['attach_name']) ? $info['attach_name'] : ''?>
-		            <input id="attachment" name="attachment" type="file" />
-		       	 	<br/>
+		            <input id="attachment" name="attachment" type="file" style="display:inline-block;" />
+		            <?php if(isset($info['attach_name'])){ ?>
+		            <img src="<?php echo $mbs_appenv->uploadURL($info['attach_path']).CInfoControl::MIN_ATTACH_SFX?>" /><?php echo $info['attach_name']?>
+		            <?php } ?>
+		       	 	<br/><br/><br/>
 		            <button type="submit" class="pure-button pure-button-primary"><?php echo $page_title?></button>
 		    </fieldset>
 		</form>
