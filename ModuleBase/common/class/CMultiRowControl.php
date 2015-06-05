@@ -91,11 +91,11 @@ class CMultiRowControl extends CUniqRowControl
 		return $this->arrBuf[$this->bufkey];
 	}
 	
-	function destroy()
+	function destroy($condtions=array())
 	{
 		try
 		{
-			$ret = parent::destroy();
+			$ret = parent::destroy($condtions);
 		}
 		catch(Exception $e)
 		{

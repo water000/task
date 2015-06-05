@@ -132,13 +132,22 @@ class CUniqRowOfTable
 		return $ret;
 	}
 	
- 	function del(){
+ 	function del($condtions=array()){
  		$ret = null;
  		$sql = sprintf('DELETE FROM %s WHERE %s=%d', 
  			$this->tbname, $this->keyname, $this->primaryKey);
+ 		
+ 		if(!empty($condtions)){
+ 			$sql .= ' AND '.implode('=? AND ', array_keys($condtions)).'=?';
+ 		}
  			
  		try {
-			$ret = $this->oPdoConn->exec($sql);
+ 			if(empty($condtions)){
+				$ret = $this->oPdoConn->exec($sql);
+ 			}else{
+ 				$pdos = $this->oPdoConn->prepare($sql);
+ 				$ret = $pdos->execute(array_values($condtions));
+ 			}
 			if($ret === false){
 				$this->_seterror($this->oPdoConn);
 			}
@@ -169,7 +178,14 @@ class CUniqRowOfTable
  		return $this->tbname;
  	}
  	
- 	function search($keyval,$offset=0, $limit=0){
+ 	/**
+ 	 * 
+ 	 * @param array $keyval
+ 	 * @param array $opts array('offset'=>0, 'limit'=>0, 'order'=>'id desc')
+ 	 * @throws Exception
+ 	 * @return Ambigous <boolean, unknown>|multitype:
+ 	 */
+ 	function search($keyval, $opts = array()){
  		$sql = sprintf('SELECT * FROM %s WHERE 1', $this->tbname());
  		$values = array();
  		foreach ($keyval as $key => $val){
@@ -187,9 +203,15 @@ class CUniqRowOfTable
  				$values[] = $val;
  			}
  		}
- 		if($limit > 0){
- 			$sql .= ' LIMIT '.$offset.','.$limit;
+ 		
+ 		if(isset($opts['order'])){
+ 			$sql .= ' ORDER BY '.$opts['order'];
  		}
+ 		
+ 		if(isset($opts['offset']) && isset($opts['limit'])){
+ 			$sql .= ' LIMIT '.$opts['offset'].','.$opts['limit'];
+ 		}
+ 		
  		try{
  			$pdos = $this->oPdoConn->prepare($sql);
  			$ret = $pdos->execute($values);

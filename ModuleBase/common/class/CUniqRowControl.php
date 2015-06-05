@@ -172,13 +172,13 @@ class CUniqRowControl
 		return $ret;
 	}
 	
-	function destroy()
+	function destroy($condtions=array())
 	{
 		try
 		{
 			if($this->oCache)
 				$this->oCache->destroy();
-			$ret = $this->oDB->del();
+			$ret = $this->oDB->del($condtions);
 		}
 		catch(Exception $e)
 		{

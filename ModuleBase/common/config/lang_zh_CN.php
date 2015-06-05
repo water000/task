@@ -64,6 +64,7 @@ $lang_zh_CN = array(
 	'time'                   => '时间',
 	'content'                => '内容',
 	'all'                    => '所有',
+	'status'                 => '状态',
 );
 
 

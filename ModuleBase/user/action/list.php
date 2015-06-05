@@ -16,12 +16,17 @@ foreach($req_search_keys as $k=> &$v){
 	}
 }
 if(count($req_search_keys) > 0){
-	$search_keys = array_merge($search_keys, $req_search_keys);
-	$list = $user_ins->getDB()->search($req_search_keys, ROWS_OFFSET, ROWS_PER_PAGE);
-	
+	$opts = array(
+		'offset' => ROWS_OFFSET,
+		'limit'  => ROWS_PER_PAGE,
+		'order'  => ' id desc',
+	);
+	$list = $user_ins->getDB()->search($req_search_keys, $opts);
 }else{
 	$list = $user_ins->getDB()->listAll(ROWS_OFFSET, ROWS_PER_PAGE);
 }
+
+$search_keys = array_merge($search_keys, $req_search_keys);
 
 ?>
 
@@ -100,8 +105,6 @@ if(count($req_search_keys) > 0){
 				<button class="button-error pure-button" type="submit" onclick="return confirm('<?php echo $mbs_appenv->lang('confirmed', 'common')?>');"><?php echo $mbs_appenv->lang('delete')?></button>
 			</div>
 		</form>
-		
-		
     </div>
 </div>
 <div class=footer></div>

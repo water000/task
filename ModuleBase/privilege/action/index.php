@@ -153,6 +153,8 @@ for(var i=0, j=0; i<links.length; i++){
 		if(j++<g_max_mod_num){
 			links[i].nextSibling.style.display = "block";
 			_push_mod(links[i].nextSibling);
+		}else{
+			links[i].nextSibling.style.display = "none";
 		}
 			
 	}else{

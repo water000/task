@@ -12,14 +12,15 @@ class CInfoDef extends CModDef {
 			self::LD_FTR => array(
 				array('user', 'checkLogin', true)
 			),
+			self::DEPEXT => array('gd'),
 			self::TBDEF => array(
 				'info' => '(
 				   id                   int unsigned auto_increment not null,
 				   title                varchar(32) not null,
 				   abstract             varchar(255),
-				   attach_format        tinyint,
-				   attach_path          varchar(255),
-				   attach_name          varchar(32),
+				   attachment_format    tinyint,
+				   attachment_path      varchar(255),
+				   attachment_name      varchar(32),
 				   create_time          int unsigned,
 				   secure_level         tinyint,
 				   creator_id           int unsigned,
@@ -35,7 +36,10 @@ class CInfoDef extends CModDef {
 				    info_id              int unsigned,
 				    status               tinyint,
 				    request_time         int unsigned,
-				    primary key (id)
+				    primary key (id),
+					key(pusher_uid),
+					key(recv_uid),
+					unique key(pusher_uid, recv_uid, info_id)
 				)',
 				'info_comment' => '(
 					id                   int unsigned auto_increment not null,
@@ -47,8 +51,8 @@ class CInfoDef extends CModDef {
 				)'
 			),
 			self::PAGES => array(
-				'push_list' => array(
-					self::P_TLE => '消息下发列表',
+				'recv_list' => array(
+					self::P_TLE => '接收列表',
 					self::G_DC  => '返回当前用户未读的消息列表',
 					self::P_ARGS => array(
 						'type'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'消息类型, IMG/VDO/TXT中的一个'),
@@ -100,7 +104,15 @@ class CInfoDef extends CModDef {
 					self::LD_FTR => array(
 						array('user', 'checkDepLogin', true)
 					),
-				)
+				),
+				'push_list' => array(
+					self::P_TLE => '下发列表',
+					self::G_DC => '当前用户下发的消息列表',
+					self::P_MGR => true,
+					self::LD_FTR => array(
+						array('user', 'checkDepLogin', true)
+					),
+				),
 			),
 		);
 	}

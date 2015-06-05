@@ -3,11 +3,33 @@
 $page_title = $mbs_appenv->lang(isset($_REQUEST['id']) ? 'edit_info' : 'add_info');
 $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 
+if(isset($_REQUEST['delete']) && isset($_REQUEST['id'])){
+	mbs_import('user', 'CUserSession');
+	$usess = new CUserSession();
+	list($sess_uid) = $usess->get();
+	
+	mbs_import('', 'CInfoPushControl', 'CInfoControl');
+	$infoctr = CInfoControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance());
+	$info_push_ctr = CInfoPushControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance());
+	$info_push_ctr->setPrimaryKey($sess_uid);
+
+	foreach($_REQUEST['id'] as $info_id){
+		$infoctr->setPrimaryKey($info_id);
+		$infoctr->destroy(array('creator_id'=>$sess_uid));
+		$info_push_ctr->destroy(array('info_id'=>$info_id));
+	}
+	$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', $mbs_appenv->toURL('list'));
+	exit(0);
+}
+
 $req_info = null;
 if(isset($_REQUEST['id'])){
 	mbs_import('', 'CInfoControl');
 	$infoctr = CInfoControl::getInstance($mbs_appenv,
-			CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['id']);
+			CDbPool::getInstance(), CMemcachedPool::getInstance());
+	$infoctr->setPrimaryKey($_REQUEST['id']);
 	$info = $req_info = $infoctr->get();
 	if(empty($req_info)){
 		$mbs_appenv->echoex('invalid info id: '.$_REQUEST['id'], 'NO_SUCH_ID');
@@ -23,14 +45,14 @@ if(isset($_REQUEST['__timeline'])){
 	if($_FILES['attachment']['size'] > 0){
 		$atype = CInfoControl::getAttachType($_FILES['attachment']['name']);
 		if(0 == $atype){
-			$error[] = $mbs_appenv->lang('unsupport_attach_type')
+			$error[] = $mbs_appenv->lang('unsupport_attachment_type')
 			.'('.$_FILES['attachment']['name'].')';
 		}else{
-			$info['attach_format']         = $atype;
-			$info['attach_name']           = $_FILES['attachment']['name'];
-			$info['attach_path']           = CInfoControl::moveAttachment(
+			$info['attachment_format']         = $atype;
+			$info['attachment_name']           = $_FILES['attachment']['name'];
+			$info['attachment_path']           = CInfoControl::moveAttachment(
 					'attachment', $atype, $mbs_appenv);
-			if(false === $info['attach_path']){
+			if(false === $info['attachment_path']){
 				$error[] = 'Move attachment error';
 			}
 		}
@@ -40,8 +62,8 @@ if(isset($_REQUEST['__timeline'])){
 		if(isset($_REQUEST['id'])){
 			$ret = $infoctr->set($info);
 			if($ret !== false && $_FILES['attachment']['size']>0
-				&& !empty($req_info['attach_name'])){
-				unlink($mbs_appenv->uploadPath($req_info['attach_path']));
+				&& !empty($req_info['attachment_name'])){
+				unlink($mbs_appenv->uploadPath($req_info['attachment_path']));
 			}
 		}else{
 			mbs_import('user', 'CUserDepSession', 'CUserSession');
@@ -71,6 +93,10 @@ if(isset($_REQUEST['__timeline'])){
 <title><?php mbs_title($page_title)?></title>
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<style type="text/css">
+.popimg{position:fixed;top:10%;left:10%;height:85%;display:none;overflow:scroll;}
+.popimg img{vertical-align:center;}
+</style>
 </head>
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
@@ -99,9 +125,11 @@ if(isset($_REQUEST['__timeline'])){
 		            	name="abstract"><?php echo CStrTools::txt2html($info['abstract'])?></textarea>
 		            <br/>
 		            <label for="attachment"><?php echo $mbs_appenv->lang('attachment')?></label>
-		            <input id="attachment" name="attachment" type="file" style="display:inline-block;" />
-		            <?php if(isset($info['attach_name'])){ ?>
-		            <img src="<?php echo $mbs_appenv->uploadURL($info['attach_path']).CInfoControl::MIN_ATTACH_SFX?>" /><?php echo $info['attach_name']?>
+		            <input id="attachment" name="attachment" type="file" />
+		            <?php if(isset($info['attachment_name'])){ ?>
+		            <img src="<?php echo $mbs_appenv->uploadURL($info['attachment_path']).CInfoControl::MIN_ATTACH_SFX?>" 
+		            	__to_url="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" onclick="_img_click(this)"
+		            	title="<?php echo $info['attachment_name']?>" alt="<?php echo $info['attachment_name']?>" />
 		            <?php } ?>
 		       	 	<br/><br/><br/>
 		            <button type="submit" class="pure-button pure-button-primary"><?php echo $page_title?></button>
@@ -109,6 +137,18 @@ if(isset($_REQUEST['__timeline'])){
 		</form>
     </div>
 </div>
+<div class="popimg" id="IDD_POPIMG"><img alt="" src="" /></div>
+<script type="text/javascript">
+var g_popimg = document.getElementById("IDD_POPIMG");
+function _img_click(img){
+	var to = img.getAttribute("__to_url");
+	g_popimg.style.display = "block";
+	g_popimg.childNodes[0].src = to;
+}
+g_popimg.onclick = function(e){
+	g_popimg.style.display = "none";
+}
+</script>
 <div class=footer></div>
 </body>
 </html>
