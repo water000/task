@@ -116,30 +116,109 @@ class CInfoControl extends CUniqRowControl {
 			trigger_error('mkdirUpload error: '.$subdir, E_USER_WARNING);
 			return false;
 		}
-	
-		$new_width = $new_height = 50;
-		list($width, $height, $type) = getimagesize($_FILES[$filename]['tmp_name']);
-		
-		$ext = substr(image_type_to_extension($type), 1);
-		if($width > $new_width && !function_exists('imagecreatefrom'.$ext)){
-			trigger_error('unsupported image type: '.$ext);
-			return false;
-		}
-
 		$dest_path = $dest_dir.$name;
-		if(!move_uploaded_file($_FILES[$filename]['tmp_name'], $dest_path)){
-			trigger_error('move upload file error');
-			return false;
+	
+		switch ($type){
+		case self::AT_IMG:
+			$new_width = $new_height = 50;
+			list($width, $height, $type) = getimagesize($_FILES[$filename]['tmp_name']);
+			
+			$ext = substr(image_type_to_extension($type), 1);
+			if($width > $new_width && !function_exists('imagecreatefrom'.$ext)){
+				trigger_error('unsupported image type: '.$ext);
+				return false;
+			}
+			
+			if(!move_uploaded_file($_FILES[$filename]['tmp_name'], $dest_path)){
+				trigger_error('move upload file error');
+				return false;
+			}
+			
+			if($width > $new_width){
+				$image_p = imagecreatetruecolor($new_width, $new_height);
+				$image = call_user_func('imagecreatefrom'.$ext, $dest_path);
+				imagecopyresampled($image_p, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+				call_user_func('image'.$ext, $image_p, $dest_path.self::MIN_ATTACH_SFX, 100);
+			}
+			break;
+		case self::AT_TXT:
+			self::word2png($_FILES[$filename]['tmp_name'], $dest_path);
+			break;
+		case self::AT_VDO:
+			if(!move_uploaded_file($_FILES[$filename]['tmp_name'], $dest_path)){
+				trigger_error('move upload file error');
+				return false;
+			}
+			break;
 		}
 		
-		if($width > $new_width){
-			$image_p = imagecreatetruecolor($new_width, $new_height);
-			$image = call_user_func('imagecreatefrom'.$ext, $dest_path);
-			imagecopyresampled($image_p, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-			call_user_func('image'.$ext, $image_p, $dest_path.self::MIN_ATTACH_SFX, 100);
-		}
 		
 		return $subdir.'/'.$name;
+	}
+	
+	static function word2png_jod($src, $dest){
+		$temp = tempnam('', 'doc_');
+		if(false === $temp){
+			trigger_error('tempnam error.', E_USER_WARNING);
+			return false;
+		}
+		
+		$cmd = 'java -jar %s %s';
+		system(sprintf($cmd, $src, $temp));
+		self::pdf2png($temp, $dest);
+	}
+	
+	static function word2png_com($src, $dest){
+		if(!class_exists('COM')){
+			trigger_error('class "COM" not exists', E_USER_WARNING);
+			return false;
+		}
+		
+		//set_time_limit(0);
+		$word = null;
+		
+		try {
+			$word = new COM("word.application");
+			$word->DisplayAlerts = 0;
+			$ret = $word->Documents->Open($src);
+			var_dump($src, $ret);
+			if($ret){
+				//var_dump($ret);
+				$word->ActiveDocument->ExportAsFixedFormat($dest.'.pdf', 
+						17, false, 0, 0, 0, 0, 7, true, true, 2, true, true, false);
+			}
+		} catch (Exception $e) {
+			echo iconv('gbk', 'utf-8', $e->getMessage().':'.$e->getLine());
+		}
+		if($word){
+			$word->Quit();
+			unset($word);
+		}
+	}
+	
+	static function pdf2png($src, $dest){
+		try {
+			$im = new imagick();
+			$im->setCompressionQuality(90);
+			$im->readImage($src);
+		
+			$canvas = new imagick();
+			foreach($im as $k => $sub){
+				$sub->setImageFormat('png');
+				$sub->stripImage();
+				$sub->trimImage(0);
+				
+				$canvas->newImage($sub->getImageWidth()+10, 
+					$sub->getImageHeight()+10+($k+1 == $im->getNumberImages() ? 10 : 0), 
+					'gray');
+				$canvas->compositeImage($sub, Imagick::COMPOSITE_COPY, 5, 5);
+			}
+			
+			$canvas->resetIterator();
+			$canvas->appendImages(true)->writeImage($dest);
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
 }
 
