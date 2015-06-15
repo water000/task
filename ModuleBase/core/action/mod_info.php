@@ -33,7 +33,7 @@ $moddef = mbs_moddef($selected_mod);
 <body>
 <div class="warpper">
 	<div class=content>
-		<div class="left vertical-manu" >
+		<div class="left vertical-menu" >
 			<p class=title><?php echo $mbs_appenv->lang('mod_list')?></p>
 			<?php foreach($mod_list as $mod){?>
 			<a href="<?php echo $mbs_appenv->toURL($mbs_appenv->item('cur_action'), '', array('mod'=>$mod))?>" <?php echo $mod==$selected_mod?' class=cur':''?>><?php echo $mod?></a>

@@ -23,13 +23,20 @@ if(isset($_REQUEST['user_id'])){
 	$info_push_ctr = CInfoPushControl::getInstance($mbs_appenv, 
 			CDbPool::getInstance(), CMemcachedPool::getInstance());
 	
-	$error = array();
+	mbs_import('common', 'WebsocketClient');
+	list($ws_host, $ws_port, $ws_path) = $mbs_appenv->config('web_socket');
+	$wsock = new WebsocketClient();
+	$wsock->connect($ws_host, $ws_port, $ws_path);
+	$login = '{"MSG_TOKEN" : "'.session_id().'","MSG_TYPE" : "M_LOGIN"}';
+	$ret = $wsock->sendData($login);
 	
-	foreach($_REQUEST['info_id'] as $info_id){
-		foreach($_REQUEST['user_id'] as $uid){
+	$error = array();
+	foreach($_REQUEST['user_id'] as $uid){
+		$push_num = 0;
+		foreach($_REQUEST['info_id'] as $info_id){
 			$push_info = array(
 				'pusher_uid' => $sess_uid,
-				'recv_uid'   => $uid, 
+				'recv_uid'   => $uid,
 				'info_id'    => $info_id,
 				'push_time'  => time(),
 				'status'     => CInfoPushControl::ST_WAIT_PUSH,
@@ -37,14 +44,22 @@ if(isset($_REQUEST['user_id'])){
 			$ret = $info_push_ctr->add($push_info);
 			if(empty($ret)){
 				$error[] = $info_push_ctr->error();
+			}else{
+				++$push_num;
+			}
+			if($push_num > 0){
+				$_msg = sprintf('{"MSG_SENDER" : "%d","MSG_RECEIVER" : "%d","MSG_CREATE_TIME" : "%s","MSG_CONTENT" : "SYSTEM_NEWS_UPDATE","MSG_TYPE" : "M_SYSTEM_COMMAND"}',
+						$sess_uid, $uid, time());
+				$ret = $wsock->sendData($_msg);
 			}
 		}
 	}
+	$wsock->disconnect();
 	
 	if(empty($error))
 		$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', $mbs_appenv->toURL('push_list'));
 	else
-		$mbs_appenv->echoex($mbs_appenv->lang('info_had_push'), 'ERR_INFO_HAD_PUSH', $mbs_appenv->toURL('push_list'));
+		$mbs_appenv->echoex($mbs_appenv->lang('info_had_push'), 'INFO_HAD_PUSH', $mbs_appenv->toURL('push_list'));
 	exit(0);
 }
 
@@ -74,9 +89,10 @@ h3 a{font-size:80%;float:right;}
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="pure-g" style="margin-top: 20px;color:#777;">
-    <div class="pure-u-2-3 align-center" >
+    <div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
+    <div class="pure-u-5-6">
 		<form method="post">
-		<div class="pure-g">
+		<div>
 			 <div class="pure-u-2-3">
 			 	<h3><?php echo $mbs_appenv->lang('push_list')?>
 			 		<a href="#" onclick="window.open('<?=$mbs_appenv->toURL('list', 'user')?>', window.attachEvent?null:'_blank,_top', 'height=600,width=900,location=no', true)"><?php echo $mbs_appenv->lang('select_recv_user')?></a></h3>
@@ -105,7 +121,7 @@ if(isset($_REQUEST['id'])){
 }
 if(0 == $total_info_num){ 
 	echo '<div class=no-data>', $mbs_appenv->lang('no_data'), 
-		'&nbsp;&nbsp;<a class="pure-button pure-button-primary" href="',$mbs_appenv->toURL('list'),'">',$mbs_appenv->lang('select_info'),'</a></div>';
+		'&nbsp;&nbsp;<a href="',$mbs_appenv->toURL('list'),'">',$mbs_appenv->lang('select_info'),'</a></div>';
 }
 ?>
 			 </div>

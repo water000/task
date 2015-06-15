@@ -7,7 +7,7 @@ class CInfoDef extends CModDef {
 				self::G_NM=>'info',
 				self::M_CS=>'utf-8',
 				self::G_TL=>'消息快报',
-				self::G_DC=>'提供消息的编辑、下发、查询等'
+				self::G_DC=>'提供消息的编辑、推送、查询等'
 			),
 			self::LD_FTR => array(
 				array('user', 'checkLogin', true)
@@ -63,7 +63,7 @@ class CInfoDef extends CModDef {
 					self::P_TLE => '消息详情',
 					self::G_DC  => '返回消息的详细信息',
 					self::P_ARGS => array(
-						'info_id'     => array(self::PA_REQ=>1, self::PA_TYP=>'integer', self::PA_EMP=>0, self::G_DC=>'消息id'),
+						'id'     => array(self::PA_REQ=>1, self::PA_TYP=>'integer', self::PA_EMP=>0, self::G_DC=>'消息id'),
 					),
 					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG", data:{info:{详见数据表info中的字段}}',
 				),
@@ -71,7 +71,7 @@ class CInfoDef extends CModDef {
 					self::P_TLE => '消息批阅',
 					self::G_DC  => '对消息的具体批阅',
 					self::P_ARGS => array(
-						'info_id'     => array(self::PA_REQ=>1, self::PA_TYP=>'integer', self::PA_EMP=>0, self::G_DC=>'消息id'),
+						'id'     => array(self::PA_REQ=>1, self::PA_TYP=>'integer', self::PA_EMP=>0, self::G_DC=>'消息id'),
 						'content'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'批阅的内容'),
 					),
 					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG"}',
@@ -98,16 +98,16 @@ class CInfoDef extends CModDef {
 					),
 				),
 				'push' => array(
-					self::P_TLE => '下发消息',
-					self::G_DC => '下发选中的消息，选择相应的接收用户进行下发',
+					self::P_TLE => '推送消息',
+					self::G_DC => '推送选中的消息，选择相应的接收用户进行推送',
 					self::P_MGR => true,
 					self::LD_FTR => array(
 						array('user', 'checkDepLogin', true)
 					),
 				),
 				'push_list' => array(
-					self::P_TLE => '下发列表',
-					self::G_DC => '当前用户下发的消息列表',
+					self::P_TLE => '推送列表',
+					self::G_DC => '当前用户推送的消息列表',
 					self::P_MGR => true,
 					self::LD_FTR => array(
 						array('user', 'checkDepLogin', true)

@@ -6,15 +6,33 @@ mbs_import('', 'CUserControl');
 $user = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 
 if(isset($_REQUEST['id'])){
-	$_REQUEST['id'] = intval($_REQUEST['id']);
 	$user_ins = CUserControl::getInstance($mbs_appenv,
-			CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['id']);
+			CDbPool::getInstance(), CMemcachedPool::getInstance());
+	
+	if(isset($_REQUEST['delete'])){
+		foreach($_REQUEST['id'] as $id){
+			if($id > 3){
+				$user_ins->setPrimaryKey(intval($id));
+				$user_ins->destroy();
+			}
+		}
+		$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', $mbs_appenv->toURL('list'));
+		exit(0);
+	}
+	
+	$_REQUEST['id'] = intval($_REQUEST['id']);
+	$user_ins->setPrimaryKey($_REQUEST['id']);
+	
 	if(isset($_REQUEST['name'])){
 		$user = array_intersect_key($_REQUEST, $user);
-		if($user['password'] != '******'){
-			CUserControl::formatPassword($user['password']);
+		$exclude = array();
+		if(!empty($user['password'])){
+			$user['password']= CUserControl::formatPassword($user['password']);
+		}else{
+			unset($user['password']);
+			$exclude[] = 'password';
 		}
-		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
+		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), $exclude);
 		if(empty($error)){
 			$ret = $user_ins->set($user);
 			if(empty($ret)){
@@ -28,8 +46,8 @@ if(isset($_REQUEST['id'])){
 			exit(0);
 		}
 		$user = array_intersect_key($user_spec, $user);
-		$user['password'] = '******';
 	}
+	$user['password']='';
 }
 else if(isset($_REQUEST['__timeline'])){
 	$new_user = array_intersect_key($_REQUEST, $user);
@@ -60,13 +78,17 @@ else if(isset($_REQUEST['__timeline'])){
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="pure-g" style="margin-top: 20px;color:#777;">
-    <div class="pure-u-1-2 align-center">
+    <div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
+    <div class="pure-u-5-6">
 	    <?php if(isset($_REQUEST['__timeline'])){ if(!empty($error)){ ?>
 		<div class=error><p><?php echo implode('<br/>', $error)?></p>
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 		</div>
 		<?php }else {?>
 		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?>
+			<?php if(isset($new_user['class_id']) && empty($new_user['class_id']) ){ ?>
+			<a href="<?php echo $mbs_appenv->toURL('department')?>" class=link ><?php echo $mbs_appenv->lang('join_department')?></a>
+			<?php } ?>
 			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
 		<?php }}?>
 		
@@ -90,7 +112,7 @@ else if(isset($_REQUEST['__timeline'])){
 		        </div>
 		        <div class="pure-control-group">
 		            <label for="password"><?php echo $mbs_appenv->lang(array('login', 'password'))?></label>
-		            <input id="password" name="password" type="text" value="<?php echo $user['password']?>" required />
+		            <input id="password" name="password" type="text" value="<?php echo $user['password']?>" />
 		        </div>
 		        <div class="pure-control-group">
 		            <label for="email"><?php echo $mbs_appenv->lang('email')?></label>
@@ -128,8 +150,11 @@ else if(isset($_REQUEST['__timeline'])){
 						}
 					}
 		            ?>
-		            <input id="class" name="class" type="text" style="color: #aaa;" value="<?php echo $class_value?>" disabled />
-		            <input type="hidden" name="class_id" value="<?php echo $user['class_id']?>" />
+		            <input id="class" name="class" type="text" style="color: #aaa;" 
+		            	value="<?php echo $class_value?>" disabled />
+		            <input type="hidden" name="class_id" value="<?php echo $user['class_id']?>"  />
+		            <a href="#" style="vertical-align: bottom; color:red; display: <?php echo empty($class_value) ? 'none':'';?>" 
+		            	onclick="var c=this.parentNode.getElementsByTagName('input');c[0].value=c[1].value='';this.style.display='none';">&times;</a>
 		            <a href="javascript:;" onclick="window.open('<?=$mbs_appenv->toURL('class', '', array('popwin'=>1))?>', '_blank,_top', 'height=400,width=600,location=no', true)"
 		            	style="vertical-align: bottom;margin-left:20px;">
 		            	<?php echo $mbs_appenv->lang('select_class')?>

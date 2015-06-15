@@ -10,6 +10,9 @@ ini_set('session.use_only_cookies', 1);
 if(isset($_SERVER['HTTP_X_LOGIN_TOKEN']) && !empty($_SERVER['HTTP_X_LOGIN_TOKEN'])){ // only for app request
 	$_COOKIE[session_name()] = $_SERVER['HTTP_X_LOGIN_TOKEN'];
 }
+else if(isset($_REQUEST['X-LOGIN-TOKEN'])){
+	$_COOKIE[session_name()] = $_REQUEST['X-LOGIN-TOKEN'];
+}
 
 $default = array(
 	'table_prefix'         => 'mbs_',

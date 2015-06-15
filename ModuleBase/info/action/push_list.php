@@ -10,9 +10,7 @@ $info_push_ctr = CInfoPushControl::getInstance($mbs_appenv,
 $user_ctr = CUserControl::getInstance($mbs_appenv,
 	CDbPool::getInstance(), CMemcachedPool::getInstance());
 
-define('ROWS_PER_PAGE', 20);
-define('PAGE_ID',  isset($_REQUEST['page_id']) ? intval($_REQUEST['page_id']) : 1);
-define('ROWS_OFFSET', (PAGE_ID-1)*ROWS_PER_PAGE);
+
 $search_keys = array('tstart'=>'', 'tend'=>'');
 $req_search_keys = array_intersect_key($_REQUEST, $search_keys);
 foreach($req_search_keys as $k=> $v){
@@ -45,12 +43,25 @@ mbs_import('user', 'CUserSession');
 $usersess = new CUserSession();
 list($req_search_keys['pusher_uid'],) = $usersess->get(); 
 unset($req_search_keys['tstart'], $req_search_keys['tend']);
-$opts = array(
-	'offset' => ROWS_OFFSET,
-	'limit'  => ROWS_PER_PAGE,
-	'order'  => ' id desc',
-);
-$list = $info_push_ctr->getDB()->search($req_search_keys, $opts);
+
+define('ROWS_PER_PAGE', 20);
+define('PAGE_ID',  isset($_REQUEST['page_id']) ? intval($_REQUEST['page_id']) : 1);
+define('ROWS_OFFSET', (PAGE_ID-1)*ROWS_PER_PAGE);
+$count = $info_push_ctr->getDB()->count($req_search_keys);
+$list = array();
+$page_num_list = array();
+if($count > ROWS_OFFSET){
+	$opts = array(
+		'offset' => ROWS_OFFSET,
+		'limit'  => ROWS_PER_PAGE,
+		'order'  => ' id desc',
+	);
+	$list = $info_push_ctr->getDB()->search($req_search_keys, $opts);
+	$list = $list->fetchAll(PDO::FETCH_ASSOC);
+
+	mbs_import('common', 'CTools');
+	$page_num_list = CTools::genPagination(PAGE_ID, ceil($count/ROWS_PER_PAGE));
+}
 
 ?>
 <!doctype html>
@@ -69,10 +80,11 @@ td .abstract{width:95%; margin:10px auto;color:#555;font-size:80%;}
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="pure-g" style="margin-top: 20px;color:#777;">
-    <div class="pure-u-2-3 align-center">
+    <div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
+    <div class="pure-u-5-6">
     	<form class="pure-form" method="post">
     		<fieldset>
-        		<legend><?php echo $mbs_appenv->lang('search')?></legend>
+        		<legend><?php echo $mbs_appenv->lang(array('push', 'search'))?></legend>
         		<?php echo $mbs_appenv->lang('time')?>
         		<input type="text" style="width: 120px" name="tstart" value="<?php echo $search_keys['tstart']?>" />-<input type="text" name="tend" style="width: 120px" value="<?php echo $search_keys['tend']?>" />
        			<button type="submit" class="pure-button pure-button-primary"><?php echo $mbs_appenv->lang('search')?></button>
@@ -114,12 +126,42 @@ td .abstract{width:95%; margin:10px auto;color:#555;font-size:80%;}
 			     	<?php }?>
 			      </tbody>
 			</table>
-			<div style="margin-top:10px;">
+			<div class="oper-bar" >
 				<button class="button-error pure-button" type="submit" name="delete" onclick="return confirm('<?php echo $mbs_appenv->lang('confirmed', 'common')?>');"><?php echo $mbs_appenv->lang('delete')?></button>
+				<?php if(!empty($page_num_list)){ $keys = array_intersect_key($_REQUEST, $search_keys); ?>
+				<div class="pure-menu pure-menu-horizontal page-num-menu">
+					<span class=pure-menu-heading><?php echo sprintf($mbs_appenv->lang('page_num_count_format'), $count)?></span>
+			        <?php if(count($page_num_list) > 1){?>
+			        <ul class="pure-menu-list">
+			        	<?php foreach($page_num_list as $n => $v){ ?>
+			        	<li class="pure-menu-item<?php echo $n==PAGE_ID?' pure-menu-selected':''?>"><a href="<?php echo $mbs_appenv->toURL('list', '', 
+			        			array_merge($keys, array('page_id'=>$n))) ?>" class="pure-menu-link"><?php echo $v?></a></li>
+			        	<?php }?>
+			        </ul>
+			        <?php }?>
+			    </div>
+				<?php } ?>
 			</div>
 		</form>
     </div>
 </div>
 <div class=footer></div>
+<script type="text/javascript">
+/*(function _watch_operbar(){
+	var es = document.getElementsByTagName("div"), i, dest=null;
+	for(i=0; i<es.length; i++){
+		if("oper-bar" == es[i].className){
+			dest = es[i];
+			break;
+		}
+	}
+	if(dest){
+		var tb = dest.parentNode.getElementsByTagName("table");
+		if(tb.clientHeight > document.getElementsByTagName("html")[0].clientHeight*1.6){
+			dest.className += " oper-bar-pop";
+		}
+	}
+})();*/
+</script>
 </body>
 </html>

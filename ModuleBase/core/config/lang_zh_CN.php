@@ -28,6 +28,15 @@
  	'today'         => '今天',
  	'days_ago'      => '天前',
  	'long_ago'      => '更久',
+ 	
+ 	'checkargs_error' => array(
+		'no_such_depend_arg_appeared' => '参数 "%s" 需要 "%s", 但是未出现',
+		'no_such_depend_arg_defined'  => '参数 "%s" 需要 "%s", 但是未定义',
+		'no_such_arg_appeared'        => '参数 "%s" 未出现',
+		'arg_cannot_be_empty'         => '参数 "%s" 不能为空',
+		'arg_type_invalid'            => '参数 "%s" 类型(%s)错误, 需要(%s)',
+		'arg_length_invalid'          => '参数 "%s" 长度(%d)无效, 需要(%s)',
+	),
 );
  
  

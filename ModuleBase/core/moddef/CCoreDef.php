@@ -13,7 +13,7 @@ class CCoreDef extends CModDef{
 				//array('user', 'checkLogin', true),
 			),
 		    self::TAG => array(
-		   	 	'url' => array(self::G_CS => 'CFileURL', self::G_DC => '(,,mod,file,[type])'),
+		   	 	//'url' => array(self::G_CS => 'CFileURL', self::G_DC => '(,,mod,file,[type])'),
 		    ),
 			self::PAGES => array(
 				'mod_info' => array(
@@ -55,6 +55,14 @@ class CCoreDef extends CModDef{
 		  			key(class_module),
 		  			key(action_module, action_name)
 		  		)",
+		 		'core_api_log'  => '(
+		 			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+					`input` text,
+					`output` text,
+					`other` text,
+					`time` int(10) unsigned DEFAULT NULL,
+					PRIMARY KEY (`id`)
+		 		)',
 		  	),
 		    /*self::LTN => array(
 		    	'class' => 'mod.action1,mod.action2,...'

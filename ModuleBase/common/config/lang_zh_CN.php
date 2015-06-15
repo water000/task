@@ -42,7 +42,7 @@ $_notice_frame = <<<EOT
 EOT;
 
 $lang_zh_CN = array(
-	'site_name'              => '',
+	'site_name'              => '消息快报',
 	'db_exception'           => '系统繁忙，请稍后再试(dbe)',
 	'header_html'            => __header(),
 	'notice_page'            => $_notice_frame, //%s: meta tag or empty, %s: error/success, %s: msg content
@@ -65,6 +65,7 @@ $lang_zh_CN = array(
 	'content'                => '内容',
 	'all'                    => '所有',
 	'status'                 => '状态',
+	'page_num_count_format'  => '共%d条记录',
 );
 
 

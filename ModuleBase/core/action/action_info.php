@@ -96,7 +96,7 @@ td{word-wrap:break-word;word-break:break-all;}
 			</form>
 			<span>Filters: </span>
 		</div>
-		<div class="left vertical-manu" id=IDD_LEFT>
+		<div class="left vertical-menu" id=IDD_LEFT>
 			<p class=title>actions</p>
 <?php
 $dayago = -1;

@@ -1,5 +1,6 @@
 <?php 
 
+
 define('REDIRECT_AFTER_LOGIN', isset($_REQUEST['redirect']) 
 	? urldecode($_REQUEST['redirect']) : $mbs_appenv->toURL('index', 'privilege'));
 
@@ -33,9 +34,11 @@ if(isset($_REQUEST['phone'])){
 	
 	$us = new CUserSession();
 	$user_info = $us->get();
+	
 	if(!empty($user_info)){
 		//$mbs_appenv->echoex($mbs_appenv->lang('had_login'), 'HAD_LOGIN', REDIRECT_AFTER_LOGIN);
-		$mbs_appenv->echoex(array('user'=>$user_info[1], 'token'=>session_id()), '', REDIRECT_AFTER_LOGIN);
+		$mbs_appenv->echoex(array('user'=>$user_info[1], 'token'=>session_id(), 
+				'allow_comment'=>$user_info[1]['class_id']==3), '', REDIRECT_AFTER_LOGIN);
 		exit(0);
 	}
 	
@@ -73,8 +76,30 @@ if(isset($_REQUEST['phone'])){
 				}
 			}
 			if(empty($error)){
+				if(isset($_COOKIE[ini_get('session.name')])){
+					session_regenerate_id();
+				}
+				
 				$us->set($rs['id'], $rs);
-				$mbs_appenv->echoex(array('user'=>$rs, 'token'=>session_id()), '', REDIRECT_AFTER_LOGIN);
+				$sid = session_id();
+				$mbs_appenv->echoex(array('user'=>$rs, 'token'=>$sid,
+						'allow_comment'=>$rs['class_id']==3), '', REDIRECT_AFTER_LOGIN);
+				
+				mbs_import('', 'CUserLoginLogControl');
+				$user_llog = CUserLoginLogControl::getInstance($mbs_appenv, 
+						CDbPool::getInstance(), CMemcachedPool::getInstance(), $rs['id']);
+				$llog = $user_llog->get();
+				if(!empty($llog) && !empty($llog['token']) && $llog['token'] != $sid){//delete the session which previous user logined
+					session_write_close();
+					
+					if('files' == ini_get('session.save_handler')){
+						unlink(session_save_path().'/sess_'.$llog['token']);
+					}else{
+						session_id($llog['token']);
+						session_destroy();
+					}
+				}
+				$user_llog->add(array('user_id'=>$rs['id'], 'token'=>$sid, 'time'=>time()));
 				exit(0);
 			}
 		}
@@ -85,8 +110,8 @@ if(isset($_REQUEST['phone'])){
 	}
 }
 else{
-	if(empty($_COOKIE)){
-		setcookie('is_cookie_available', 'yes'); // for checking whether the client supporting cookies
+	if(ini_get('session.use_cookies') && empty($_COOKIE)){
+		setcookie('is_cookie_available', 'yes', time() + 365*86400); // for checking whether the client supporting cookies
 		define('NEED_TESTING_COOKIE', 1);
 	}
 	
@@ -97,6 +122,7 @@ else{
 		$mbs_appenv->echoex($mbs_appenv->lang('had_login'), '', REDIRECT_AFTER_LOGIN);
 		exit(0);
 	}
+	
 }
 
 ?>

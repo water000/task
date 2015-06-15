@@ -69,7 +69,13 @@ class CUserDef extends CModDef {
 					primary key (id),
 					unique key(user_id),
 					key(dep_id)
-				)'
+				)',
+				'user_login_log'        => '(
+					 user_id              int unsigned not null,
+				   	 token                char(32),
+				     time                 int unsigned,
+				     primary key (user_id)
+				)',
 			),
 			self::PAGES => array(
 				'login' => array(
@@ -111,12 +117,6 @@ class CUserDef extends CModDef {
 					self::P_TLE => '列表',
 					self::G_DC  => '用户的列表，也可以搜索用户(phone, name, email)，都是精确查询，不支持模糊查询',
 					self::P_MGR => true
-				),
-				'delete' => array(
-					self::P_TLE => '删除',
-					self::G_DC => '删除指定的用户，id前3的不删除',
-					self::P_MGR => true,
-					self::P_LNK => false,
 				),
 				'class' => array(
 					self::P_TLE => '分类',

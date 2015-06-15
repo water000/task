@@ -37,7 +37,7 @@ class CLogAPI{
 		);
 	}
 	
-	function read(string $timeline){
+	function read($timeline){
 		
 	}
 	
@@ -52,7 +52,7 @@ class CDBLogAPI extends CLogAPI{
 		$this->table = mbs_tbname('core_api_log');
 	}
 	
-	function write($output, $other=''){
+	function write(array $output, $other=''){
 		parent::write($output, $other);
 		$pdos = $this->pdoconn->prepare(sprintf(
 				'INSERT INTO %s(input, output, time, other) values(?, ?, ?, ?)', $this->table));

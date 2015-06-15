@@ -60,7 +60,7 @@ iframe{width:100%;border:0;}
 <body>
 <iframe src=""></iframe>
 <div class=actions>
-	<div class="vertical-manu groups">
+	<div class="vertical-menu groups">
 		<a class=change_win href="#" onclick="_change(this);">-</a>
 		<p class=title><?php echo $mbs_appenv->lang('mgrlist')?></p>
 			<div>

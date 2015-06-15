@@ -185,8 +185,8 @@ class CUniqRowOfTable
  	 * @throws Exception
  	 * @return Ambigous <boolean, unknown>|multitype:
  	 */
- 	function search($keyval, $opts = array()){
- 		$sql = sprintf('SELECT * FROM %s WHERE 1', $this->tbname());
+ 	function search($keyval, $opts = array(), &$count=0){
+ 		$sql = sprintf('SELECT * FROM %s WHERE 1', $this->tbname);
  		$values = array();
  		foreach ($keyval as $key => $val){
  			if(is_array($val)){
@@ -203,11 +203,10 @@ class CUniqRowOfTable
  				$values[] = $val;
  			}
  		}
- 		
+
  		if(isset($opts['order'])){
  			$sql .= ' ORDER BY '.$opts['order'];
  		}
- 		
  		if(isset($opts['offset']) && isset($opts['limit'])){
  			$sql .= ' LIMIT '.$opts['offset'].','.$opts['limit'];
  		}
@@ -220,6 +219,40 @@ class CUniqRowOfTable
  			throw $e;
  		}
  		return array();
+ 	}
+ 	
+ 	function count($keyval){
+ 		$sql = sprintf('SELECT count(1) FROM %s WHERE 1', $this->tbname);
+ 		$values = array();
+ 		foreach ($keyval as $key => $val){
+ 			if(is_array($val)){
+ 				$sql .= sprintf(' AND %s>=? AND %s<?', $key, $key);
+ 				array_push($values, $val[0], $val[1]);
+ 			}
+ 			else{
+ 				if(is_string($val) &&
+ 				('%' == $val[0] || '%' == $val[strlen($val)-1])){
+ 					$sql .= sprintf(' AND %s LIKE ?', $key);
+ 				}else{
+ 					$sql .= sprintf(' AND %s = ?', $key);
+ 				}
+ 				$values[] = $val;
+ 			}
+ 		}
+ 		
+ 		try{
+ 			$pdos = $this->oPdoConn->prepare($sql);
+ 			$ret = $pdos->execute($values);
+ 			if(empty($ret) || !($ret = $pdos->fetchAll())){
+ 				return 0;
+ 			}
+ 		
+ 			return $ret[0][0];
+ 		}catch (Exception $e){
+ 			throw $e;
+ 		}
+ 		
+ 		return 0;
  	}
 }
 

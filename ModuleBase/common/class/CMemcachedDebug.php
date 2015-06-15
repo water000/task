@@ -8,7 +8,7 @@ class CMemcachedDebug extends Memcached
 	private static $totalExecTime = 0;
 	private $arrSingleTime = array();
 		
-	function getTotalExec()
+	static function getTotalExec()
 	{
 		return self::$totalExecTime;
 	}

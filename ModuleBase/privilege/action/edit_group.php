@@ -3,7 +3,7 @@
 mbs_import('privilege', 'CPrivGroupControl');
 mbs_import('user', 'CUserSession');
 
-$action_def = &$mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'));
+$action_def = $mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'));
 $args_def = $action_def[CModDef::P_ARGS];
 
 $error = array();

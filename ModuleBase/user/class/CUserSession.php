@@ -9,7 +9,7 @@
 class CUserSession extends CModTag {
 
 	function __construct(){
-		if('' == session_id())
+		if(!isset($_SESSION))
 			session_start();
 	}
 	

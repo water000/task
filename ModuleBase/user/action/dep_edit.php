@@ -83,7 +83,7 @@ else if(isset($_REQUEST['id'])){
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
-.selected_win{display: none; border-left:1px solid #e1e1e1;width:22%;margin-left:1.5%;padding-left:1.2%;}
+.selected_win{display: none; border-left:1px solid #e1e1e1;width:20%;margin-left:1.5%;padding-left:1.2%;}
 .selected_win a{float:right;font-size:12px;}
 #IDT_JOIN_LIST li{border-bottom:1px dashed #bbb;padding:2px 5px;}
 </style>
@@ -91,7 +91,8 @@ else if(isset($_REQUEST['id'])){
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="pure-g" style="margin-top: 20px;color:#777;">
-    <div class="pure-u-1-2 align-center" >
+    <div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
+    <div class="pure-u-5-6">
     	<?php if(!empty($error)){ ?>
 		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
@@ -131,8 +132,11 @@ else if(isset($_REQUEST['id'])){
     	<?php }?>
     	</form>
     		
-    		<?php if(0 == $k){ $udepmbr->setPrimaryKey($list[0]['id']);$mbr_list = $udepmbr->get(); ?>
-    		<div class="pure-g" style="margin-top: 20px;">
+    		<?php if(0 == $k){ 
+    			$udepmbr->setPrimaryKey($list[0]['id']);
+    			$mbr_list = $udepmbr->get(); 
+    		?>
+    		<div style="margin-top: 20px;">
     			<div class="pure-u-1">
 		    		<h3><?php echo $mbs_appenv->lang('dep_member')?>
 	    			<a href="#" style="float: right;" onclick="window.open('<?=$mbs_appenv->toURL('list', 'user')?>', window.attachEvent?null:'_blank,_top', 'height=600,width=900,location=no', true)"><?php echo $mbs_appenv->lang('add')?></a></h3>

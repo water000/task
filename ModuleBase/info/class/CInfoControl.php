@@ -8,6 +8,7 @@ class CInfoControl extends CUniqRowControl {
 	const AT_TXT = 1;
 	const AT_VDO = 2;
 	const AT_IMG = 3;
+	const AT_PDF = 4;
 	private static $ATYPE_MAP = array(
 		self::AT_TXT => 'TXT',
 		self::AT_VDO => 'VDO',
@@ -54,6 +55,10 @@ class CInfoControl extends CUniqRowControl {
 		return isset(self::$ATYPE_MAP[$type]) ? self::$ATYPE_MAP[$type] : '';
 	}
 	
+	static function txt2type($txt){
+		return array_search($txt, self::$ATYPE_MAP);
+	}
+	
 	static function typeExists($type){
 		return isset(self::$ATYPE_MAP[$type]);
 	}
@@ -91,6 +96,9 @@ class CInfoControl extends CUniqRowControl {
 			case 'flv':
 				$type = self::AT_VDO;
 				break;
+			case 'pdf':
+				$type = self::AT_PDF;
+				break;
 		}
 		
 		return $type;
@@ -103,7 +111,7 @@ class CInfoControl extends CUniqRowControl {
 		return array($subdir, md5(uniqid('pfx_', true)));
 	}
 	
-	static function moveAttachment($filename, $type, $appenv=null){
+	static function moveAttachment($filename, &$format, $appenv=null){
 		$appenv = empty($appenv) ? self::$appenv : $appenv;
 		if(empty($appenv)){
 			trigger_error('empty appenv: '.$subdir, E_USER_WARNING);
@@ -118,7 +126,7 @@ class CInfoControl extends CUniqRowControl {
 		}
 		$dest_path = $dest_dir.$name;
 	
-		switch ($type){
+		switch ($format){
 		case self::AT_IMG:
 			$new_width = $new_height = 50;
 			list($width, $height, $type) = getimagesize($_FILES[$filename]['tmp_name']);
@@ -138,17 +146,26 @@ class CInfoControl extends CUniqRowControl {
 				$image_p = imagecreatetruecolor($new_width, $new_height);
 				$image = call_user_func('imagecreatefrom'.$ext, $dest_path);
 				imagecopyresampled($image_p, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-				call_user_func('image'.$ext, $image_p, $dest_path.self::MIN_ATTACH_SFX, 100);
+				call_user_func('image'.$ext, $image_p, $dest_path.self::MIN_ATTACH_SFX, 9);
 			}
 			break;
 		case self::AT_TXT:
-			self::word2png($_FILES[$filename]['tmp_name'], $dest_path);
+			$src = $_FILES[$filename]['tmp_name'].urlencode($_FILES[$filename]['name']);
+			var_dump($src);
+			rename($_FILES[$filename]['tmp_name'], $src);
+			self::word2png_jod($src, $dest_path);
+			unset($src);
+			$format = self::AT_IMG;
 			break;
 		case self::AT_VDO:
 			if(!move_uploaded_file($_FILES[$filename]['tmp_name'], $dest_path)){
 				trigger_error('move upload file error');
 				return false;
 			}
+			break;
+		case self::AT_PDF:
+			self::pdf2png($_FILES[$filename]['tmp_name'], $dest);
+			$format = self::AT_IMG;
 			break;
 		}
 		
@@ -157,15 +174,16 @@ class CInfoControl extends CUniqRowControl {
 	}
 	
 	static function word2png_jod($src, $dest){
-		$temp = tempnam('', 'doc_');
-		if(false === $temp){
-			trigger_error('tempnam error.', E_USER_WARNING);
-			return false;
+		$cmd = 'java -jar /opt/jodconverter-2.2.2/lib/jodconverter-cli-2.2.2.jar %s %s';
+		$pdf = $src.'.pdf';
+		exec (sprintf($cmd, $src, $pdf), $ret);
+		try {
+			self::pdf2png($pdf, $dest);
+		} catch (Exception $e) {
+			throw $e;
 		}
 		
-		$cmd = 'java -jar %s %s';
-		system(sprintf($cmd, $src, $temp));
-		self::pdf2png($temp, $dest);
+		unlink($pdf);
 	}
 	
 	static function word2png_com($src, $dest){
@@ -199,14 +217,14 @@ class CInfoControl extends CUniqRowControl {
 	static function pdf2png($src, $dest){
 		try {
 			$im = new imagick();
-			$im->setCompressionQuality(90);
+			$im->setCompressionQuality(100);
 			$im->readImage($src);
 		
 			$canvas = new imagick();
 			foreach($im as $k => $sub){
 				$sub->setImageFormat('png');
 				$sub->stripImage();
-				$sub->trimImage(0);
+				//$sub->trimImage(0);
 				
 				$canvas->newImage($sub->getImageWidth()+10, 
 					$sub->getImageHeight()+10+($k+1 == $im->getNumberImages() ? 10 : 0), 
@@ -215,7 +233,16 @@ class CInfoControl extends CUniqRowControl {
 			}
 			
 			$canvas->resetIterator();
-			$canvas->appendImages(true)->writeImage($dest);
+			$nimg = $canvas->appendImages(true);
+			$nimg->setImageFormat('png');
+			$nimg->writeImage($dest);
+			$nimg->thumbnailImage(50, 50);
+			$nimg->writeImage($dest.self::MIN_ATTACH_SFX);
+			
+			$nimg->clear();
+			$im->clear();
+			$canvas->clear();
+			
 		} catch (Exception $e) {
 			throw $e;
 		}

@@ -123,6 +123,7 @@ fieldset span{margin-left:5px;}
 <?php 
 if(!empty($pu_list)){
 	$n = 1; 
+	$pu_list = $pu_list->fetchAll(PDO::FETCH_ASSOC);
 	foreach($pu_list as $row){ 
 		$usctr->setPrimaryKey($row['user_id']); 
 		$usinfo = $usctr->get(); 

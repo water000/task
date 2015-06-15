@@ -15,7 +15,8 @@ class CAppEnvironment{
 		'charset'           => 'utf-8',
 		'lang'              => 'zh_CN',
 		'class_file_suffix' => '.php',
-		'default_module'    => 'common',
+		'default_module'    => 'user',
+		'default_action'    => 'login',
 		/********** config end **********/
 		
 		/********** runtime item **********/
@@ -122,7 +123,7 @@ class CAppEnvironment{
   		//RewriteRule ^(.*)$          /index.php?__path__=$1  [B,L,QSA] 
 		$arr = explode('/', trim($_GET['__path__'], '/'));
 		$arr2[0] = isset($arr['0']) ? $arr['0'] : $this->env['default_module'];
-		$arr2[1] = isset($arr['1']) ? $arr['1'] : 'index';
+		$arr2[1] = isset($arr['1']) ? $arr['1'] : $this->env['default_action'];
 		unset($_GET['__path__']);
 		$arr2[] = $_GET;
 
@@ -212,31 +213,29 @@ class CAppEnvironment{
 			}
 		}
 		
-		if(is_string($item)){
-			return isset($this->mod_cfg[$mod][$cfg][$item]) ? $this->mod_cfg[$mod][$cfg][$item] : false;
-		}
-		else if(is_array($item)){
-			$ret = '';
-			foreach($item as $e){
-				$ret .= isset($this->mod_cfg[$mod][$cfg][$e]) ? $this->mod_cfg[$mod][$cfg][$e] : $e;
-			}
-			return $ret;
-		}else{
-			return false;
-		}
+		return isset($this->mod_cfg[$mod][$cfg][$item]) ? $this->mod_cfg[$mod][$cfg][$item] : false;
 	}
 	
 	function lang($item, $mod=''){
-		$ret = $this->config($item, $mod, 'lang_'.$this->env['lang']);
-		if($ret === false){
-			if(empty($mod)){
-				$ret = $this->config($item, 'common', 'lang_'.$this->env['lang']);
-				$ret = $ret === false ? $item : $ret;
-			}else{
-				$ret = $item;
+		$arr = is_array($item) ? $item : array($item);
+		
+		$str = '';
+		foreach($arr as $item){
+			$ret = $this->config($item, $mod, 'lang_'.$this->env['lang']);
+			if($ret === false){
+				if(empty($mod)){
+					$ret = $this->config($item, 'common', 'lang_'.$this->env['lang']);
+					$ret = $ret === false ? $item : $ret;
+				}else{
+					$ret = $item;
+				}
 			}
+			if(is_string($ret))
+				$str .= $ret;
+			else 
+				$str = $ret;
 		}
-		return $ret;
+		return $str;
 	}
 	
 	static function _echo_as_xml($arr){
@@ -293,7 +292,7 @@ class CAppEnvironment{
 				return ;
 			}
 			else if(!empty($redirect_url)){
-				$meta = '<meta http-equiv="Refresh" content="'.(empty($errcode)? 2 : 4).';'.$redirect_url.'">';
+				$meta = '<meta http-equiv="Refresh" content="'.(empty($errcode)? 3 : 10).';'.$redirect_url.'">';
 				$msg .= sprintf('<p style="text-align:right;font-size: 12px;padding: 0 10px;">%s&nbsp;<a href="%s">%s</a></p>', 
 						$this->lang('click_if_not_redirect', 'common'), $redirect_url, $redirect_url);
 			}

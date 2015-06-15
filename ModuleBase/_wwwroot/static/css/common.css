@@ -46,19 +46,19 @@ div.g-loading, div.g-loading-error{width:100%;position:fixed;top:0;height:12px;z
 .dropmenuHeader .size .user-oper .reg-login a{float:right;color:#7B7B7B;}
 .dropmenuHeader .size .user-oper .reg-login .login{margin-left:15px;}
 
-.main .top-manu{ margin-top:10px;height:51px;}
-.top-manu a.logo{ display:inline-block;}
-.top-manu .le_tags{font-size:12px; margin-top:10px;background-color:#e9f3f4; height:33px; float:right; width:810px;}
-.top-manu .le_tags .x-manu{float:left;font-size:14px;width:93px;height:100%;line-height:2.5;text-align:center;border-right: 1px solid #FFFFFF;}
-.top-manu .le_tags .x-manu a{display:block;width:100%;height:100%;line-height:2.5;text-align:center;color:#336633;text-decoration:none;}
-.top-manu .le_tags .x-manu a:hover{background-color:#DCEDEF;}
-.top-manu .le_tags .x-manu-w107{width:107px;}
-.top-manu .le_tags .x-manu-selected{background-color:#c6e3e6; color:#336633;}
-.top-manu .le_tags .x-manu-selected a:hover{background-color:#c6e3e6;}
-.top-manu .aside{ float:right; width:277px;height:100%;}
-.top-manu .aside .mod {margin:3px 3px 3px 0;height:26px;font-size:12px;border: 1px solid #b6d9b6;display:inline-block; overflow:hidden; zoom:1}
-.top-manu #db-sidesrh INPUT.search-textbox{float:left;vertical-align:middle;color:#95b995;WIDTH: 219px;height:17px; line-height:17px; padding:5px 3px 5px 3px; border:0 none; border-right:1px solid #b6d9b6;}
-.top-manu #db-sidesrh .bn-srh {float:left;vertical-align:middle;WIDTH:46px;height:26px;text-align:center; background-color:#f1f1f1; color:#7f907f;border: 0;}
+.main .top-menu{ margin-top:10px;height:51px;}
+.top-menu a.logo{ display:inline-block;}
+.top-menu .le_tags{font-size:12px; margin-top:10px;background-color:#e9f3f4; height:33px; float:right; width:810px;}
+.top-menu .le_tags .x-menu{float:left;font-size:14px;width:93px;height:100%;line-height:2.5;text-align:center;border-right: 1px solid #FFFFFF;}
+.top-menu .le_tags .x-menu a{display:block;width:100%;height:100%;line-height:2.5;text-align:center;color:#336633;text-decoration:none;}
+.top-menu .le_tags .x-menu a:hover{background-color:#DCEDEF;}
+.top-menu .le_tags .x-menu-w107{width:107px;}
+.top-menu .le_tags .x-menu-selected{background-color:#c6e3e6; color:#336633;}
+.top-menu .le_tags .x-menu-selected a:hover{background-color:#c6e3e6;}
+.top-menu .aside{ float:right; width:277px;height:100%;}
+.top-menu .aside .mod {margin:3px 3px 3px 0;height:26px;font-size:12px;border: 1px solid #b6d9b6;display:inline-block; overflow:hidden; zoom:1}
+.top-menu #db-sidesrh INPUT.search-textbox{float:left;vertical-align:middle;color:#95b995;WIDTH: 219px;height:17px; line-height:17px; padding:5px 3px 5px 3px; border:0 none; border-right:1px solid #b6d9b6;}
+.top-menu #db-sidesrh .bn-srh {float:left;vertical-align:middle;WIDTH:46px;height:26px;text-align:center; background-color:#f1f1f1; color:#7f907f;border: 0;}
 
 .main .layout_content{ margin-top:5px; overflow:hidden;}
 .layout_content .top-left{width:120px; float:left; margin-bottom:85px; overflow:hidden; }
@@ -195,12 +195,12 @@ a.min-avatar{ width:30px; height:30px; float:left; display:block; margin-top:1px
 .top-right .collected-user .intro a.name{ font-size:12px; text-align:center;color:#026FDF; height:14px;   text-align:center;}
 .top-right .collected-user .intro a:hover.name{ text-decoration:underline;}
 
-.star-ac-manu{margin:30px 0 12px;}
-.star-ac-manu span{ font-weight:bold; padding-right:25px;}
-.star-ac-manu span.ac-title{color:#6E6E6E;margin-right:16px;}
-.star-ac-manu a{color:#339933;padding:3px 7px;text-decoration:none;font-size:12px; margin:0 1px;}
-.star-ac-manu a:hover{background-color:#91C88C;color:white;}
-.star-ac-manu .selected{background-color:#82C07D;color:white;padding:3px 9px;font-size:12px;}
+.star-ac-menu{margin:30px 0 12px;}
+.star-ac-menu span{ font-weight:bold; padding-right:25px;}
+.star-ac-menu span.ac-title{color:#6E6E6E;margin-right:16px;}
+.star-ac-menu a{color:#339933;padding:3px 7px;text-decoration:none;font-size:12px; margin:0 1px;}
+.star-ac-menu a:hover{background-color:#91C88C;color:white;}
+.star-ac-menu .selected{background-color:#82C07D;color:white;padding:3px 9px;font-size:12px;}
 
 /*progress bar*/
 span.progress-bar{ line-height:13px; line-height:13px; display:inline-block;}
@@ -820,7 +820,7 @@ div.wysiwyg iframe { border: 0; margin: 5px 0 0 0; clear: left; width: 97.5% !im
 
 
 /**
- *------------------·ÖÒ³ÑùÊ½---------------------
+ *------------------ï¿½ï¿½Ò³ï¿½ï¿½Ê½---------------------
 */	
 
 .pages {

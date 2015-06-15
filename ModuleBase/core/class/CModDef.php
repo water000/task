@@ -424,15 +424,8 @@ abstract class CModDef {
 	}
 	
 	
-	function checkargs($action){
-		static $error_desc = array(
-			'no_such_depend_arg_appeared' => '参数 "%s" 需要 "%s", 但是未出现',
-			'no_such_depend_arg_defined'  => '参数 "%s" 需要 "%s", 但是未定义',
-			'no_such_arg_appeared'        => '参数 "%s" 未出现',
-			'arg_cannot_be_empty'         => '参数 "%s" 不能为空',
-			'arg_type_invalid'            => '参数 "%s" 类型(%s)错误, 需要(%s)',
-			'arg_length_invalid'          => '参数 "%s" 长度(%d)无效, 需要(%s)',
-		);
+	function checkargs($action, $exclude_args=array()){
+		$error_desc = self::$appenv->lang('checkargs_error', 'core');
 		$error = array();
 		if(isset($this->desc[self::PAGES][$action][self::P_ARGS])){
 			$defopts = array(
@@ -445,6 +438,9 @@ abstract class CModDef {
 	 		);
 	 		$pargs = $this->desc[CModDef::PAGES][$action][self::P_ARGS];
 	 		foreach($pargs as $name => $opts){
+	 			if(in_array($name, $exclude_args)){
+	 				continue;
+	 			}
 	 			$opts = empty($opts) ? $defopts : array_merge($defopts, $opts);
 	 				
 	 			if(!empty($opts[CModDef::PA_DEP]))
@@ -479,7 +475,7 @@ abstract class CModDef {
 				if($opts[CModDef::PA_TRI] && isset($_REQUEST[$name]) && is_string($_REQUEST[$name]))
 					$_REQUEST[$name] = trim($_REQUEST[$name]);
  					
-				if(!$opts[CModDef::PA_EMP] && isset($_REQUEST[$name]) && empty($_REQUEST[$name])){
+				if($opts[self::PA_REQ] && !$opts[CModDef::PA_EMP] && isset($_REQUEST[$name]) && empty($_REQUEST[$name])){
 					$error[$name] = sprintf($error_desc['arg_cannot_be_empty'], $name);
 					continue;
 				}
@@ -494,7 +490,7 @@ abstract class CModDef {
 					continue;
 				}
 				
-				if(!empty($opts[CModDef::PA_RNG]) && isset($_REQUEST[$name])){
+				if(!empty($opts[CModDef::PA_RNG]) && isset($_REQUEST[$name]) && !empty($_REQUEST[$name])){
 					if(is_string($_REQUEST[$name])){
 						$num = iconv_strlen($_REQUEST[$name], self::$appenv->item('charset'));
 					}

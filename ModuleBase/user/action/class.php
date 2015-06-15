@@ -28,7 +28,8 @@ $list = $uc->getDB()->listAll();
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="pure-g" style="margin-top: 20px;color:#777;">
-    <div class="pure-u-1-2 align-center" >
+    <div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
+    <div class="pure-u-5-6">
     	<?php if(isset($_REQUEST['name']) && !empty($error)){ ?>
 		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
@@ -58,7 +59,7 @@ $list = $uc->getDB()->listAll();
 			    <tbody>
 			    <?php foreach($list as $k=>$row){?>
 			        <tr <?php echo 1 == $k%2 ? 'class=pure-table-odd':'' ?>>
-			            <td><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /><?php echo $k+1?></td>
+			            <td><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /><?php echo $row['id']?></td>
 			            <td><?php echo $row['name']?></td>
 			            <td><?php echo $row['code']?></td>
 			            <td><?php echo date('Y-m-d H:i', $row['create_time'])?></td>
@@ -89,8 +90,6 @@ $list = $uc->getDB()->listAll();
 				<button class="button-error pure-button" name="delete" type="submit"><?php echo $mbs_appenv->lang('delete')?></button>
 			</div>
 		</form>
-		
-		
     </div>
 </div>
 <div class=footer></div>

@@ -158,8 +158,7 @@ function _main($mbs_appenv){
 		CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
 		CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
 	
-		register_shutdown_function(function(){
-			global $mbs_appenv;
+		register_shutdown_function(function($mbs_appenv){		
 			if(false !== strpos(PHP_SAPI, 'cli')){
 				CDbPool::getInstance()->cli();
 				CMemcachedPool::getInstance()->cli();
@@ -167,7 +166,7 @@ function _main($mbs_appenv){
 				CDbPool::getInstance()->html();
 				CMemcachedPool::getInstance()->html();
 			}
-		});
+		}, $mbs_appenv);
 	
 		mbs_import('core', 'CLogAPI');
 		$mbs_appenv->setLogAPI(new CDBLogAPI(CDbPool::getInstance()->getDefaultConnection()));
@@ -210,7 +209,17 @@ function _main($mbs_appenv){
 		require $path;
 	}
 	
-	if(function_exists('fastcgi_finish_request'))
+	/*if(RTM_DEBUG){ // place before "fastcgi_finish_request" calling
+		if(false !== strpos(PHP_SAPI, 'cli')){
+			CDbPool::getInstance()->cli();
+			CMemcachedPool::getInstance()->cli();
+		}else if('html' == $mbs_appenv->item('client_accept')){
+			CDbPool::getInstance()->html();
+			CMemcachedPool::getInstance()->html();
+		}
+	}*/
+	
+	if(!RTM_DEBUG && function_exists('fastcgi_finish_request'))
 		call_user_func('fastcgi_finish_request');	
 }
 

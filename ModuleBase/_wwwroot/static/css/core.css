@@ -7,10 +7,10 @@ ul li{list-style-type:none;}
 .warpper{width:100%;min-height:100%;font-size:12px;position:relative;background-color:#ddd;}
 .content{margin:0 auto;padding:15px 0;width:1000px;min-height:600px;}
 
-.vertical-manu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
-.vertical-manu p.title{background-color:#fff;font-weight:bold; text-align:center;padding:3px 0;border-bottom:1px solid #bbb;}
-.vertical-manu a{color:rgb(0,100,200);padding:3px 5px; display:block;text-decoration:none;border:1px solid #fff;}
-.vertical-manu a:hover, .vertical-manu .cur{border:1px solid #85BBEF; background-color:#C6E0FA;}
+.vertical-menu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
+.vertical-menu p.title{background-color:#fff;font-weight:bold; text-align:center;padding:3px 0;border-bottom:1px solid #bbb;}
+.vertical-menu a{color:rgb(0,100,200);padding:3px 5px; display:block;text-decoration:none;border:1px solid #fff;}
+.vertical-menu a:hover, .vertical-menu .cur{border:1px solid #85BBEF; background-color:#C6E0FA;}
 
 .warpper p.table_title{font-size:14px; font-weight:bold;color:#555;text-align:left;padding:3px 5px;}
 .warpper table{width:100%;margin-bottom:30px;background-color:#fff;border-top:1px solid #ccc;}
@@ -24,14 +24,20 @@ ul li{list-style-type:none;}
 .success a.close, .error a.close{position:absolute; top:2px; right:5px; color:#666;font-size:60%;text-decoration:none;}
 .success a.close:hover, .error a.close:hover{color:#000;}
 .success {  background-color: #dff0d8;}
+.success a.link{font-size:80%;margin-left:10px;}
 .error { background-color: #f2dede;}
 
-.no-data{text-align:center;color:#bbb;font-size:80%;}
+.no-data{text-align:center;color:#bbb;font-size:80%;padding:10px 0;}
 .back{font-size:65%;color:rgb(92, 92, 245);float:right;display:inline-block;vertical-align:bottom;}
 .back:hover{color:blue;}
 
 .align-center{margin:0 auto;display:block;} /* blocked for some frames like 'div' */
-
+.pure-g{width:1024px;margin:0 auto;}
+.custom-restricted-width {display: inline-block;}
+.pure-u-1-6 .pure-menu{margin: 50px 0 0 30px;padding: 6px 0;}
+.page-num-menu{display:inline-block;width:inherit;float:right;}
+.oper-bar{margin-top:13px;}
+.oper-bar-pop{position:fixed;bottom:0;background-color:white;width:850px;}
 
 /*
  * -- PURE MENU STYLES --

@@ -1,4 +1,8 @@
 <?php
+if(!class_exists('Memcache', false)){
+	//trigger_error('memcache lib not exists!install if use');
+	class Memcache{}
+}
 class Memcached extends Memcache 
 {
 	private $arrServerPool = array();

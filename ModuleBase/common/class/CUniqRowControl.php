@@ -176,9 +176,9 @@ class CUniqRowControl
 	{
 		try
 		{
-			if($this->oCache)
-				$this->oCache->destroy();
 			$ret = $this->oDB->del($condtions);
+			if($ret && $this->oCache)
+				$this->oCache->destroy();
 		}
 		catch(Exception $e)
 		{

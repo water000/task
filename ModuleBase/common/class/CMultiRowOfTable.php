@@ -50,10 +50,11 @@ class CMultiRowOfTable extends CUniqRowOfTable
 			($this->pageId-1)*$this->numPerPage, $this->numPerPage);
 		try {
 			$pdos = $this->oPdoConn->query($sql);
+			$ret = $pdos->fetchAll(PDO::FETCH_ASSOC);
 		} catch (Exception $e) {
 			throw $e;
 		}
-		return $pdos;
+		return $ret;
 	}
 	
 	function getAll(){

@@ -26,6 +26,11 @@ class CCommonDef extends CModDef{
 					self::P_ARGS => array(
 					),
 				),
+				'version'    => array(
+					self::P_TLE => '版本信息',
+					self::G_DC  => '提供了版本的信息，以及修改，app的大概介绍',
+					self::P_OUT => '{"version_id":"1.0", "version_content"=>"", "content"=>"", "APP_URL"=>""}'
+				)
 			),
 	  );
 	}

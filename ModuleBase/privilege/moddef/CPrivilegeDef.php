@@ -111,11 +111,13 @@ class CPrivilegeDef extends CModDef {
 				'create_ts' => time()
 			));
 			
-			$ins = CPrivUserControl::getInstance(self::$appenv, $dbpool, $mempool);
+			$ins = CPrivUserControl::getInstance(self::$appenv, $dbpool, $mempool, 1);
+			$ins->setSecondKey(1);
+			$ins->delNode();
 			$ins->add(array(
 				'user_id'       => 1,
-				'priv_group_id' => $pgid,
-				'create_ts'     => time(),
+				'priv_group_id' => 1,
+				'join_ts'       => time(),
 			));
 		} catch (Exception $e) {
 			throw $e;

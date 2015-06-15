@@ -12,12 +12,13 @@ if(isset($_REQUEST['delete']) && isset($_REQUEST['id'])){
 	$infoctr = CInfoControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance());
 	$info_push_ctr = CInfoPushControl::getInstance($mbs_appenv,
-			CDbPool::getInstance(), CMemcachedPool::getInstance());
-	$info_push_ctr->setPrimaryKey($sess_uid);
-
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), $sess_uid);
+	
 	foreach($_REQUEST['id'] as $info_id){
 		$infoctr->setPrimaryKey($info_id);
 		$infoctr->destroy(array('creator_id'=>$sess_uid));
+		
+		$info_push_ctr->setSecondKey($info_id);// for db only
 		$info_push_ctr->destroy(array('info_id'=>$info_id));
 	}
 	$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', $mbs_appenv->toURL('list'));
@@ -48,10 +49,10 @@ if(isset($_REQUEST['__timeline'])){
 			$error[] = $mbs_appenv->lang('unsupport_attachment_type')
 			.'('.$_FILES['attachment']['name'].')';
 		}else{
-			$info['attachment_format']         = $atype;
-			$info['attachment_name']           = $_FILES['attachment']['name'];
 			$info['attachment_path']           = CInfoControl::moveAttachment(
 					'attachment', $atype, $mbs_appenv);
+			$info['attachment_format']         = $atype;
+			$info['attachment_name']           = $_FILES['attachment']['name'];
 			if(false === $info['attachment_path']){
 				$error[] = 'Move attachment error';
 			}
@@ -65,6 +66,7 @@ if(isset($_REQUEST['__timeline'])){
 				&& !empty($req_info['attachment_name'])){
 				unlink($mbs_appenv->uploadPath($req_info['attachment_path']));
 			}
+			$info_id = $_REQUEST['id'];
 		}else{
 			mbs_import('user', 'CUserDepSession', 'CUserSession');
 			
@@ -77,7 +79,7 @@ if(isset($_REQUEST['__timeline'])){
 			
 			$infoctr = CInfoControl::getInstance($mbs_appenv,
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
-			$ret = $infoctr->add($info);
+			$info_id = $ret = $infoctr->add($info);
 			$info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 		}
 		if(empty($ret)){
@@ -94,20 +96,23 @@ if(isset($_REQUEST['__timeline'])){
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
-.popimg{position:fixed;top:10%;left:10%;height:85%;display:none;overflow:scroll;}
-.popimg img{vertical-align:center;}
+.popimg{position:fixed;top:6%;left:6%;height:85%;width:85%;padding:1%;display:none;overflow:scroll;background-color:#333;}
+.popimg img{vertical-align:middle;display:block;margin:0 auto;}
 </style>
 </head>
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
 <div class="pure-g" style="margin-top: 20px;color:#777;">
-    <div class="pure-u-1-2 align-center">
+    <div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
+    <div class="pure-u-5-6">
 	    <?php if(isset($_REQUEST['__timeline'])){ if(!empty($error)){ ?>
 		<div class=error><p><?php echo implode('<br/>', $error)?></p>
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 		</div>
 		<?php }else {?>
 		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?>
+			<a href="<?php echo $mbs_appenv->toURL('push', '', array('id[]'=>$info_id))?>">
+				<?php echo $mbs_appenv->lang('push')?></a>
 			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
 		<?php }}?>
 		
