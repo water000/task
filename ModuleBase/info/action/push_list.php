@@ -116,7 +116,6 @@ td .abstract{width:95%; margin:10px auto;color:#555;font-size:80%;}
 			            <td><?php echo $recv_user['name']?></td>
 			            <td><div class=title><a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$row['info_id']))?>">
 			            	<?php echo CStrTools::txt2html($info['title'])?></a></div>
-			            	<div class=abstract><?php echo CStrTools::txt2html($info['abstract'])?></div>
 			            </td>
 			            <td><?php echo date('Y-m-d H:i:s', $row['push_time'])?></td>
 			            <td><?php echo $mbs_appenv->lang(CInfoPushControl::statusText($row['status']))?></td>

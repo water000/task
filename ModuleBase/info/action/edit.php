@@ -49,10 +49,14 @@ if(isset($_REQUEST['__timeline'])){
 			$error[] = $mbs_appenv->lang('unsupport_attachment_type')
 			.'('.$_FILES['attachment']['name'].')';
 		}else{
-			$info['attachment_path']           = CInfoControl::moveAttachment(
-					'attachment', $atype, $mbs_appenv);
-			$info['attachment_format']         = $atype;
-			$info['attachment_name']           = $_FILES['attachment']['name'];
+			//try {
+				$info['attachment_path']           = CInfoControl::moveAttachment(
+						'attachment', $atype, $mbs_appenv);
+				$info['attachment_format']         = $atype;
+				$info['attachment_name']           = $_FILES['attachment']['name'];
+			//} catch (Exception $e) {
+			//	$notice = $mbs_appenv->lang('unsupport_attachment_type').';'.$e->getMessage();
+		//	}
 			if(false === $info['attachment_path']){
 				$error[] = 'Move attachment error';
 			}
@@ -96,8 +100,12 @@ if(isset($_REQUEST['__timeline'])){
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
-.popimg{position:fixed;top:6%;left:6%;height:85%;width:85%;padding:1%;display:none;overflow:scroll;background-color:#333;}
-.popimg img{vertical-align:middle;display:block;margin:0 auto;}
+.popimg{position:fixed;top:0;left:0;width:100%;height:100%;display:none;background:#333;}
+.popimg div{height:89%;width:89%;margin:5%;overflow:auto;}
+.popimg img, .popimg video{vertical-align:middle;display:block;margin:0 auto;}
+div.thumb_img{position:relative;display:inline-block;}
+.thumb_img .player{position:absolute;width:50%;height:50%;top:25%;left:25%;
+	background: url(<?php echo $mbs_appenv->sURL('info/player.png')?>) no-repeat center center;}
 </style>
 </head>
 <body>
@@ -110,8 +118,8 @@ if(isset($_REQUEST['__timeline'])){
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 		</div>
 		<?php }else {?>
-		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?>
-			<a href="<?php echo $mbs_appenv->toURL('push', '', array('id[]'=>$info_id))?>">
+		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common'),  isset($notice) ? '('.$notice.')': '';?>
+			<a href="<?php echo $mbs_appenv->toURL('push', '', array('id[]'=>$info_id));?>">
 				<?php echo $mbs_appenv->lang('push')?></a>
 			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
 		<?php }}?>
@@ -123,36 +131,57 @@ if(isset($_REQUEST['__timeline'])){
 		    		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang('back', 'common')?></a></legend>
 		    	
 		            <label for="title"><?php echo $mbs_appenv->lang('title')?></label>
-		            <input id="title" class="pure-input-1-2" name="title" type="text" value="<?php echo $info['title']?>" required />
+		            <input id="title" class="pure-input-1-2" name="title" type="text" 
+		            	value="<?php echo htmlspecialchars($info['title'])?>" required />
 		            <br/>
 		            <label for="abstract"><?php echo $mbs_appenv->lang('abstract')?></label>
-		            <textarea id="abstract" class="pure-input-1-2" style="height: 100px;"
-		            	name="abstract"><?php echo CStrTools::txt2html($info['abstract'])?></textarea>
+		            <textarea id="abstract" class="pure-input-1-2" style="height: 200px;"
+		            	name="abstract"><?php echo htmlspecialchars($info['abstract'])?></textarea>
 		            <br/>
 		            <label for="attachment"><?php echo $mbs_appenv->lang('attachment')?></label>
 		            <input id="attachment" name="attachment" type="file" />
-		            <?php if(isset($info['attachment_name'])){ ?>
-		            <img src="<?php echo $mbs_appenv->uploadURL($info['attachment_path']).CInfoControl::MIN_ATTACH_SFX?>" 
-		            	__to_url="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" onclick="_img_click(this)"
-		            	title="<?php echo $info['attachment_name']?>" alt="<?php echo $info['attachment_name']?>" />
-		            <?php } ?>
-		       	 	<br/><br/><br/>
+		            
+		       	 	<?php if(isset($info['attachment_path']) && !empty($info['attachment_path'])){ ?>
+		            <div class="thumb_img">
+						<img __to_url="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" 
+			            	src="<?php echo $mbs_appenv->uploadURL($info['attachment_path']).CInfoControl::MIN_ATTACH_SFX?>" />
+			             <?php if($info['attachment_format'] == CInfoControl::AT_VDO){ ?>
+			             <div class=player __video_type="video/<?=pathinfo($info['attachment_name'], PATHINFO_EXTENSION )?>"></div>
+			             <?php }?>
+		            </div>
+					<?php echo $info['attachment_name']; } ?>
+					<br/> <br/>
 		            <button type="submit" class="pure-button pure-button-primary"><?php echo $page_title?></button>
 		    </fieldset>
 		</form>
     </div>
 </div>
-<div class="popimg" id="IDD_POPIMG"><img alt="" src="" /></div>
+<div class="popimg" id="IDD_POPIMG"><div></div></div>
 <script type="text/javascript">
-var g_popimg = document.getElementById("IDD_POPIMG");
-function _img_click(img){
-	var to = img.getAttribute("__to_url");
-	g_popimg.style.display = "block";
-	g_popimg.childNodes[0].src = to;
-}
-g_popimg.onclick = function(e){
-	g_popimg.style.display = "none";
-}
+(function(window, document){
+	var g_popimg = document.getElementById("IDD_POPIMG");
+	g_popimg.onclick = function(e){
+		g_popimg.style.display = "none";
+		g_popimg.firstChild.innerHTML = "";
+	}
+	var imgs = document.getElementsByTagName("img"), i;
+	for(i=0; i<imgs.length; i++){
+		if("thumb_img" == imgs[i].parentNode.className){
+			imgs[i].parentNode.onclick = function(e){
+				g_popimg.style.display = "block";
+				var player = this.getElementsByTagName("div");
+				if(player.length > 0){ 
+					g_popimg.firstChild.innerHTML = '<video controls="controls" autoplay="autoplay"><source src="'
+						+this.getElementsByTagName("img")[0].getAttribute("__to_url")
+						+'" type="'+player[0].getAttribute("__video_type")
+						+'" > </source>unsupport video format</video>';
+				}else{
+					g_popimg.firstChild.innerHTML = '<img alt="" src="'+this.getElementsByTagName("img")[0].getAttribute("__to_url")+'" />';
+				}
+			}
+		}
+	}
+})(window, document);
 </script>
 <div class=footer></div>
 </body>

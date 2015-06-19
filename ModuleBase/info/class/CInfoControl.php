@@ -16,6 +16,8 @@ class CInfoControl extends CUniqRowControl {
 	);
 	
 	const MIN_ATTACH_SFX = '_min';
+	const THUMB_HEIGHT   = 80;
+	const THUMB_FORMAT   = 'jpeg';
 	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
@@ -73,6 +75,7 @@ class CInfoControl extends CUniqRowControl {
 				break;
 			case 'gif':
 			case 'jpg':
+			case 'jpeg':
 			case 'png':
 			case 'swf':
 			case 'swc':
@@ -111,6 +114,29 @@ class CInfoControl extends CUniqRowControl {
 		return array($subdir, md5(uniqid('pfx_', true)));
 	}
 	
+	static function _thumbnail($src, $dest, $is_video=false){
+		try{
+			$nim = $im = new imagick();
+			$im->setCompressionQuality(100);
+			$im->readImage($src);
+			if($is_video){
+				foreach($im as $k => $sub){
+					$nim = $sub;
+					break;
+				}
+			}
+			$nim->setImageFormat(self::THUMB_FORMAT);
+			$nim->thumbnailImage(0, self::THUMB_HEIGHT);
+			$nim->writeImage($dest);
+			if($nim != $im){
+				$nim->clear();
+			}
+			$im->clear();
+		}catch (Exception $e){
+			throw $e;
+		}
+	}
+	
 	static function moveAttachment($filename, &$format, $appenv=null){
 		$appenv = empty($appenv) ? self::$appenv : $appenv;
 		if(empty($appenv)){
@@ -128,47 +154,50 @@ class CInfoControl extends CUniqRowControl {
 	
 		switch ($format){
 		case self::AT_IMG:
-			$new_width = $new_height = 50;
-			list($width, $height, $type) = getimagesize($_FILES[$filename]['tmp_name']);
-			
-			$ext = substr(image_type_to_extension($type), 1);
-			if($width > $new_width && !function_exists('imagecreatefrom'.$ext)){
-				trigger_error('unsupported image type: '.$ext);
-				return false;
-			}
-			
-			if(!move_uploaded_file($_FILES[$filename]['tmp_name'], $dest_path)){
-				trigger_error('move upload file error');
-				return false;
-			}
-			
-			if($width > $new_width){
-				$image_p = imagecreatetruecolor($new_width, $new_height);
-				$image = call_user_func('imagecreatefrom'.$ext, $dest_path);
-				imagecopyresampled($image_p, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-				call_user_func('image'.$ext, $image_p, $dest_path.self::MIN_ATTACH_SFX, 9);
-			}
-			break;
-		case self::AT_TXT:
-			$src = $_FILES[$filename]['tmp_name'].urlencode($_FILES[$filename]['name']);
-			var_dump($src);
-			rename($_FILES[$filename]['tmp_name'], $src);
-			self::word2png_jod($src, $dest_path);
-			unset($src);
-			$format = self::AT_IMG;
-			break;
 		case self::AT_VDO:
 			if(!move_uploaded_file($_FILES[$filename]['tmp_name'], $dest_path)){
-				trigger_error('move upload file error');
+				trigger_error('Failed to move upload file');
 				return false;
 			}
+			if($format == self::AT_IMG){
+				self::_thumbnail($dest_path, $dest_path.self::MIN_ATTACH_SFX, $format == self::AT_VDO);
+			}
+			/*$src = $_FILES[$filename]['tmp_name'].urlencode($_FILES[$filename]['name']);
+			rename($_FILES[$filename]['tmp_name'], $src);
+			
+			//try{
+				self::_thumbnail($src, $dest_path.self::MIN_ATTACH_SFX, $format == self::AT_VDO);
+			//}catch (Exception $e){
+			//	trigger_error('unsupport file type!'.$e->getMessage());
+			//}
+			
+			rename($src, $dest_path);
+			*/
+			
 			break;
-		case self::AT_PDF:
-			self::pdf2png($_FILES[$filename]['tmp_name'], $dest);
+		case self::AT_TXT:
 			$format = self::AT_IMG;
+			
+			$src = $_FILES[$filename]['tmp_name'].urlencode($_FILES[$filename]['name']);
+			rename($_FILES[$filename]['tmp_name'], $src);
+			try{
+				self::word2png_jod($src, $dest_path);
+			}catch (Exception $e){
+				throw $e;
+			}
+			unset($src);
+			
+			break;
+		
+		case self::AT_PDF:
+			$format = self::AT_IMG;
+			try{
+				self::pdf2img($_FILES[$filename]['tmp_name'], $dest_path);
+			}catch (Exception $e){
+				throw $e;
+			}
 			break;
 		}
-		
 		
 		return $subdir.'/'.$name;
 	}
@@ -178,12 +207,50 @@ class CInfoControl extends CUniqRowControl {
 		$pdf = $src.'.pdf';
 		exec (sprintf($cmd, $src, $pdf), $ret);
 		try {
-			self::pdf2png($pdf, $dest);
+			self::pdf2img($pdf, $dest);
 		} catch (Exception $e) {
 			throw $e;
 		}
 		
 		unlink($pdf);
+	}
+	
+	static function pdf2img($src, $dest){
+		try {
+			$im = new imagick();
+			$im->setCompressionQuality(100);
+			$im->readImage($src);
+		
+			$canvas = new imagick();
+			foreach($im as $k => $sub){
+				$sub->setImageFormat(self::THUMB_FORMAT);
+				$sub->stripImage();
+				//$sub->trimImage(0);
+				
+				$canvas->newImage($sub->getImageWidth()+10, 
+					$sub->getImageHeight()+10+($k+1 == $im->getNumberImages() ? 10 : 0), 
+					'gray');
+				$canvas->compositeImage($sub, Imagick::COMPOSITE_COPY, 5, 5);
+				
+				if(0 == $k){
+					$sub->thumbnailImage(0, self::THUMB_HEIGHT);
+					$sub->writeImage($dest.self::MIN_ATTACH_SFX);
+				}
+			}
+			
+			$canvas->resetIterator();
+			$nimg = $canvas->appendImages(true);
+			$nimg->setImageFormat(self::THUMB_FORMAT);
+			$nimg->writeImage($dest);
+			
+			
+			$nimg->clear();
+			$im->clear();
+			$canvas->clear();
+			
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
 	
 	static function word2png_com($src, $dest){
@@ -214,39 +281,6 @@ class CInfoControl extends CUniqRowControl {
 		}
 	}
 	
-	static function pdf2png($src, $dest){
-		try {
-			$im = new imagick();
-			$im->setCompressionQuality(100);
-			$im->readImage($src);
-		
-			$canvas = new imagick();
-			foreach($im as $k => $sub){
-				$sub->setImageFormat('png');
-				$sub->stripImage();
-				//$sub->trimImage(0);
-				
-				$canvas->newImage($sub->getImageWidth()+10, 
-					$sub->getImageHeight()+10+($k+1 == $im->getNumberImages() ? 10 : 0), 
-					'gray');
-				$canvas->compositeImage($sub, Imagick::COMPOSITE_COPY, 5, 5);
-			}
-			
-			$canvas->resetIterator();
-			$nimg = $canvas->appendImages(true);
-			$nimg->setImageFormat('png');
-			$nimg->writeImage($dest);
-			$nimg->thumbnailImage(50, 50);
-			$nimg->writeImage($dest.self::MIN_ATTACH_SFX);
-			
-			$nimg->clear();
-			$im->clear();
-			$canvas->clear();
-			
-		} catch (Exception $e) {
-			throw $e;
-		}
-	}
 }
 
 ?>

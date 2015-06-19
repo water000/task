@@ -44,6 +44,7 @@ $lang_zh_CN = array(
 	'edit'              => '编辑',
 	'user'              => '用户',
 		
+	'department'        => '部门',
 	'add_department'    => '添加部门',
 	'join_department'   => '加入相应业务部门',
 	'dep_exists'        => '部门已存在',

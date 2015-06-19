@@ -19,15 +19,15 @@ $lang_zh_CN = array(
 	'select_info'           => '选择消息',
 	'recipient'             => '接收人',
 	'push_time'             => '推送时间',
-	'wait_push'             => '等待下发',
-	'had_read'              => '已经阅读',
+	'wait_push'             => '未读',
+	'had_read'              => '已读',
 	'info_had_push'         => '消息已推送',
 	'confirm_delete_info'   => '确认删除选中的消息以及推送过的相关消息记录？',
 		
 	'menu'              => function(){
 		global $mbs_appenv;
 		$items = array(
-			$mbs_appenv->toURL('list')       => '列表',
+			$mbs_appenv->toURL('list')       => '消息列表',
 			$mbs_appenv->toURL('push_list')  => '推送记录',
 		);
 		$sub_items = array(

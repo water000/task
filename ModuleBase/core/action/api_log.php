@@ -37,6 +37,7 @@ h1{text-align:center;margin-bottom:15px;letter-spacing:normal;}
 #STATUS_BAR a{color:yellow;}
 .pure-u-1-4{width:27%;margin:1% 0 0 1%;word-break: break-word;  max-height: 380px;  overflow-y: auto;}
 .pure-u-1-10{width:9%;}
+.pure-g{width:100%;}
 </style>
 </head>
 <body>

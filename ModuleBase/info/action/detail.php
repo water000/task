@@ -54,7 +54,10 @@ video, img{width:100%;}
 		<div class=date><?php echo $mbs_appenv->lang('site_name'), '&nbsp;', date('Y-m-d H:i:s', $info['create_time'])?></div>
 		<div>
 		<?php if($info['attachment_format'] == CInfoControl::AT_VDO){?>
-		<video src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" controls="controls">unsupport video format</video>
+		<video preload="preload" controls="controls">
+			<source src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" type="video/<?=pathinfo($info['attachment_name'], PATHINFO_EXTENSION )?>"></source>
+			unsupport video format
+		</video>
 		<?php }else if($info['attachment_format'] == CInfoControl::AT_IMG){ ?>
 		<img src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" />
 		<?php } ?>

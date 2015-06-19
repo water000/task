@@ -54,6 +54,7 @@ $lang_zh_CN = array(
 	'list'                   => '列表',
 	'search'                 => '查询',
 	'back'                   => '返回',
+	'close'                  => '关闭',
 	'no_data'                => '暂无数据',
 	'operation_success'      => '操作成功',
 	'existed'                => '已存在',

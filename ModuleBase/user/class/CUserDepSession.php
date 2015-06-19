@@ -33,7 +33,7 @@ class CUserDepSession extends CModTag {
 			return $_SESSION['user_dep_login'][0];
 		}
 		
-		$mbs_appenv->echoex($mbs_appenv->lang('login_first', 'user'), 'USER_NOT_LOGIN_DEP', 
+		$mbs_appenv->echoex($mbs_appenv->lang(array('login_first', 'department'), 'user'), 'USER_NOT_LOGIN_DEP', 
 				$mbs_appenv->toURL('dep_login', 'user', array('redirect'=>$_SERVER['REQUEST_URI'])));
 		
 		return false;
