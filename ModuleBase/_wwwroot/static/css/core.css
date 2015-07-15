@@ -32,7 +32,8 @@ ul li{list-style-type:none;}
 .back:hover{color:blue;}
 
 .align-center{margin:0 auto;display:block;} /* blocked for some frames like 'div' */
-.pure-g{width:1024px;margin:0 auto;}
+.pure-g{  letter-spacing: 0;}
+.wrapper{width:1024px;margin:20px auto;}
 .custom-restricted-width {display: inline-block;}
 .pure-u-1-6 .pure-menu{margin: 50px 0 0 30px;padding: 6px 0;}
 .page-num-menu{display:inline-block;width:inherit;float:right;}

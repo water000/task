@@ -15,8 +15,6 @@ class CAppEnvironment{
 		'charset'           => 'utf-8',
 		'lang'              => 'zh_CN',
 		'class_file_suffix' => '.php',
-		'default_module'    => 'user',
-		'default_action'    => 'login',
 		/********** config end **********/
 		
 		/********** runtime item **********/
@@ -26,14 +24,13 @@ class CAppEnvironment{
 		'client_accept'     => '', // assigned by __construct()
 		'cur_mod'           => '', // assigned by fromURL()
 		'cur_action'        => '', // assigned by fromURL()
-		'cur_action_url'    => '', // assigned by fromURL()
-		
+		'cur_action_url'    => '', // assigned by fromURL()		
 	);
 	
 	private $mod_cfg = array();
 	
 	private $log_api = null; // an instance of core.CLogAPI
-	
+		
 	private function __construct(){
 		$this->env['app_root'] = realpath(dirname(__FILE__).'/..').'/';
 		$this->env['web_root'] = empty($this->env['web_root']) ? 
@@ -105,13 +102,20 @@ class CAppEnvironment{
 			.(empty($args) ? '' : '?'.http_build_query($args));
 	}
 	
-	function fromURL($url=''){
+	/**
+	 * 
+	 * @param string $mod default module if not exists
+	 * @param string $action default action if not exits
+	 * @param unknown $args
+	 * @return array 
+	 */
+	function fromURL($mod='', $action='', $args=array()){
 		/*
 		// this version use the 'm' and 'a' to request directly without using any url-rewrite conditions
-		parse_str(empty($url) ? $_SERVER['QUERY_STRING'] : $url, $arr);
+		parse_str($_SERVER['QUERY_STRING'], $arr);
 		$arr2 = array();
-		$arr2[0] = isset($arr['m']) ? $arr['m'] : $this->env['default_module'];
-		$arr2[1] = isset($arr['a']) ? $arr['a'] : 'index';
+		$arr2[0] = isset($arr['m']) ? $arr['m'] : '';
+		$arr2[1] = isset($arr['a']) ? $arr['a'] : '';
 		$arr2[] = $arr;
 		*/
 		
@@ -120,16 +124,23 @@ class CAppEnvironment{
   		//RewriteRule ^/static/(.+)   -                       [L,QSA]
 		//RewriteRule ^/upload/(.+)   -                       [L,QSA]
   		//RewriteRule ^/favicon.ico   -                       [L,QSA]
-  		//RewriteRule ^(.*)$          /index.php?__path__=$1  [B,L,QSA] 
-		$arr = explode('/', trim($_GET['__path__'], '/'));
-		$arr2[0] = isset($arr['0']) ? $arr['0'] : $this->env['default_module'];
-		$arr2[1] = isset($arr['1']) ? $arr['1'] : $this->env['default_action'];
-		unset($_GET['__path__']);
-		$arr2[] = $_GET;
-
-		$this->env['cur_mod']    = $arr2[0];
-		$this->env['cur_action'] = $arr2[1];
-		$this->env['cur_action_url'] = $this->toURL($arr2[1], $arr2[0]);
+  		//RewriteRule ^(.*)$          /index.php?__path__=$1  [B,L,QSA]
+		$arr2 = array('', '', '');
+		
+  		if(isset($_GET['__path__'])){ 
+			$arr = explode('/', trim($_GET['__path__'], '/'));
+			$arr2[0] = empty($arr[0]) ? $mod : $arr[0];
+			$arr2[1] = isset($arr[1]) ? $arr[1] : $action;
+			unset($_GET['__path__'], $_REQUEST['__path__']);
+			$arr2[] = $_GET;			
+  		}else{
+  			$arr2[0] = $mod;
+  			$arr2[1] = $action;
+  			$arr2[]  = $args;
+  		}
+  		$this->env['cur_mod']    = $arr2[0];
+  		$this->env['cur_action'] = $arr2[1];
+  		$this->env['cur_action_url'] = $this->toURL($arr2[1], $arr2[0]);
 
 		return $arr2;
 	}
@@ -149,14 +160,18 @@ class CAppEnvironment{
 				$filename = 'js/'.$filename;
 				break;
 			default :
-				$filename = 'img/'.$filename;
+				$filename = 'images/'.$filename;
 				break;
 		}
 		return $this->env['web_root'].'static/'.$filename;
 	}
 	
 	function getModDefInfo($mod){
-		$class = 'C'.ucfirst($mod).'Def';
+		$arr = explode('_', $mod);
+		foreach($arr as &$v){
+			$v = ucfirst($v);
+		}
+		$class = 'C'.implode('', $arr).'Def';
 		$path = $this->getDir($mod, self::FT_MODDEF).$class.$this->env['class_file_suffix'];
 		return array($class, $path);
 	}

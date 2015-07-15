@@ -35,171 +35,166 @@ if(empty($priv_list)){
 
 $priv_group = CPrivGroupControl::decodePrivList($priv_list['priv_list']);
 
+
+function _fn_icon($mod, $ac){
+	static $icon_map = array(
+		'info.edit' => 'ico1',
+		'info.list' => 'ico2',
+
+		'info_push.push'         => 'ico3',
+		'info_push.push_list'    => 'ico4',
+		'info_push.comment_list' => 'ico5',
+	);
+	echo isset($icon_map[$mod.'.'.$ac]) ?  '<i class="ico '. $icon_map[$mod.'.'.$ac]. '"></i>' : '';
+}
+
 ?>
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
-<style type="text/css">
-body{overflow:hidden;}
-iframe{width:100%;border:0;}
-.actions{width:160px;padding:8px;position:fixed;right:10px;;bottom:35px;}
-.actions div.groups{width:140px;font-size:12px;position:relative;}
-
-.actions a{color:rgb(0,100,200);}
-.actions a.mod{font-weight:bold;border-top:1px solid #e1e1e1;}
-.actions a.mod span{margin-left:2px;color:#777;font-size:12px;float:right;}
-.actions div.group{display:none;}
-.actions div.group a{padding-left: 15px;}
-.actions .blur_a{background-color:#fff;}
-
-.change_win{width:15px;position:absolute;right:0;top:0;padding:0;}
-.vertical-menu p.title{border-bottom:0;}
-</style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,minimum-scale=1.0,maximum-scale=1.0">
+	<title><?php mbs_title()?></title>
+	<!--[if lt ie 9]>
+		<script>
+			document.createElement("article");
+			document.createElement("section");
+			document.createElement("aside");
+			document.createElement("footer");
+			document.createElement("header");
+			document.createElement("nav");
+	</script>
+	<![endif]-->
+	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css"/>
+	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>">
+	<style type="text/css">
+	iframe{width:1100px;border:0;}
+	</style>
 </head>
 <body>
-<iframe src=""></iframe>
-<div class=actions>
-	<div class="vertical-menu groups">
-		<a class=change_win href="#" onclick="_change(this);">-</a>
-		<p class=title><?php echo $mbs_appenv->lang('mgrlist')?></p>
-			<div>
-			<?php 
-			if(isset($priv_group[CPrivGroupControl::PRIV_TOPMOST])){
-				$list = $mbs_appenv->getModList();
-				foreach($list as $mod){ 
-					$moddef=mbs_moddef($mod);
-					if(empty($moddef)) continue;
-					$actions = $moddef->filterActions(CModDef::P_MGR);
-					if(empty($actions)) continue;
-			?>
-			<a href="#" class=mod>
-				<?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
-			</a><div class=group><?php foreach($actions as $ac => $title){?>
-				<a href="#" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)"><?php echo $title?></a><?php }?></div>
-			<?php } }else{ foreach($priv_group as $mod => $actions){ $moddef=mbs_moddef($mod);if(empty($moddef)) continue; ?>
-			<a href="#" class=mod>
-				<?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?><span>&gt;</span>
-			</a><div class=group><?php foreach($actions as $ac){?>
-				<a href="#" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)"><?php echo $moddef->item(CModDef::PAGES, $ac, CModDef::P_TLE)?></a><?php }?></div>
-			<?php }} ?>
-		</div>
-	</div>
+<div class=top-win>
+	<!-- 头部 -->
+	<header class="header"><?php echo $mbs_appenv->lang('header_html')?></header>
+	<!-- 头部end -->
+	<!-- 左边栏 -->
+	<nav id="navBar">
+		<dl class="navBar">
+		<?php 
+		if(isset($priv_group[CPrivGroupControl::PRIV_TOPMOST])){
+			$list = $mbs_appenv->getModList();
+			foreach($list as $mod){
+				if('core' == $mod) continue;
+				$moddef=mbs_moddef($mod);
+				if(empty($moddef)) continue;
+				$actions = $moddef->filterActions(CModDef::P_MGR);
+				if(empty($actions)) continue;
+		?>
+		<dt class="group-type"><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></dt>
+		<?php foreach($actions as $ac => $def){?>
+		<dd class="type"><a href="#" class="link-type" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)">
+			<?php _fn_icon($mod, $ac)?><?php echo $def[CModDef::P_TLE]?></a></dd>
+		<?php }}}else{  ?>
+		<?php foreach($priv_group as $mod => $actions){ if('core' == $mod) continue; $moddef=mbs_moddef($mod);if(empty($moddef)) continue; ?>
+		<dt class="group-type"><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></dt>
+		<?php foreach($actions as $ac => $def){?>
+		<dd class="type"><a href="#" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)">
+			<?php echo _fn_icon($mod, $ac)?><?php echo $def[CModDef::P_TLE]?></a></dd>
+		<?php }}} ?>
+		</dl>
+	</nav>
+	<!-- 左边栏end -->
+	<!-- 内容主体 -->
+	<section class="wrap" id="wrap">
+		<iframe src=""></iframe>
+	</section>
+	<!-- 内容主体end -->
+
+	<!-- 加载jquery.js -->
+	<!--[if ie 6]>
+	<script src="<?php echo $mbs_appenv->sURL('jquery-1.3.1.min.js')?>"></script>
+	<script src="<?php echo $mbs_appenv->sURL('fixIE6.js')?>"></script>
+	<![endif]-->
 </div>
 <script type="text/javascript">
-var visit_mod_list = [], g_max_mod_num = 3;
+var frame = document.getElementsByTagName("iframe")[0], prev = null, visit_actions = [];
+var links = document.getElementsByTagName("a"), i, j=0, firstlink=null;
 
-function _push_mod(mod){
-	var i;
-	for(i=0; i<visit_mod_list.length; i++){
-		if(visit_mod_list[i] == mod){
-			return;
+for(i=0; i<links.length; i++){
+	if("DD" == links[i].parentNode.tagName){
+		if(document.location.search.indexOf("to=") != -1){
+			if(document.location.href.indexOf(encodeURIComponent(links[i].getAttribute("data"))) != -1){
+				_to.call(links[i], decodeURIComponent(document.location.search.substr(4)));
+				break;
+			}
 		}
-	}
-	if(g_max_mod_num == visit_mod_list.length){
-		var m = visit_mod_list.shift();
-		m.style.display = "none";
-	}
-	visit_mod_list.push(mod);
-}
-function _pull_mod(mod){
-	var i;
-	for(i=0; i<visit_mod_list.length; i++){
-		if(visit_mod_list[i] == mod){
-			visit_mod_list.splice(i, 1);
-			return;
+		else{
+			_to(links[i]);
+			break;
 		}
-	}
-}
-function _change(oa){
-	if("-" == oa.innerHTML){
-		oa.parentNode.getElementsByTagName("div")[0].style.display = "none";
-		oa.innerHTML = "+";
-	}else{
-		oa.parentNode.getElementsByTagName("div")[0].style.display = "block";
-		oa.innerHTML = "-";
 	}
 }
 
 function _to(link, is_redirect){
-	var url = link.getAttribute("data");
+	var url;
+	
+	if("object" == typeof link){
+		url = link.getAttribute("data");
+	}else{
+		url = link;
+		link = this;
+	}
 
 	is_redirect = 1 == arguments.length ? true : is_redirect;
 	
 	if(prev != null){
-		prev.className = '';
+		prev.className = prev.className.replace("check", "");
 	}
-	link.className = "cur";
+	link.className += " check";
 	prev = link;
 	
-	if(is_redirect)
+	if(is_redirect){
 		frame.src = url;
+		frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
+			if (frame.contentWindow.document.readyState=="complete"){
+				frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-5)+"px";
+				document.title = frame.contentWindow.document.title;
+				history.pushState(null, null, "<?php echo $mbs_appenv->item('cur_action_url') ?>?to="
+						+encodeURIComponent( frame.contentWindow.location.href));
+				//frame.contentWindow.document.body.onclick = function(e){
+				//	if(prev)
+				//		prev.className = "blur_a";
+				//}
+				
+				if( -1 == frame.contentWindow.document.location.href.indexOf(prev.getAttribute("data")) ){
+					for(var i=0; i<links.length; i++){
+						if(frame.contentWindow.document.location.href.indexOf(links[i].getAttribute("data")) != -1){
+							_to(links[i], false);
+							break;
+						}
+					}
+					if(i == links.length){
+						document.location = frame.contentWindow.document.location.href;
+					}
+				}
+			}
+		}
+	}
 	
 }
 
-var frame = document.getElementsByTagName("iframe")[0], prev = null, visit_actions = [];
-var links = document.getElementsByTagName("a"), i, j=0, firstlink=null;
-for(var i=0, j=0; i<links.length; i++){
-	if("mod" == links[i].className){
-		links[i].onclick = function(e){
-			if("none" == this.nextSibling.style.display){
-				this.nextSibling.style.display = "block";
-				_push_mod(this.nextSibling);
-			}else{
-				this.nextSibling.style.display = "none";
-				_pull_mod(this.nextSibling);
-			}
-		}
-		if(j++<g_max_mod_num){
-			links[i].nextSibling.style.display = "block";
-			_push_mod(links[i].nextSibling);
-		}else{
-			links[i].nextSibling.style.display = "none";
-		}
-			
-	}else{
-		if("group" == links[i].parentNode.className && null == firstlink){
-			firstlink = links[i];
-			firstlink.onclick.apply(firstlink);
-		}
+/*document.onkeydown = frame.contentWindow.document.onkeydown = function(e){
+	e = e || this.parentWindow.event;
+	if(116 == (e.keyCode || e.which)){ // forriden F5 key in parent window
+		frame.contentWindow.location.reload();
+		e.returnValue = false;
+		e.cancelBubble = true;
+		e.keyCode = 0;
+		return false;
 	}
-}
+}*/
 
 
-frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-5)+"px";
-frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
-	if (frame.contentWindow.document.readyState=="complete"){
-		frame.contentWindow.document.body.onclick = function(e){
-			if(prev)
-				prev.className = "cur blur_a";
-		}
-		document.title = frame.contentWindow.document.title;
-		
-		if(prev.getAttribute("data") != frame.contentWindow.document.location.pathname){
-			for(var i=0; i<links.length; i++){
-				if(links[i].getAttribute("data") == frame.contentWindow.document.location.pathname){
-					_to(links[i], false);
-					break;
-				}
-			}
-			if(i == links.length){
-				document.location = frame.contentWindow.document.location.href;
-			}
-		}
 
-		document.onkeydown = frame.contentWindow.document.onkeydown = function(e){
-			e = e || this.parentWindow.event;
-			if(116 == (e.keyCode || e.which)){ // forriden F5 key in parent window
-				frame.contentWindow.location.reload();
-				e.returnValue = false;
-				e.cancelBubble = true;
-				e.keyCode = 0;
-				return false;
-			}
-			
-		}
-	}
-}
 
 </script>
 </body>

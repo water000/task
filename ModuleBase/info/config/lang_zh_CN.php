@@ -3,7 +3,7 @@
 $lang_zh_CN = array(
 	'info'                  => '消息',
 	'edit_info'             => '编辑消息',
-	'add_info'              => '添加消息',
+	'add_info'              => '创建信息',
 	'title'                 => '标题',
 	'abstract'              => '概要',
 	'attachment'            => '附件',
@@ -23,6 +23,17 @@ $lang_zh_CN = array(
 	'had_read'              => '已读',
 	'info_had_push'         => '消息已推送',
 	'confirm_delete_info'   => '确认删除选中的消息以及推送过的相关消息记录？',
+	'comment'               => '批阅',
+	'comment_person'        => '批阅人',
+	'latest_days'           => '近%d天',
+		
+	'all_info'              => '所有信息',
+	'total_count'           => '共%d条',
+	'title_keys'            => '标题关键字',
+	'create_time'           => '创建时间',
+	'please_input'          => '请输入...',
+	'click_to_add'          => '点击添加',
+	'cancel'                => '取消',
 		
 	'menu'              => function(){
 		global $mbs_appenv;

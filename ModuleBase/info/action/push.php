@@ -88,9 +88,8 @@ h3 a{font-size:80%;float:right;}
 </head>
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<div class="pure-g" style="margin-top: 20px;color:#777;">
-    <div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
-    <div class="pure-u-5-6">
+<div class="pure-g wrapper">
+    <div class="pure-u-1">
 		<form method="post">
 		<div>
 			 <div class="pure-u-2-3">

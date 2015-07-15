@@ -93,7 +93,9 @@ if(isset($_REQUEST['phone'])){
 					session_write_close();
 					
 					if('files' == ini_get('session.save_handler')){
-						unlink(session_save_path().'/sess_'.$llog['token']);
+						$sess_path = session_save_path();
+						$sess_path = empty($sess_path) ? getenv('TMP') : $sess_path;
+						unlink($sess_path.'/sess_'.$llog['token']);
 					}else{
 						session_id($llog['token']);
 						session_destroy();
@@ -143,7 +145,7 @@ img{vertical-align:bottom;margin: 0 6px;}
 <a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 </div>
 <?php }}?>
-<div class="pure-g main-content">
+<div class="pure-g wrapper">
     <div class="pure-u-1-3"></div>
     <div class="pure-u-1-3">
     	<form class="pure-form pure-form-stacked" method="post">

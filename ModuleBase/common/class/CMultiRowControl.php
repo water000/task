@@ -41,6 +41,7 @@ class CMultiRowControl extends CUniqRowControl
 	{
 		parent::setPrimaryKey($key);
 		$this->bufkey = $this->primaryKey.':'.$this->oDB->getPageId();
+		$this->total = -1;
 	}
 	
 	function setPageId($id)

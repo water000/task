@@ -52,9 +52,10 @@ function mbs_moddef($mod){
 		$obj = new $class($mbs_appenv);
 		if(! $obj instanceof CModDef){
 			$obj = null;
-			trigger_error($class.' not instance of CModDef', E_USER_ERROR);
+			trigger_error($class.' not instance of CModDef', E_USER_WARNING);
 		}
 	}else{
+		var_dump($class, $path);
 		trigger_error($mod.' mod not exists', E_USER_WARNING);
 	}
 	
@@ -126,7 +127,10 @@ function _main($mbs_appenv){
 			array_walk_recursive($_REQUEST, $func);
 		}
 	
-		list($mod, $action, $args) = $mbs_appenv->fromURL();
+		list($mod, $action, $args) = $mbs_appenv->fromURL(
+			$mbs_appenv->config('default_module', 'common'),
+			$mbs_appenv->config('default_action', 'common')
+		);
 		
 		header('Content-Type: text/html; charset='.$mbs_appenv->item('charset'));
 	}
@@ -154,11 +158,11 @@ function _main($mbs_appenv){
 
 	$mbs_appenv->config('', 'common');
 	
-	if(RTM_DEBUG){
+	if(RTM_DEBUG && !isset($mbs_cur_actiondef[CModDef::P_DOF])){
 		CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
 		CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
 	
-		register_shutdown_function(function($mbs_appenv){		
+		register_shutdown_function(function($mbs_appenv){
 			if(false !== strpos(PHP_SAPI, 'cli')){
 				CDbPool::getInstance()->cli();
 				CMemcachedPool::getInstance()->cli();
@@ -190,11 +194,10 @@ function _main($mbs_appenv){
 		$filters = $mbs_appenv->config('action_filters', 'common');
 		if(!empty($filters)){
 			foreach($filters as $ftr){
-				if(3 == count($ftr) && $ftr[0]($mbs_cur_actiondef)){
-					mbs_import($ftr[1], $ftr[2]);
-					$obj = new $ftr[2]();
-					if(!$obj->oper(null)){
-						$mbs_appenv->echoex($obj->getError(), 'AC_FTR_ERROR');
+				if(count($ftr) >=3 && $ftr[0]($mbs_cur_actiondef)){
+					$mdef = mbs_moddef($ftr[1]);
+					if(!$mdef->filter($ftr[2], null, $err)){
+						$mbs_appenv->echoex($err, 'AC_FTR_ERROR');
 						exit(1);
 					}
 				}
@@ -203,7 +206,7 @@ function _main($mbs_appenv){
 		
 		$path = $mbs_appenv->getActionPath($action, $mod);
 		if(!file_exists($path)){
-			header('HTTP/1.1 400');
+			header('HTTP/1.1 404');
 			trigger_error('Invalid request: '.$mod.'.'.$action, E_USER_ERROR);
 		}
 		require $path;

@@ -15,6 +15,8 @@ else if(isset($_REQUEST['X-LOGIN-TOKEN'])){
 }
 
 $default = array(
+	'default_module'       => 'user',
+	'default_action'       => 'login',
 	'table_prefix'         => 'mbs_',
 	'database'             => array(
 		// format: host_port_dbname, the 'dbname' is a database name that should be created by yourself
@@ -32,7 +34,7 @@ $default = array(
 		//the class must extends the core.CModTag, and the params in function 'oper' are 'null'
 		
 		array(function($action_def){return !empty($action_def) && isset($action_def[CModDef::P_MGR]); }, 
-			'privilege', 'CPrivFilter'),
+			'privilege', 'privFtr'),
 		
 		//array(function($action_def){return !empty($action_def) && isset($action_def[CModDef::P_OUT]); }, '', ''),
 		

@@ -45,9 +45,8 @@ $search_keys = array_merge($search_keys, $req_search_keys);
 <a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 </div>
 <?php }}?>
-<div class="pure-g" style="margin-top: 20px;color:#777;">
-	<div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
-    <div class="pure-u-5-6">
+<div class="pure-g wrapper">
+    <div class="pure-u-1">
     	<form class="pure-form" method="post">
     		<fieldset>
         		<legend><?php echo $mbs_appenv->lang(array('user', 'search'))?></legend>

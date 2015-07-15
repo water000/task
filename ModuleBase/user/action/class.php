@@ -27,9 +27,8 @@ $list = $uc->getDB()->listAll();
 </head>
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<div class="pure-g" style="margin-top: 20px;color:#777;">
-    <div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
-    <div class="pure-u-5-6">
+<div class="pure-g wrapper">
+    <div class="pure-u-1">
     	<?php if(isset($_REQUEST['name']) && !empty($error)){ ?>
 		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>

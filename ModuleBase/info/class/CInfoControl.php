@@ -5,6 +5,8 @@ class CInfoControl extends CUniqRowControl {
 	private static $instance   = null;
 	private static $appenv     = null;
 	
+	const TBNAME = 'info';
+	
 	const AT_TXT = 1;
 	const AT_VDO = 2;
 	const AT_IMG = 3;
@@ -36,7 +38,7 @@ class CInfoControl extends CUniqRowControl {
 				$memconn = $mempool->getConnection();
 				self::$instance = new CInfoControl(
 						new CUniqRowOfTable($dbpool->getDefaultConnection(),
-								mbs_tbname('info'), 'id', $primarykey),
+								mbs_tbname(self::TBNAME), 'id', $primarykey),
 						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CInfoControl') : null,
 						$primarykey
 				);
@@ -54,7 +56,7 @@ class CInfoControl extends CUniqRowControl {
 	}
 
 	static function type2txt($type){
-		return isset(self::$ATYPE_MAP[$type]) ? self::$ATYPE_MAP[$type] : '';
+		return isset(self::$ATYPE_MAP[$type]) ? self::$ATYPE_MAP[$type] : 'TXT';
 	}
 	
 	static function txt2type($txt){

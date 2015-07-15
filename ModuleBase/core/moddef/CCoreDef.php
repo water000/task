@@ -39,7 +39,7 @@ class CCoreDef extends CModDef{
 					self::P_MGR => true
 				),
 				'api_log'   => array(
-					self::P_TLE => '接口访问日志',
+					self::P_TLE => '接口日志',
 					self::G_DC  => '接口访问的日志，记录了输入、输出、、时间、以及其他相关信息',
 					self::P_MGR => true
 				)

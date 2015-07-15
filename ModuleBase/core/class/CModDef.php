@@ -31,14 +31,15 @@ abstract class CModDef {
 	
 	CONST PAGES  = 'pages';  // the pages in the module.
 	CONST P_TLE  = 'p_title'; // the page's title where displayed in <title></title>
-	CONST P_MGR  = 'p_mgr'; // indicate whether the page is a managment page
+	CONST P_MGR  = 'p_mgr'; // indicate whether the page is a management page
 	CONST P_OUT  = 'p_out'; // output something like json format to mobile app
-	CONST P_LNK  = 'p_link'; // the page whether be a hyper link singly
 	CONST P_ARGS = 'p_args'; // the page's arguments appeared in $_REQUEST, $args, $_FILES
+	CONST P_DOF  = 'p_debug_output_off'; // close the debug_output if set
+	//CONST P_LGC  = 'p_logo_class'; // <a href="..."><i class=P_LGC></i>P_TLE</a>
 	CONST PA_TYP = 'pa_type';    // the arg's type what appears in gettype(). default is 'string'
 	CONST PA_REQ = 'pa_required';// the arg MUST be required in the page. default is 1
 	CONST PA_DEP = 'pa_depend'; // the arg which appears in the same page. default is null
-	CONST PA_EMP = 'pa_empty';  // allow emmpty on the arg(default is 0). NOTICE: the empty validation only check the length of the trimed arg
+	CONST PA_EMP = 'pa_empty';  // allow empty on the arg(default is 0). NOTICE: the empty validation only check the length of the trimed arg
 	CONST PA_TRI = 'pa_trim';   // ignore triming on the arg if set to 0. default is 1(trim).
 	CONST PA_RNG = 'pa_range'; // the range of the arg's length. split by comma, like '5,12'.  arg>=5 && arg<12
 	
@@ -46,7 +47,7 @@ abstract class CModDef {
 	CONST LTN    = 'listener';
 	CONST MGR    = 'mgrpage';
 	CONST LD_FTR = 'load_filter'; // do filter checking on each script in the module
-	CONST DEPEXT = 'dependent'; // checking wether the current environment included the extension or function. = array(ext1, ext2, ...)
+	CONST DEPEXT = 'dependent'; // checking whether the current environment included the extension or function. = array(ext1, ext2, ...)
 	
 	protected static $appenv = null;
 	private $desc = null;
@@ -138,7 +139,7 @@ abstract class CModDef {
 				}
 			}
 			if($i == $num)
-				$ret[$ac] = $def[CModDef::P_TLE];
+				$ret[$ac] = $def;
 		}
 		
 		return $ret;
@@ -429,7 +430,7 @@ abstract class CModDef {
 		$error = array();
 		if(isset($this->desc[self::PAGES][$action][self::P_ARGS])){
 			$defopts = array(
-	 			self::PA_REQ => 1, 
+	 			self::PA_REQ => 0, 
 	 			self::PA_DEP => null, 
 	 			self::PA_EMP => 0, 
 	 			self::PA_TRI => 1,

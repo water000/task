@@ -43,24 +43,26 @@ if(isset($_REQUEST['__timeline'])){
 
 	$info = array_intersect_key($_REQUEST, $info);
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
-	if($_FILES['attachment']['size'] > 0){
+	if(UPLOAD_ERR_OK == $_FILES['attachment']['error']){
 		$atype = CInfoControl::getAttachType($_FILES['attachment']['name']);
 		if(0 == $atype){
 			$error[] = $mbs_appenv->lang('unsupport_attachment_type')
 			.'('.$_FILES['attachment']['name'].')';
 		}else{
-			//try {
+			try {
 				$info['attachment_path']           = CInfoControl::moveAttachment(
 						'attachment', $atype, $mbs_appenv);
 				$info['attachment_format']         = $atype;
 				$info['attachment_name']           = $_FILES['attachment']['name'];
-			//} catch (Exception $e) {
-			//	$notice = $mbs_appenv->lang('unsupport_attachment_type').';'.$e->getMessage();
-		//	}
+			} catch (Exception $e) {
+				$error[] = $mbs_appenv->lang('unsupport_attachment_type').';'.$e->getMessage();
+			}
 			if(false === $info['attachment_path']){
 				$error[] = 'Move attachment error';
 			}
 		}
+	}else if($_FILES['attachment']['error'] != UPLOAD_ERR_NO_FILE){
+		$error[] = $mbs_appenv->lang($_FILES['attachment']['error']);
 	}
 	
 	if(empty($error)){
@@ -93,12 +95,26 @@ if(isset($_REQUEST['__timeline'])){
 }
 
 ?>
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,minimum-scale=1.0,maximum-scale=1.0">
 <title><?php mbs_title($page_title)?></title>
-<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
-<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<!--[if lt ie 9]>
+	<script>
+		document.createElement("article");
+		document.createElement("section");
+		document.createElement("aside");
+		document.createElement("footer");
+		document.createElement("header");
+		document.createElement("nav");
+	</script>
+<![endif]-->
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('core.css')?>" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('createInfo.css')?>" />
 <style type="text/css">
 .popimg{position:fixed;top:0;left:0;width:100%;height:100%;display:none;background:#333;}
 .popimg div{height:89%;width:89%;margin:5%;overflow:auto;}
@@ -109,52 +125,53 @@ div.thumb_img{position:relative;display:inline-block;}
 </style>
 </head>
 <body>
-<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<div class="pure-g" style="margin-top: 20px;color:#777;">
-    <div class="pure-u-1-6"><?php call_user_func($mbs_appenv->lang('menu'))?></div>
-    <div class="pure-u-5-6">
-	    <?php if(isset($_REQUEST['__timeline'])){ if(!empty($error)){ ?>
-		<div class=error><p><?php echo implode('<br/>', $error)?></p>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+<div class="createInfo">
+	<?php if(isset($_REQUEST['__timeline'])){ if(!empty($error)){ ?>
+	<div class=error><p><?php echo implode('<br/>', $error)?></p>
+	<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+	</div>
+	<?php }else {?>
+	<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common'),  isset($notice) ? '('.$notice.')': '';?>
+		<a href="<?php echo $mbs_appenv->toURL('push', '', array('id[]'=>$info_id));?>">
+			<?php echo $mbs_appenv->lang('push')?></a>
+			<?php echo $mbs_appenv->lang(array('or', 'continue')), $page_title?>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
+	<?php }}?>
+	<h2 class="tit"><?php echo $mbs_appenv->lang('add_info')?></h2>
+	<form action="" method="post" enctype="multipart/form-data">
+		<input type="hidden" name="__timeline" value="<?php echo time()?>" />
+		<div class="inpBox mb17"> 
+			<label for="" class="labelL"><?php echo $mbs_appenv->lang('title')?>&nbsp;:&nbsp;</label>
+			<input type="text" class="inpTit" name="title" required
+				value="<?php echo htmlspecialchars($info['title'])?>" placeholder="<?php echo $mbs_appenv->lang('please_input')?>...">
 		</div>
-		<?php }else {?>
-		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common'),  isset($notice) ? '('.$notice.')': '';?>
-			<a href="<?php echo $mbs_appenv->toURL('push', '', array('id[]'=>$info_id));?>">
-				<?php echo $mbs_appenv->lang('push')?></a>
-			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
-		<?php }}?>
-		
-    	<form name="_form" class="pure-form pure-form-stacked" enctype="multipart/form-data" method="post">
-    		<input type="hidden" name="__timeline" value="<?php echo time()?>" />
-		    <fieldset>
-		    	<legend style="font-size: 150%;"><?php echo $page_title?>
-		    		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang('back', 'common')?></a></legend>
-		    	
-		            <label for="title"><?php echo $mbs_appenv->lang('title')?></label>
-		            <input id="title" class="pure-input-1-2" name="title" type="text" 
-		            	value="<?php echo htmlspecialchars($info['title'])?>" required />
-		            <br/>
-		            <label for="abstract"><?php echo $mbs_appenv->lang('abstract')?></label>
-		            <textarea id="abstract" class="pure-input-1-2" style="height: 200px;"
-		            	name="abstract"><?php echo htmlspecialchars($info['abstract'])?></textarea>
-		            <br/>
-		            <label for="attachment"><?php echo $mbs_appenv->lang('attachment')?></label>
-		            <input id="attachment" name="attachment" type="file" />
-		            
-		       	 	<?php if(isset($info['attachment_path']) && !empty($info['attachment_path'])){ ?>
-		            <div class="thumb_img">
-						<img __to_url="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" 
-			            	src="<?php echo $mbs_appenv->uploadURL($info['attachment_path']).CInfoControl::MIN_ATTACH_SFX?>" />
-			             <?php if($info['attachment_format'] == CInfoControl::AT_VDO){ ?>
-			             <div class=player __video_type="video/<?=pathinfo($info['attachment_name'], PATHINFO_EXTENSION )?>"></div>
-			             <?php }?>
-		            </div>
-					<?php echo $info['attachment_name']; } ?>
-					<br/> <br/>
-		            <button type="submit" class="pure-button pure-button-primary"><?php echo $page_title?></button>
-		    </fieldset>
-		</form>
-    </div>
+		<div class="inpBox mb22">
+			<label for="" class="labelL"><?php echo $mbs_appenv->lang('abstract')?>&nbsp;:&nbsp;</label>
+			<textarea type="text" rows="6" class="inpWord" name="abstract" 
+				placeholder="<?php echo $mbs_appenv->lang('please_input')?>..."><?php echo htmlspecialchars($info['abstract'])?></textarea>
+		</div>
+		<div class="inpBox" style="position:relative;">
+			<label for="upFile" class="labelFile"><?php echo $mbs_appenv->lang('attachment')?>&nbsp;:&nbsp;
+			<input type="file" id="upFile" name="attachment" class="inpFile" />
+				<span class="btnFile"><i class="icoFile"></i><?php echo $mbs_appenv->lang('click_to_add')?></span>
+			</label>
+		</div>
+		<?php if(isset($info['attachment_path']) && !empty($info['attachment_path'])){ ?>
+	    <div class="thumb_img" style="margin-top:15px;">
+	    	<label for="" class="labelL">&nbsp;</label>
+			<img __to_url="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" 
+				title="<?php echo $info['attachment_name'];?>"
+		            src="<?php echo $mbs_appenv->uploadURL($info['attachment_path']).CInfoControl::MIN_ATTACH_SFX?>" />
+		   <?php if($info['attachment_format'] == CInfoControl::AT_VDO){ ?>
+		    <div class=player __video_type="video/<?=pathinfo($info['attachment_name'], PATHINFO_EXTENSION )?>"></div>
+		    <?php }?>
+	    </div>
+		<?php } ?>
+		<div class="btnBox" style="margin-top:40px;">
+			<a href="javascript:;" class="btn-send" onclick="this.parentNode.parentNode.submit();"><?php echo $mbs_appenv->lang('submit')?></a>
+			<a href="<?php echo $mbs_appenv->toURL('list')?>" class="btn-cancle"><?php echo $mbs_appenv->lang('cancel')?></a>
+		</div>
+	</form>
 </div>
 <div class="popimg" id="IDD_POPIMG"><div></div></div>
 <script type="text/javascript">
@@ -183,6 +200,5 @@ div.thumb_img{position:relative;display:inline-block;}
 	}
 })(window, document);
 </script>
-<div class=footer></div>
 </body>
 </html>

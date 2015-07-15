@@ -108,8 +108,8 @@ h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
 				<div class=allmod>
 					<p class=title><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></p>
 					<div class=mod>
-						<?php foreach($mgr_list as $key => $title){?><label>
-							<input type="checkbox" name="priv_list[<?php echo $mod?>][]" value="<?php echo $key?>" <?php echo (isset($_REQUEST['group_id'])&&$priv_group->privExists($mod, $key)) ? ' checked' : ''?> /><?php echo $title?>
+						<?php foreach($mgr_list as $key => $def){?><label>
+							<input type="checkbox" name="priv_list[<?php echo $mod?>][]" value="<?php echo $key?>" <?php echo (isset($_REQUEST['group_id'])&&$priv_group->privExists($mod, $key)) ? ' checked' : ''?> /><?php echo $def[CModDef::P_TLE]?>
 						</label><?php }?>
 						<div style="clear: both"></div>
 					</div>

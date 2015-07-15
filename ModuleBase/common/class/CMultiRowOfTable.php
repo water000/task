@@ -148,8 +148,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 		$sql = sprintf('SELECT count(1) FROM %s WHERE %s=%d', 
 				$this->tbname, $this->keyname, $this->primaryKey);
 		try{
-			$ret = $this->oPdoConn->query($sql);
-			$ret = $pdos->fetchAll();
+			$ret = $this->oPdoConn->query($sql)->fetchAll();
 			$ret = empty($ret) ? 0 : $ret[0][0];
 		}catch (Exception $e) {
 			throw $e;

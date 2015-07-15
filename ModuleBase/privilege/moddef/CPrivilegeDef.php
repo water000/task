@@ -47,11 +47,19 @@ class CPrivilegeDef extends CModDef {
 				'index' => array(
 					self::P_TLE => '页面导航',
 					self::G_DC  => '查找当前用户所属的权限组下面所有的管理页面，并呈现出来',
+					self::P_DOF => true,
 					self::P_ARGS => array(
 					)
 				),
+				'group_list' => array(
+					self::P_TLE => '权限组列表',
+					self::G_DC  => '列出权限组包含的信息',
+					self::P_MGR => true,
+					self::P_ARGS => array(
+					),
+				),
 				'edit_group' => array(
-					self::P_TLE => '创建/编辑权限组',
+					self::P_TLE => '权限组编辑',
 					self::G_DC  => '将系统中所有P_MGR 标记为true 的 action按模块分组列出，然后选择相应的action并保存到组中',
 					self::P_MGR => true,
 					self::P_ARGS => array(
@@ -64,15 +72,9 @@ class CPrivilegeDef extends CModDef {
 						'group_id'   => array(self::PA_TYP=>'integer', self::PA_REQ=>0,self::G_DC=>'如果当前状态是编辑时，此参数代表当前组')
 					),
 				),
-				'group_list' => array(
-					self::P_TLE => '权限组列表',
-					self::G_DC  => '列出权限组包含的信息',
-					self::P_MGR => true,
-					self::P_ARGS => array(
-					),
-				),
+				
 				'join_group' => array(
-					self::P_TLE => '加入/编辑用户权限',
+					self::P_TLE => '用户权限编辑',
 					self::G_DC  => '选择一个或多个用户加入到指定的权限组中， 相应的组在group_list中选择',
 					self::P_MGR => true,
 					self::P_ARGS => array(

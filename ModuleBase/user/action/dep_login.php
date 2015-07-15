@@ -57,9 +57,9 @@ img{vertical-align:bottom;margin: 0 6px;}
 </head>
 <body>
 <div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<div class="pure-g main-content">
+<div class="pure-g wrapper">
     <div class="pure-u-1-3"></div>
-    <div class="pure-u-1-3" style="margin-top: 20px;">
+    <div class="pure-u-1-3">
     	<?php if(isset($_REQUEST['password'])){if(!empty($error)){ ?>
 		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
