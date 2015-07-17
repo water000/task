@@ -185,7 +185,7 @@ class CUniqRowOfTable
  	 * @throws Exception
  	 * @return Ambigous <boolean, unknown>|multitype:
  	 */
- 	function search($keyval, $opts = array(), &$count=0){
+ 	function search($keyval, $opts = array()){
  		$sql = sprintf('SELECT * FROM %s WHERE 1', $this->tbname);
  		$values = array();
  		foreach ($keyval as $key => $val){

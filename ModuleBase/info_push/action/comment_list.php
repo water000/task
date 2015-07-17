@@ -55,17 +55,29 @@ $sql = sprintf($sql,
 		isset($req_search_keys['title']) ? ' AND i.title like ? ' : '',
 		isset($_REQUEST['info_id']) ? ' AND c.info_id='.intval($_REQUEST['info_id']) : ''
 );
-$sql_list = 'SELECT i.*, c.*, c.id as cid '.$sql.' ORDER BY c.id ';
-$sql_count = 'SELECT count(1)'.$sql;
 
-$pdos = CDbPool::getInstance()->getDefaultConnection()->prepare($sql_list);
-$pdos->execute(isset($req_search_keys['title']) ? $req_search_keys['title'] : null);
-$cmt_list = $pdos->fetchAll(PDO::FETCH_ASSOC);
+$sql_count = 'SELECT count(1) as count '.$sql;
+
 
 $pdos = CDbPool::getInstance()->getDefaultConnection()->prepare($sql_count);
 $pdos->execute(isset($req_search_keys['title']) ? $req_search_keys['title'] : null);
 $cmt_count = $pdos->fetchAll(PDO::FETCH_ASSOC);
-$cmt_count = empty($cmt_count) ? 0 : $cmt_count[0];
+$cmt_count = empty($cmt_count) ? 0 : $cmt_count[0]['count'];
+
+define('ROWS_PER_PAGE', 8);
+define('PAGE_ID',  isset($_REQUEST['page_id']) ? intval($_REQUEST['page_id']) : 1);
+define('ROWS_OFFSET', (PAGE_ID-1)*ROWS_PER_PAGE);
+$cmt_list = $page_num_list = array();
+
+if($cmt_count > ROWS_OFFSET){
+	$sql_list = 'SELECT i.*, c.*, c.id as cid '.$sql.' ORDER BY c.id LIMIT '.ROWS_OFFSET.','.ROWS_PER_PAGE;
+	$pdos = CDbPool::getInstance()->getDefaultConnection()->prepare($sql_list);
+	$pdos->execute(isset($req_search_keys['title']) ? $req_search_keys['title'] : null);
+	$cmt_list = $pdos->fetchAll(PDO::FETCH_ASSOC);
+	
+	mbs_import('common', 'CTools');
+	$page_num_list = CTools::genPagination(PAGE_ID, ceil($cmt_count/ROWS_PER_PAGE), 8);
+}
 ?>
 <!doctype html>
 <html>
@@ -80,7 +92,7 @@ $cmt_count = empty($cmt_count) ? 0 : $cmt_count[0];
     <?php if(isset($_REQUEST['info_id'])){ ?>
         <h2 class="tit">
             <?php echo sprintf($mbs_appenv->lang('info_title'), $cmt_list[0]['title'])?>
-            <a href="javascript:;" class="btn-create"><span class="back-icon"></span><?php echo $mbs_appenv->lang('back')?></a>
+            <a href="<?php echo $mbs_appenv->toURL('comment_list')?>" class="btn-create"><span class="back-icon"></span><?php echo $mbs_appenv->lang('back')?></a>
         </h2>
         <!-- 列表 -->
         <div class="box-tabel mb17">
@@ -96,7 +108,7 @@ $cmt_count = empty($cmt_count) ? 0 : $cmt_count[0];
                     <p class="con-info">
                         <a href="javascript:;" class="content"><?php echo CStrTools::txt2html($row['comment_content'])?></a>
                     </p>
-                    <p class="time-con"><?php echo date('Y-m-d H:i', $row['comment_time'])?></p>
+                    <p class="piyue-create time-con"><?php echo date('Y-m-d H:i', $row['comment_time'])?></p>
                 </li>
             <?php } ?>
             </ul>
@@ -120,8 +132,8 @@ $cmt_count = empty($cmt_count) ? 0 : $cmt_count[0];
             <div class="top">
                 <p class="piyue-person"><?php echo $mbs_appenv->lang('comment_person')?></p>
                 <p class="piyue-cont"><?php echo $mbs_appenv->lang(array('comment', 'content'))?></p>
-                <p class="piyue-create"><?php echo $mbs_appenv->lang(array('comment', 'time'))?></p>
-                <p class="piyue-create"><?php echo $mbs_appenv->lang(array('from', 'comment', 'info'))?></p>
+                <p class="piyue-create piyue-create2"><?php echo $mbs_appenv->lang(array('comment', 'time'))?></p>
+                <p class="piyue-info"><?php echo $mbs_appenv->lang(array('from', 'comment', 'info'))?></p>
             </div>
             <ul class="ul-list">
                <?php foreach($cmt_list as $row){ $user_ctr->setPrimaryKey($row['comment_uid']); ?>
@@ -130,8 +142,8 @@ $cmt_count = empty($cmt_count) ? 0 : $cmt_count[0];
                     <p class="con-info">
                         <a href="javascript:;" class="content"><?php echo CStrTools::txt2html($row['comment_content'])?></a>
                     </p>
-                    <p class="time-con"><?php echo date('Y-m-d H:i', $row['comment_time'])?></p>
-                    <p><a href="<?php echo $mbs_appenv->toURL('comment_list', '', array('info_id'=>$row['info_id']))?>">
+                    <p class="piyue-create piyue-create2 time-con"><?php echo date('Y-m-d H:i', $row['comment_time'])?></p>
+                    <p class="piyue-info from-info"><a href="<?php echo $mbs_appenv->toURL('comment_list', '', array('info_id'=>$row['info_id']))?>">
                     	<?php echo CStrTools::txt2html($row['title'])?></a></p>
                 </li>
             <?php } ?>
@@ -139,16 +151,23 @@ $cmt_count = empty($cmt_count) ? 0 : $cmt_count[0];
         </div>
         <!-- 列表end -->
         <div class="box-bottom">
-            <p class="pageBox">
-                <a href="javascript:;" class="btn-page">上一页</a>
-                <a href="javascript:;" class="btn-page">1</a>
-                <a href="javascript:;" class="btn-page">2</a>
-                <a href="javascript:;" class="btn-page check">3</a>
-                <a href="javascript:;" class="btn-page">4</a>
-                <a href="javascript:;" class="btn-page">5</a>
-                <a href="javascript:;" class="btn-page">下一页</a>
-            </p>
-        </div>
+		<?php if(count($page_num_list) > 1){?>
+		<p class="pageBox">
+			<?php if(PAGE_ID > 1){ ?>
+			<a href="<?php echo $mbs_appenv->toURL('list', '', array_merge($search_keys, array('page_id'=>PAGE_ID-1))) ?>" 
+				class="btn-page"><?php echo $mbs_appenv->lang('prev_page')?></a>
+			<?php } ?>
+        	<?php foreach($page_num_list as $n => $v){ ?>
+        	<a href="<?php echo $mbs_appenv->toURL('list', '', array_merge($search_keys, array('page_id'=>$n))) ?>" 
+        		class="btn-page <?php echo $n==PAGE_ID?' check':''?>" ><?php echo $v?></a>
+        	<?php }?>
+        	<?php if(PAGE_ID < count($page_num_list)){ ?>
+	        <a href="<?php echo $mbs_appenv->toURL('list', '', array_merge($search_keys, array('page_id'=>PAGE_ID+1))) ?>" 
+	        	class="btn-page"><?php echo $mbs_appenv->lang('next_page')?></a>
+	        <?php }?>
+	    </p>
+		<?php } ?>
+		</div>
     <?php } ?>
     </div>
 </body>

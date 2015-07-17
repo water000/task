@@ -14,8 +14,7 @@ if(isset($_REQUEST['delete']) && isset($_REQUEST['id'])){
 	foreach($_REQUEST['id'] as $id){
 		$info_push_ctr->destroy(array('id'=>$id));
 	}
-	$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', 
-			isset($_REQUEST['redirect']) ? urldecode($_REQUEST['redirect']):$mbs_appenv->toURL('push_list'));
+	$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', $mbs_appenv->toURL('push_list'));
 	exit(0);
 }
 
@@ -69,110 +68,166 @@ if(isset($_REQUEST['user_id'])){
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
-<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
-<style type="text/css">
-.selected_win{display: none; border-left:1px solid #e1e1e1;width:22%;margin-left:1.5%;padding-left:1.2%;}
-.selected_win a{float:right;font-size:12px;}
-#IDT_JOIN_LIST {}
-#IDT_JOIN_LIST li{border-bottom:1px dashed #bbb;padding:2px 5px;}
-#IDT_JOIN_LIST li a{float:right;font-size:12px;}
-h3{border-bottom:1px solid #eee;padding: 10px 0;margin:0 auto 10px;}
-h3 a{font-size:80%;float:right;}
-.odd{background-color:#f2f2f2}
-.title{font-weight:bold;}
-.title span{font-size:80%;font-weight:normal;margin-left:10px;}
-.abstract{width:95%; margin:10px auto;color:#555;font-size:80%;}
-.pure-u-1-3{width: 29%;margin-left:2%;padding:0 0.5%;border-left:1px solid #ddd;display:none;margin-top: 20px}
-.pure-u-2-3 div{padding: 5px;}
-</style>
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('sendNew.css')?>" />
 </head>
 <body>
-<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<div class="pure-g wrapper">
-    <div class="pure-u-1">
-		<form method="post">
-		<div>
-			 <div class="pure-u-2-3">
-			 	<h3><?php echo $mbs_appenv->lang('push_list')?>
-			 		<a href="#" onclick="window.open('<?=$mbs_appenv->toURL('list', 'user')?>', window.attachEvent?null:'_blank,_top', 'height=600,width=900,location=no', true)"><?php echo $mbs_appenv->lang('select_recv_user')?></a></h3>
-<?php
-$total_info_num = 0;
-mbs_import('', 'CInfoControl');
-$info_ctr = CInfoControl::getInstance($mbs_appenv, 
-	CDbPool::getInstance(), CMemcachedPool::getInstance());
-if(isset($_REQUEST['id'])){
-	foreach($_REQUEST['id'] as $id){
-		$info_ctr->setPrimaryKey($id);
-		$info = $info_ctr->get();
-		if(empty($info) || $info['creator_id'] != $sess_uid)
-			continue;
-		++$total_info_num;
-?>
-				<div <?php echo 0==$total_info_num%2 ? ' class=odd':''?>>
-					<input type="hidden" name="info_id[]" value="<?php echo $id?>" />
-					<div class=title><a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$info['id']))?>">
-						<?php echo CStrTools::txt2html($info['title'])?></a>
-						<span><?php echo date('Y-m-d', $info['create_time'])?></span></div>
-					<div class=abstract><?php echo CStrTools::txt2html($info['abstract'])?></div>
-				</div>
-<?php
-	}
-}
-if(0 == $total_info_num){ 
-	echo '<div class=no-data>', $mbs_appenv->lang('no_data'), 
-		'&nbsp;&nbsp;<a href="',$mbs_appenv->toURL('list'),'">',$mbs_appenv->lang('select_info'),'</a></div>';
-}
-?>
-			 </div>
-			 <div class="pure-u-1-3">
-    			<ul id=IDT_JOIN_LIST></ul>
-    			<button class="pure-button pure-button-primary" style="margin-top:15px;" name="join_member" type="submit">
-    				<?php echo $mbs_appenv->lang('push')?></button>	    		
-			 </div>
+<div class="sendNew">
+	<h2 class="tit"><?php echo $mbs_appenv->lang(array('push', 'new', 'info'))?></h2>
+	<div class="content">
+		<form action="" name=_form method="post">
+		<div class="partLeft">
+			<h3 class="subTit"><?php echo $mbs_appenv->lang(array('to_be', 'push', 'info'))?>
+				(<?php echo isset($_REQUEST['id']) ? count($_REQUEST['id']) : 0, $mbs_appenv->lang('info_unit')?>)&nbsp;:&nbsp;</h3>
+			<ul id=IDU_LIST class="ul-news">
+			<?php
+			$total_info_num = 0;
+			mbs_import('info', 'CInfoControl');
+			$info_ctr = CInfoControl::getInstance($mbs_appenv, 
+				CDbPool::getInstance(), CMemcachedPool::getInstance());
+			if(isset($_REQUEST['id'])){
+				foreach($_REQUEST['id'] as $id){
+					$info_ctr->setPrimaryKey($id);
+					$info = $info_ctr->get();
+					if(empty($info) || $info['creator_id'] != $sess_uid)
+						continue;
+					++$total_info_num;
+			?>
+				<li class="list-news">
+					<input type="hidden" name="info_id[]" value="<?php echo $_REQUEST['id']?>" />
+					<h4 class="tit-news"><a href="<?php echo $mbs_appenv->toURL('edit', 'info', array('id'=>$_REQUEST['id']))?>">
+						<?php echo CStrTools::txt2html($info['title'])?></a></h4>
+					<p class="word-news"><?php echo $info['abstract']?></p>
+					<a href="javascript:;" onclick="_remove_info(this);" 
+						class="btn-dele"><?php echo $mbs_appenv->lang('remove')?></a>
+				</li>
+			<?php }} ?>
+				<li><a href="javascript:;" class="add-news">+<?php echo $mbs_appenv->lang(array('continue', 'add', 'info'))?>...</a></li>
+			</ul>
+		</div>
+		<div class="partRight">
+			<h3 class="subTit"><?php echo $mbs_appenv->lang('recipient')?>(19<?php echo $mbs_appenv->lang('person')?>)&nbsp;:&nbsp;</h3>
+			<div class="container">
+				<i class="ico-sear"></i>
+				<input type="text" class="inp-sear" placeholder="<?php echo $mbs_appenv->lang('input_name_to_search')?>..." />
+				<?php
+				mbs_import('user', 'CUserControl', 'CUserClassControl'); 
+				$user_ctr = CUserControl::getInstance($mbs_appenv,
+					CDbPool::getInstance(), CMemcachedPool::getInstance());
+				$uclass_ctr = CUserClassControl::getInstance($mbs_appenv, 
+					CDbPool::getInstance(), CMemcachedPool::getInstance());
+				$ulist = $user_ctr->getDB()->search(array('class_id'=>array(1, 100)), array('order' => 'class_id desc'));
+				$cid = 0;
+				foreach($ulist as $u){
+					if($u['class_id'] != $cid){
+						if($cid != 0) echo '</ul>';
+						$uclass_ctr->setPrimaryKey($u['class_id']);
+						$ucname = $uclass_ctr->get();
+						$cid = $u['class_id'];
+				?>
+				<p class="nav-tab"><i class="ico-arrow"></i><?php echo empty($ucname) ? 'delete':$ucname['name'] ?>
+					<a href="javascript:;" onclick="_checkall(this)" class="btn-checkAll"><?php echo $mbs_appenv->lang('check_all')?></a></p>
+				<ul class="ul-people">
+					<?php } ?>
+					<li class="list-name"><label class="labelH"><?php echo $u['name']?>
+						<input type="checkbox" class="check-part" name="user_id[]" value="<?php echo $u['id']?>"></label>
+					</li>
+				<?php } ?>
+			</div>
+		</div>
+		<div class="btnBox">
+			<a href="javascript:_submit(document._form);" class="btn-send"><?php echo $mbs_appenv->lang(array('confirm', 'push'))?></a>
 		</div>
 		</form>
-       
+	</div>
+</div>
+<script type="text/javascript" src="<?php echo $mbs_appenv->sURL('jquery-1.3.1.min.js')?>"></script>
+<script type="text/javascript" src="<?php echo $mbs_appenv->sURL('jquery.avgrund.js')?>"></script>
 <script type="text/javascript">
-var g_join_list = document.getElementById("IDT_JOIN_LIST"), g_selected_user=[];
-function _del(oa, id){
-	delete g_selected_user[id];
-	oa.parentNode.parentNode.removeChild(oa.parentNode);
-	if(0 == g_join_list.childNodes.length){
-		_switch_width(false);
+var title_count = document.getElementsByTagName("h3")[0];
+
+function _checkall(chkbox){
+	var list;
+	for(list=chkbox.parentNode.nextSibling; list; list=list.nextSibling){
+		if("UL" == list.tagName){
+			break;
+		}
+	}
+	if(list){
+		var cblist = list.getElementsByTagName("input"), i, checked = cblist.length>0?!cblist[0].checked : false;
+		for(i=0; i<cblist.length; i++){
+			cblist[i].checked = checked;
+		}
 	}
 }
-function _switch_width(trun_on){
-	if(trun_on){
-		g_join_list.parentNode.style.display = "inline-block";
-	}else{
-		g_join_list.parentNode.style.display = "none";
+
+var link = window.top.document.createElement("link");
+window.top.document.body.appendChild(link);
+link.href = "<?php echo $mbs_appenv->sURL('avgrund.css')?>"; 
+link.rel="stylesheet";
+
+$('.avgrund-popin', window.top.document).remove();
+
+var avgrund = $('.add-news').avgrund({
+	height: 515,
+	width: 900,
+	holderClass: 'avgrund-custom',
+	showClose: true,
+	showCloseText: '<?php echo $mbs_appenv->lang('close')?>',
+	title: '<?php echo $mbs_appenv->lang('select_info_to_push')?>',
+	onBlurContainer: '.container',
+	body: window.top.document.getElementsByTagName("div")[0],
+	template: function(obj){
+		return '<iframe style="width:100%;height:100%;" src="<?php echo $mbs_appenv->toURL('list', 'info', array('popup'=>'1'))?>'
+			+_req_info()+'"></iframe>';
 	}
+});
+window.top.cb_info_selected = function(sel_list){
+	var list = document.getElementById("IDU_LIST"), 
+		ch = list.getElementsByTagName("li"),
+		last = ch[ch.length-1];
+	for(var i=0, _new; i<sel_list.length; i++){
+		_new = document.createElement("li");
+		_new.className = "list-news";
+		_new.innerHTML = '<input type="hidden" name="info_id[]" value="'+sel_list[i].id+'" />'+
+			'<h4 class="tit-news"><a href="javascript:;">'+sel_list[i].title+'</a></h4>'+
+			'<p class="word-news">'+sel_list[i].abstract+'</p>'+
+			'<a href="javascript:;" onclick="_remove_info(this)"'+
+			'class="btn-dele"><?php echo $mbs_appenv->lang('remove')?></a>';
+		list.insertBefore(_new, last);
+	}
+	avgrund.deactivate();
+	title_count.innerHTML = title_count.innerHTML.replace(/[\d]+/, function(n){return parseInt(n)+i});
 }
-window.cb_class_selected = function(selected_user, popwin){
-	if(selected_user.length > 0){
-		for(var i=0, j=selected_user.length/2; i<j; i++){
-			if("undefined" == typeof g_selected_user[selected_user[i*2]]){
-				var li = document.createElement("li");
-				li.innerHTML = "<input type=hidden name='user_id[]' value='"+selected_user[i*2]+"' />"
-					+selected_user[i*2+1]+'('+selected_user[i*2]
-					+')<a href="#" onclick="_del(this, '+selected_user[i*2]+')"><?php echo $mbs_appenv->lang('delete', 'common')?></a>';
-				g_join_list.appendChild(li);
-				g_selected_user[selected_user[i*2]] = 1;
+function _req_info(){
+	var selected_info = document._form.elements["info_id"], ret="";
+	if(selected_info){
+		selected_info = selected_info.length ? selected_info : [selected_info];
+		var i;
+		for(i=0; i<selected_info.length; i++){
+			ret += "&info_id%5B%5D="+selected_info[i].value;
+		}
+	}
+	return ret;
+}
+function _remove_info(btn){
+	btn.parentNode.parentNode.removeChild(btn.parentNode);
+	title_count.innerHTML = title_count.innerHTML.replace(/[\d]+/, function(n){return parseInt(n)-1});
+}
+function _submit(f){
+	if(f.elements["info_id[]"]){
+		var uid_list = f.elements["user_id[]"], uid_list = uid_list.length ? uid_list : [uid_list];
+		for(var i=0; i<uid_list.length; i++){
+			if(uid_list[i].checked){
+				f.submit();
+				return true;
 			}
 		}
-		popwin.close();
-
-		if(g_join_list.childNodes.length > 0){
-			_switch_width(true);
-		}else{
-			alert("<?php echo $mbs_appenv->lang('exists')?>");
-		}
 	}
+	return false;
 }
+
 </script>
-    </div>
-</div>
-<div class=footer></div>
 </body>
 </html>

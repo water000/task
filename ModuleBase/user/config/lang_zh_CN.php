@@ -54,6 +54,8 @@ $lang_zh_CN = array(
 	'confirmed'         => '确认删除此部门和部门下所有的成员吗？删除后，操作无法撤销',
 	'dep_login'         => '部门登录',
 		
+	'data'              => '资料',
+		
 	'menu'              => function(){
 		global $mbs_appenv;
 		$items = array(

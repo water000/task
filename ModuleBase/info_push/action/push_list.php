@@ -150,6 +150,7 @@ if($count > ROWS_OFFSET){
 			$push_count = $info_push_ctr->getDB()->count(array('info_id'=>$row['id']));
 			$read_count = $info_push_ctr->getDB()->count(array('info_id'=>$row['id'], 
 				'status'=>CInfoPushControl::ST_HAD_READ));
+			$cmt_count = $info_cmt_ctr->getTotal();
 		?>
 			<li class="list">
 				<p class="con-info">
@@ -159,7 +160,7 @@ if($count > ROWS_OFFSET){
 				</p>
 				<p class="time-con"><?php echo date('m-d H:i', $row['create_time'])?></p>
 				<p class="file-name"><?php echo $mbs_appenv->lang(CInfoControl::type2txt($row['attachment_format']))?></p>
-				<p class="py-icon"><span class="py-bg"><?php echo $info_cmt_ctr->getTotal()?></span></p>
+				<p class="py-icon"><a href="<?php echo 0==$cmt_count ? 'javascript:;' : $mbs_appenv->toURL('comment_list', '', array('info_id'=>$row['id']))?>"><span class="py-bg"><?php echo $cmt_count?></span></a></p>
                 <p class="py-num"><?php echo $read_count + $push_count > 0 
                 	? '<a href="#" class=push-count data="'.$row['id'].'">' : '', $read_count, '/', $push_count, 
                 	$read_count + $push_count > 0 ? '</a>':''?></p>
@@ -209,6 +210,7 @@ window.top.document.body.appendChild(link);
 link.href = "<?php echo $mbs_appenv->sURL('avgrund.css')?>"; 
 link.rel="stylesheet";
 
+$('.avgrund-popin', window.top.document).remove();
 $('.push-count').avgrund({
 	height: 555,
 	width: 690,

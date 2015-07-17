@@ -40,6 +40,8 @@
 		};
 
 		options = $.extend(defaults, options);
+		
+		var _parent = this;
 
 		return this.each(function() {
 			var self = $(this),
@@ -144,6 +146,7 @@
 			} else {
 				activate();
 			}
+			_parent.deactivate = deactivate;
 		});
 	};
 }));

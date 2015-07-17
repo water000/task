@@ -98,6 +98,9 @@
     color: #333;
     line-height: 32px;
     position: relative; }
+
+
+
 .allInfo .box-tabel .top:after {
     content: ".";
     display: block;
@@ -109,10 +112,9 @@
     position: absolute;
     left: 14px;
     top: 9px; }
-.allInfo .box-tabel .top .piyue-person {
-    border-left: 1px solid #ced7e2;
+.allInfo .box-tabel .piyue-person {
     padding-left: 20px; }
-.allInfo .box-tabel .top .piyue-cont {
+.allInfo .box-tabel .piyue-cont {
     width: 100px;
     height: 32px;
     position: absolute;
@@ -120,14 +122,23 @@
     left: 94px;
     border-left: 1px solid #ced7e2;
     padding-left: 8px; }
-.allInfo .box-tabel .top .piyue-create {
-    width: 100px;
+.allInfo .box-tabel .piyue-create {
+    width: 167px;
     height: 32px;
     position: absolute;
     top: 0;
-    right: 94px;
+    right: 0;
     border-left: 1px solid #ced7e2;
     padding-left: 8px; }
+.allInfo .box-tabel .piyue-create2 {right: 308px; }
+.allInfo .box-tabel .piyue-info {
+	width: 300px;
+    height: 32px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-left: 1px solid #ced7e2;
+    padding-left: 8px;}
 .allInfo .box-tabel .top .format-file {
     width: 86px;
     height: 32px;
@@ -168,19 +179,18 @@
     white-space: nowrap;
     overflow: hidden; }
 .allInfo .box-tabel .list .time-con {
-    width: 134px;
-    line-height: 56px;
-    position: absolute;
-    top: 0;
-    right: 60px;
-    padding-left: 9px;
+	border:0;
     font-size: 12px;
-    color: #333; }
+    color: #333;height:auto;top:14px; }
+.allInfo .box-tabel .list .from-info {
+	border:0;
+    font-size: 12px;
+    height:auto;top:14px;}
+.from-info a{color: rgb(10,79,156); font-size:14px;}
 .allInfo .box-tabel .list .person-name {
     width: 100px;
-    line-height: 56px;
     position: absolute;
-    top: 0;
+    top: 14px;
     left: 0;
     padding-left: 20px;
     font-size: 12px;

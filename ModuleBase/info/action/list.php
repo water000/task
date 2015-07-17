@@ -53,7 +53,7 @@ $usersess = new CUserSession();
 list($req_search_keys['creator_id'],) = $usersess->get(); 
 unset($req_search_keys['date']);
 
-define('ROWS_PER_PAGE', 5);
+define('ROWS_PER_PAGE', isset($_REQUEST['popup']) ? 6 : 10);
 define('PAGE_ID',  isset($_REQUEST['page_id']) ? intval($_REQUEST['page_id']) : 1);
 define('ROWS_OFFSET', (PAGE_ID-1)*ROWS_PER_PAGE);
 $count = $info_ctr->getDB()->count($req_search_keys);
@@ -100,6 +100,7 @@ $info_push_ctr = CInfoPushControl::getInstance($mbs_appenv,
 </head>
 <body>
 <div class="allInfo">
+	<?php if(!isset($_REQUEST['popup'])){ ?>
 	<h2 class="tit">
 		<?php echo $mbs_appenv->lang('all_info')?>
 		<span class="tips"><?php echo sprintf($mbs_appenv->lang('total_count'), $count)?></span>
@@ -127,17 +128,19 @@ $info_push_ctr = CInfoPushControl::getInstance($mbs_appenv,
 		<a href="javascript:;" class="btn-search" onclick="this.parentNode.parentNode.submit()"><?php echo $mbs_appenv->lang('search')?></a>
 	</div>
 	</form>
-
+	<?php } ?>
 	<!-- 列表 -->
 	<form name="form_list" action="<?php echo $mbs_appenv->toURL('push', 'info_push')?>" method="post">
 	<div class="box-tabel mb17">
+		<?php if(!isset($_REQUEST['popup'])){ ?>
 		<div class="top">
 			<input type="checkbox" class="checkAll" onclick="_checkall(this, this.form);">
 			<p class="tit-info"><?php echo $mbs_appenv->lang('content')?></p>
 			<p class="time-create"><?php echo $mbs_appenv->lang('create_time')?></p>
 			<p class="format-file"><?php echo $mbs_appenv->lang('attachment_format')?></p>
 		</div>
-		<ul class="ul-list">
+		<?php }?>
+		<ul class="ul-list <?php echo isset($_REQUEST['popup'])? ' popup':''?>">
 		<?php $k=-1; foreach($list as $k => $row){ ?>
 			<li class="list">
 				<input type="checkbox" class="check-part" name="id[]" value="<?php echo $row['id']?>" /><?php echo $k+1?>
@@ -154,11 +157,16 @@ $info_push_ctr = CInfoPushControl::getInstance($mbs_appenv,
 	</div>
 	<!-- 列表end -->
 	<div class="box-bottom">
+		<?php if(isset($_REQUEST['popup'])){ ?>
+		<a href="javascript:;" class="btn-sure" onclick="_info_selected()" >
+			<?php echo $mbs_appenv->lang(array('confirm', 'select'))?></a>
+		<?php }else{ ?>
 		<a href="javascript:;" class="btn-send" onclick="document.form_list.submit();" >
 			<i class="ico"></i><?php echo $mbs_appenv->lang('push')?></a>
 		<a href="javascript:;" class="btn-del" onclick="document.form_list.action='<?php echo $mbs_appenv->toURL('edit', '', array('delete'=>''))?>';document.form_list.submit();">
 			<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
-		<?php if(count($page_num_list) > 1){?>
+		<?php }?>
+		<?php if(count($page_num_list) > 1){ if(isset($_REQUEST['popup'])){$search_keys['popup']=1;}?>
 		<p class="pageBox">
 			<?php if(PAGE_ID > 1){ ?>
 			<a href="<?php echo $mbs_appenv->toURL('list', '', array_merge($search_keys, array('page_id'=>PAGE_ID-1))) ?>" 
@@ -189,6 +197,29 @@ function _checkall(chkbox, form){
 	boxes = boxes.length ? boxes : [boxes];
 	for(i=0; i<boxes.length; i++){
 		boxes[i].checked = chkbox.checked;
+	}
+}
+function _info_selected(){
+	var info=[], cbox = document.form_list.elements["id[]"];
+	if(cbox){
+		if(!cbox.length){
+			cbox = [cbox];
+		}
+		var i;
+		for(i=0; i<cbox.length; i++){
+			if(cbox[i].checked){
+				info.push({
+					id:       cbox[i].value, 
+					title:    $(".link-tit", cbox[i].parentNode).html(), 
+					abstract: $(".subWord", cbox[i].parentNode).html(),
+					time:     $(".time-con", cbox[i].parentNode).html(),
+					format:   $(".format-con", cbox[i].parentNode).html()
+				});
+			}
+		}
+		if(window.parent.cb_info_selected && info.length > 0){
+			window.top.cb_info_selected(info);
+		}
 	}
 }
 </script>

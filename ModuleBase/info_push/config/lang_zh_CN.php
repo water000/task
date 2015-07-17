@@ -44,6 +44,10 @@ $lang_zh_CN = array(
 	'read_status'           => '阅读状态',
 	'info_title'            => '《<span class="title-color">%s</span>》的批阅',
 	'from'                  => '所',
+	'info_unit'             => '条',
+	'person'                => '人',
+	'input_name_to_search'  => '输入姓名搜索人员',
+	'select_info_to_push'   => '选择要推送的信息',
 		
 	'menu'              => function(){
 		global $mbs_appenv;

@@ -167,8 +167,10 @@ function _main($mbs_appenv){
 				CDbPool::getInstance()->cli();
 				CMemcachedPool::getInstance()->cli();
 			}else if('html' == $mbs_appenv->item('client_accept')){
+				echo '<div><a href="javascript:;" style="font-size:12px;color:#888;display:block;text-align:right;" onclick="open(null, null, \'width=800,height=600\').document.write(this.parentNode.nextSibling.innerHTML)">debug-info</a></div><div style="display:none">';
 				CDbPool::getInstance()->html();
 				CMemcachedPool::getInstance()->html();
+				echo '</div>';
 			}
 		}, $mbs_appenv);
 	

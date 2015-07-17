@@ -68,7 +68,7 @@ function _fn_icon($mod, $ac){
 	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css"/>
 	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>">
 	<style type="text/css">
-	iframe{width:1100px;border:0;}
+	iframe{width:100%;border:0;}
 	</style>
 </head>
 <body>
@@ -156,7 +156,7 @@ function _to(link, is_redirect){
 		frame.src = url;
 		frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
 			if (frame.contentWindow.document.readyState=="complete"){
-				frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-5)+"px";
+				frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-65)+"px";
 				document.title = frame.contentWindow.document.title;
 				history.pushState(null, null, "<?php echo $mbs_appenv->item('cur_action_url') ?>?to="
 						+encodeURIComponent( frame.contentWindow.location.href));

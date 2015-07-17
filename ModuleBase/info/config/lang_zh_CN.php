@@ -33,7 +33,6 @@ $lang_zh_CN = array(
 	'create_time'           => '创建时间',
 	'please_input'          => '请输入...',
 	'click_to_add'          => '点击添加',
-	'cancel'                => '取消',
 		
 	'menu'              => function(){
 		global $mbs_appenv;
