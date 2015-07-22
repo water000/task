@@ -109,7 +109,7 @@ if(isset($_REQUEST['id'])){
 		++$total_info_num;
 ?>
 				<div <?php echo 0==$total_info_num%2 ? ' class=odd':''?>>
-					<input type="hidden" name="info_id[]" value="<?php echo $id?>" />
+					<input type="hidden" name="info_id[]" value="<?php echo $info['id']?>" />
 					<div class=title><a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$info['id']))?>">
 						<?php echo CStrTools::txt2html($info['title'])?></a>
 						<span><?php echo date('Y-m-d', $info['create_time'])?></span></div>

@@ -58,26 +58,36 @@ $sql = sprintf($sql,
 
 $sql_count = 'SELECT count(1) as count '.$sql;
 
-
-$pdos = CDbPool::getInstance()->getDefaultConnection()->prepare($sql_count);
-$pdos->execute(isset($req_search_keys['title']) ? $req_search_keys['title'] : null);
-$cmt_count = $pdos->fetchAll(PDO::FETCH_ASSOC);
-$cmt_count = empty($cmt_count) ? 0 : $cmt_count[0]['count'];
-
-define('ROWS_PER_PAGE', 8);
-define('PAGE_ID',  isset($_REQUEST['page_id']) ? intval($_REQUEST['page_id']) : 1);
-define('ROWS_OFFSET', (PAGE_ID-1)*ROWS_PER_PAGE);
-$cmt_list = $page_num_list = array();
-
-if($cmt_count > ROWS_OFFSET){
-	$sql_list = 'SELECT i.*, c.*, c.id as cid '.$sql.' ORDER BY c.id LIMIT '.ROWS_OFFSET.','.ROWS_PER_PAGE;
-	$pdos = CDbPool::getInstance()->getDefaultConnection()->prepare($sql_list);
-	$pdos->execute(isset($req_search_keys['title']) ? $req_search_keys['title'] : null);
-	$cmt_list = $pdos->fetchAll(PDO::FETCH_ASSOC);
+try {
+	$pdos = CDbPool::getInstance()->getDefaultConnection()->prepare($sql_count);
+	$pdos->execute(isset($req_search_keys['title']) ? array($req_search_keys['title']) : array());
+	$cmt_count = $pdos->fetchAll(PDO::FETCH_ASSOC);
+	$cmt_count = empty($cmt_count) ? 0 : $cmt_count[0]['count'];
 	
-	mbs_import('common', 'CTools');
-	$page_num_list = CTools::genPagination(PAGE_ID, ceil($cmt_count/ROWS_PER_PAGE), 8);
+	define('ROWS_PER_PAGE', 8);
+	define('PAGE_ID',  isset($_REQUEST['page_id']) ? intval($_REQUEST['page_id']) : 1);
+	define('ROWS_OFFSET', (PAGE_ID-1)*ROWS_PER_PAGE);
+	$cmt_list = $page_num_list = array();
+	
+	if($cmt_count > ROWS_OFFSET){
+		$sql_list = 'SELECT i.*, c.*, c.id as cid '.$sql.' ORDER BY c.id LIMIT '.ROWS_OFFSET.','.ROWS_PER_PAGE;
+		$pdos = CDbPool::getInstance()->getDefaultConnection()->prepare($sql_list);
+		var_dump($pdos);
+		if(!$pdos){
+			var_dump(CDbPool::getInstance()->getDefaultConnection()->errorInfo());
+			exit();
+		}
+		exit();
+		$pdos->execute(isset($req_search_keys['title']) ? array($req_search_keys['title']) : array());
+		$cmt_list = $pdos->fetchAll(PDO::FETCH_ASSOC);
+	
+		mbs_import('common', 'CTools');
+		$page_num_list = CTools::genPagination(PAGE_ID, ceil($cmt_count/ROWS_PER_PAGE), 8);
+	}
+} catch (Exception $e) {
+	echo $e->getMessage();
 }
+
 ?>
 <!doctype html>
 <html>

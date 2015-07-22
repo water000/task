@@ -41,7 +41,7 @@ class CInfoPushDef extends CModDef {
 					self::P_TLE => '接收列表',
 					self::G_DC  => '返回当前用户未读的消息列表',
 					self::P_ARGS => array(
-						'type'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'消息类型, IMG/VDO/TXT中的一个'),
+						'class_type'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'消息类型, CX/SX/YQ中的一个'),
 					),
 					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG", data:{list:[info-1{详见数据表info中的字段}, 2, 3, ...]}}',
 				),

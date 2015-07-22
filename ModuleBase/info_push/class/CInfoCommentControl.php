@@ -5,7 +5,7 @@ mbs_import('common', 'CMultiRowControl');
 class CInfoCommentControl extends CMultiRowControl {
 	private static $instance = null;
 	
-	const TBNAME = 'info_comment';
+	const TBNAME = 'info_push_comment';
 	
 	protected function __construct($db, $cache, $primarykey = null, $secondKey = null){
 		parent::__construct($db, $cache, $primarykey, $secondKey);

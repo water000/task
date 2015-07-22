@@ -123,18 +123,18 @@ else if(isset($_REQUEST['__timeline'])){
 		    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" required />
         </div>
         <div class="inpBox mb17">
-        	<label for="name" class="labelL"><?php echo $mbs_appenv->lang('organization')?>&nbsp;:&nbsp;</label>
-		    <input id="name" class="inpTit" name="organization" type="text" value="<?php echo $user['organization']?>" 
+        	<label for="organization" class="labelL"><?php echo $mbs_appenv->lang('organization')?>&nbsp;:&nbsp;</label>
+		    <input id="organization" class="inpTit" name="organization" type="text" value="<?php echo $user['organization']?>" 
 		    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" required />
         </div>
         <div class="inpBox mb17">
-            <label for="name" class="labelL"><?php echo $mbs_appenv->lang('phone')?>&nbsp;:&nbsp;</label>
-		    <input id="name" class="inpTit" name="phone" type="text" value="<?php echo $user['phone']?>" 
+            <label for="phone" class="labelL"><?php echo $mbs_appenv->lang('phone')?>&nbsp;:&nbsp;</label>
+		    <input id="phone" class="inpTit" name="phone" type="text" value="<?php echo $user['phone']?>" 
 		    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" required />
         </div>
         <div class="inpBox mb17">
         	<label for="password" class="labelL"><?php echo $mbs_appenv->lang(array('login', 'password'))?>&nbsp;:&nbsp;</label>
-		    <input id="name" class="inpTit" name="phone" type="text" value="<?php echo $user['password']?>" 
+		    <input id="password" class="inpTit" name="password" type="text" value="<?php echo $user['password']?>" 
 		    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" required />
         </div>
         <div class="inpBox mb17">
@@ -142,7 +142,7 @@ else if(isset($_REQUEST['__timeline'])){
 		    <input id="email" class="inpTit" name="email" type="email" value="<?php echo $user['email']?>"
 		    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" />
         </div>
-        <div class="inpBox mb17">.
+        <div class="inpBox mb17">
         	<label for="IMEI" class="labelL">IMEI&nbsp;:&nbsp;</label>
 		    <input id="IMEI" class="inpTit" name="IMEI" value="<?php echo $user['IMEI']?>"
 		    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" />
@@ -163,7 +163,7 @@ else if(isset($_REQUEST['__timeline'])){
 		    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" />
         </div>
         <div class="inpBox mb17">
-            <label for="" class="labelL">类别：</label>
+            <label for="" class="labelL"><?php echo $mbs_appenv->lang('class')?>&nbsp;:&nbsp;</label>
             <select name="class_id" id="" class="sel-format">
             <option class="format" value="0"></option>
             <?php foreach($class_list as $c){?>
@@ -172,6 +172,7 @@ else if(isset($_REQUEST['__timeline'])){
             </select>
         </div>
         <div class="btnBox">
+        	<label for="" class="labelL"></label>
             <a href="javascript:document._form.submit();" class="btn-send"><?php echo $mbs_appenv->lang('submit')?></a>
             <a href="<?php echo $mbs_appenv->toURL('list')?>" class="btn-cancle"><?php echo $mbs_appenv->lang('cancel')?></a>
         </div>

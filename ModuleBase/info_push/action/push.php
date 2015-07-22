@@ -95,7 +95,7 @@ if(isset($_REQUEST['user_id'])){
 					++$total_info_num;
 			?>
 				<li class="list-news">
-					<input type="hidden" name="info_id[]" value="<?php echo $_REQUEST['id']?>" />
+					<input type="hidden" name="info_id[]" value="<?php echo $id?>" />
 					<h4 class="tit-news"><a href="<?php echo $mbs_appenv->toURL('edit', 'info', array('id'=>$_REQUEST['id']))?>">
 						<?php echo CStrTools::txt2html($info['title'])?></a></h4>
 					<p class="word-news"><?php echo $info['abstract']?></p>
@@ -107,17 +107,20 @@ if(isset($_REQUEST['user_id'])){
 			</ul>
 		</div>
 		<div class="partRight">
-			<h3 class="subTit"><?php echo $mbs_appenv->lang('recipient')?>(19<?php echo $mbs_appenv->lang('person')?>)&nbsp;:&nbsp;</h3>
-			<div class="container">
-				<i class="ico-sear"></i>
-				<input type="text" class="inp-sear" placeholder="<?php echo $mbs_appenv->lang('input_name_to_search')?>..." />
-				<?php
+			<?php
 				mbs_import('user', 'CUserControl', 'CUserClassControl'); 
 				$user_ctr = CUserControl::getInstance($mbs_appenv,
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
 				$uclass_ctr = CUserClassControl::getInstance($mbs_appenv, 
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
 				$ulist = $user_ctr->getDB()->search(array('class_id'=>array(1, 100)), array('order' => 'class_id desc'));
+				$ulist = $ulist->fetchAll();
+			?>
+			<h3 class="subTit"><?php echo $mbs_appenv->lang('recipient')?>(<?php echo count($ulist) , $mbs_appenv->lang('person')?>)&nbsp;:&nbsp;</h3>
+			<div class="container">
+				<i class="ico-sear"></i>
+				<input type="text" class="inp-sear" placeholder="<?php echo $mbs_appenv->lang('input_name_to_search')?>..." />
+				<?php
 				$cid = 0;
 				foreach($ulist as $u){
 					if($u['class_id'] != $cid){

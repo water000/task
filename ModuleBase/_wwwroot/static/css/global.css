@@ -1,6 +1,6 @@
 html, body {
   height: 100%;
-  overflow: hidden; }
+  /*overflow: hidden;*/ }
 
 a:link {
   text-decoration: none; }
@@ -72,7 +72,7 @@ a:active {
   .navBar .check {
     background-color: #184a8b;
     color: #fff; }
-  .navBar .ico {
+  .ico {
     width: 14px;
     height: 14px;
     background: url(../images/sprites-global.png) no-repeat;
@@ -157,9 +157,17 @@ a:active {
 .info-table thead tr{height:32px;background: url(../images/bg-headChart.jpg) repeat-x;}
 .info-table th{border-left:1px solid #ced7e2;font-weight:normal;text-align:left;}
 .info-table .first-col{padding-left:20px;border:0;}
-.info-table td{padding:15px 0;}
+.info-table td{padding:12px 0;}
 .info-table th, .info-table td{padding-left:10px;}
 .info-table tbody tr{border-bottom: 1px solid #e3e3e3;}
 .info-table tbody tr:nth-child(2n) {background-color: #f8f8f8; }
+
+.success, .error{position:relative;padding: 1em 0;text-align: center;width: 90%;margin: 2em auto;}
+.success p, .error p{margin-top:.5em;font-size:60%;}
+.success a.close, .error a.close{position:absolute; top:2px; right:5px; color:#666;font-size:60%;text-decoration:none;}
+.success a.close:hover, .error a.close:hover{color:#000;}
+.success {  background-color: #dff0d8;}
+.success a.link{font-size:80%;margin-left:10px;}
+.error { background-color: #f2dede;}
 
 

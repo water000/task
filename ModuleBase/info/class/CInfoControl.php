@@ -139,6 +139,27 @@ class CInfoControl extends CUniqRowControl {
 		}
 	}
 	
+	static function moveEditorImg($filename, $appenv=null){
+		$appenv = empty($appenv) ? self::$appenv : $appenv;
+		if(empty($appenv)){
+			trigger_error('empty appenv: '.$subdir, E_USER_WARNING);
+			return false;
+		}
+		
+		list($subdir, $name) = self::rename();
+		$dest_dir = $appenv->mkdirUpload($subdir);
+		if(false === $dest_dir){
+			trigger_error('mkdirUpload error: '.$subdir, E_USER_WARNING);
+			return false;
+		}
+		$dest_path = $dest_dir.$name;
+		if(!move_uploaded_file($_FILES[$filename]['tmp_name'], $dest_path)){
+			trigger_error('Failed to move upload file');
+			return false;
+		}
+		return $subdir.'/'.$name;
+	}
+	
 	static function moveAttachment($filename, &$format, $appenv=null){
 		$appenv = empty($appenv) ? self::$appenv : $appenv;
 		if(empty($appenv)){

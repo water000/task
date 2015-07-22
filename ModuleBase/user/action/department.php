@@ -1,8 +1,11 @@
 <?php 
 
-mbs_import('', 'CUserDepControl');
+mbs_import('', 'CUserDepControl', 'CUserDepMemberControl');
 
 $dep_ins = CUserDepControl::getInstance($mbs_appenv, 
+		CDbPool::getInstance(), CMemcachedPool::getInstance());
+
+$udepmbr_ctr = CUserDepMemberControl::getInstance($mbs_appenv, 
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
 
 $dep = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
@@ -21,74 +24,78 @@ if(isset($_REQUEST['name'])){
 }
 
 
-$list = $dep_ins->getDB()->listAll();
+$list = $dep_ins->getDB()->listAll()->fetchAll();
 ?>
 <!doctype html>
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
-<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<!--[if lt ie 9]>
+	<script>
+		document.createElement("article");
+		document.createElement("section");
+		document.createElement("aside");
+		document.createElement("footer");
+		document.createElement("header");
+		document.createElement("nav");
+</script>
+<![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,minimum-scale=1.0,maximum-scale=1.0">
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('allInfo.css')?>">
+<style type="text/css">
+.col1{width:60px;}
+.col2{width:185px;}
+.col3{width:285px;}
+.col4{width:520px;}
+.name{font-size:14px; color:#111;}
+</style>
 </head>
 <body>
-<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<div class="pure-g wrapper">
-    <div class="pure-u-1">
-    	<?php if(isset($_REQUEST['name'])){ if(!empty($error)){ ?>
-		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
-		</div>
-		<?php }else{?>
-		<div class=success><p><?php echo $mbs_appenv->lang('operation_success', 'common')?></p>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
-		</div>
-		<?php }}?>
-		
-    	<form class="pure-form" method="post">
-    		<fieldset>
-        		<legend><?php echo $mbs_appenv->lang('add_department')?></legend>
-        		<input type="text" name="name" value="<?php echo $dep['name']?>" placeholder="<?php echo $mbs_appenv->lang('name', 'common')?>" required />
-       			<input type="text" name="password" value="<?php echo $dep['password']?>" placeholder="<?php echo $mbs_appenv->lang('password')?>" required />
-       			<button type="submit" class="pure-button pure-button-primary"><?php echo $mbs_appenv->lang('add_department')?></button>
-         	</fieldset>
-		</form>
-		
-		<form name="_form" class="pure-form" method="post" action="<?php echo $mbs_appenv->toURL('dep_edit')?>">
-			<table class="pure-table" style="width: 100%;margin-top:1em;">
+<div class="allInfo">
+	<h2 class="tit">
+		<?php echo $mbs_appenv->lang(array('department', 'manage'))?>
+		<span class="tips"><?php echo sprintf($mbs_appenv->lang('total_count'), count($list))?></span>
+		<a href="<?php echo $mbs_appenv->toURL('dep_edit')?>" class="btn-create">
+			+<?php echo $mbs_appenv->lang(array('add', 'department'))?></a>
+	</h2>
+	
+    <div class="box-tabel mb17" style="margin-top:28px;">
+		<form name="_form" method="post" action="<?php echo $mbs_appenv->toURL('dep_edit')?>">
+			<table class="info-table" style="width: 100%;margin-top:1em;">
 			    <thead>
 			        <tr>
-			            <th>ID</th>
+			            <th class="first-col col1"><input type="checkbox" name="" value="" /></th>
 			            <th><?php echo $mbs_appenv->lang('name', 'common')?></th>
 			            <th><?php echo $mbs_appenv->lang('password')?></th>
 			            <th><?php echo $mbs_appenv->lang(array('edit', 'time'), 'common')?></th>
+			            <th><?php echo $mbs_appenv->lang(array('member', 'manage'))?></th>
 			        </tr>
 			    </thead>
-			
 			    <tbody>
-			    <?php $k=-1; foreach($list as $k=>$row){?>
-			        <tr <?php echo 1 == $k%2 ? 'class=pure-table-odd':'' ?>>
-			            <td><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /><?php echo $row['id']?></td>
-			            <td><a href="<?php echo $mbs_appenv->toURL('dep_edit', '', array('id[]'=>$row['id']))?>"><?php echo $row['name']?></a></td>
+			    <?php foreach($list as $k=>$row){ $udepmbr_ctr->setPrimaryKey($row['id']); ?>
+			        <tr>
+			            <td class="first-col">
+			            	<input type="checkbox" name="id[]" value="<?php echo $row['id']?>" />
+			            </td>
+			            <td class=name><?php echo $row['name']?></td>
 			            <td><?php echo $row['password']?></td>
 			            <td><?php echo date('Y-m-d H:i', $row['edit_time'])?></td>
+			            <td><a href="<?php echo $mbs_appenv->toURL('dep_member','', array('dep_id'=>$row['id']))?>">
+			            	<?php echo sprintf($mbs_appenv->lang('total_member'), $udepmbr_ctr->getTotal())?></a></td>
 			        </tr>
 			    <?php }?>
 			    </tbody>
 			</table>
-			<?php if(-1 == $k){ echo '<p class=no-data>', $mbs_appenv->lang('no_data', 'common'), '</p>'; 
-    		}else{ ?>
-    		<div style="margin-top:10px;">
-				<button class="pure-button pure-button-primary" type="submit"><?php echo $mbs_appenv->lang('edit')?></button>
-				<button class="button-error pure-button" name="delete" type="submit" 
-				 onclick="return confirm('<?php echo $mbs_appenv->lang('confirmed')?>');" ><?php echo $mbs_appenv->lang('delete')?></button>
+			<div style="margin-top:10px;" class=box-bottom>
+				<a href="javascript:document._form.action='<?php echo $mbs_appenv->toURL('class_edit', '', array('delete'=>1))?>';document._form.submit();" class="btn-del" >
+					<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
+				<a href="javascript:document._form.action='<?php echo $mbs_appenv->toURL('class_edit', '', array('edit'=>1))?>';document._form.submit();" class="btn-send" >
+					<i class="ico"></i><?php echo $mbs_appenv->lang('edit')?></a>
 			</div>
-    		<?php }?>
-			
 		</form>
-		
-		
     </div>
 </div>
-<div class=footer></div>
 </body>
 </html>

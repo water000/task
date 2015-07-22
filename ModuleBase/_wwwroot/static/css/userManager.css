@@ -28,17 +28,15 @@
     background: url("../images/ico-back_03.png") no-repeat;
 }
 .userManager .inpBox {
-    overflow: hidden;
-    width: 520px; }
+    overflow: hidden;}
 .userManager .labelL {
-    width: 84px;
-    float: left;
+    width: 165px;
+    display:inline-block;
     line-height: 32px;
     color: #333;
     font-size: 14px;
     text-align: right; }
 .userManager .inpTit {
-    float: right;
     width: 400px;
     height: 30px;
     border: 1px solid #cfcfcf;
@@ -48,15 +46,14 @@
     font-size: 14px;
     color: #333; }
 .userManager .btnBox {
-    overflow: hidden;
-    padding-left: 84px; }
+    overflow: hidden; }
 .userManager .btn-send {
     width: 88px;
     height: 31px;
     line-height: 31px;
     border: 1px solid #4374c6;
     background-color: #4374c6;
-    float: left;
+    display:inline-block;
     text-align: center;
     font-size: 16px;
     color: #fff;
@@ -68,7 +65,7 @@
     border: 1px solid #c5c5c5;
     border-radius: 3px;
     background-color: #ededed;
-    float: left;
+    display:inline-block;
     text-align: center;
     font-size: 16px;
     color: #333;
@@ -78,7 +75,6 @@
 .mb17 {
     margin-bottom: 17px; }
 .sel-format {
-    float: right;
     width: 422px;
     height: 33px;
     border: 1px solid #cfcfcf;

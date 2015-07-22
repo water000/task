@@ -209,6 +209,15 @@ class CAppEnvironment{
 	function uploadPath($filename, $mod=''){
 		return dirname(__FILE__).'/upload/'.(empty($mod)?$this->item('cur_mod'):$mod).'/'.$filename;
 	}
+	
+	function unlinkUploadFile($url){
+		$arr = parse_url($url);
+		if(!empty($arr['path']) 
+			&& 0 === strpos($arr['path'], '/upload')
+			&& strpos($arr['path'], '..') === false){
+			unlink(dirname(__FILE__).$arr['path']);
+		}
+	}
 
 	function config($item, $mod='', $cfg='default'){
 		$mod = empty($mod) ? $this->env['cur_mod'] : $mod;

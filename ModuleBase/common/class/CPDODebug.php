@@ -104,6 +104,10 @@ class CPDODebug extends PDO
 			$this->arrLog[] =array('[PDO::prepare]', $statement, $e->getMessage());
 			throw $e;
 		}
+		if(!$ret){
+			$this->arrLog[] =array('[PDO::prepare]', $statement, implode('/', parent::errorInfo()));
+			return false;
+		}
 		$end = microtime(true);
 		$cost = $end-$start;
 		$this->appendTotal($cost);

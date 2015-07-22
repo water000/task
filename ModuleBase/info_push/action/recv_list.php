@@ -4,19 +4,21 @@ define('ROWS_PER_PAGE', isset($_REQUEST['per_page']) ? intval($_REQUEST['per_pag
 define('PAGE_ID',  isset($_REQUEST['page_id']) ? intval($_REQUEST['page_id']) : 1);
 define('ROWS_OFFSET', (PAGE_ID-1)*ROWS_PER_PAGE);
 
-mbs_import('user', 'CUserSession');
+mbs_import('user', 'CUserSession', 'CUserDepControl');
 $usersess = new CUserSession();
 list($sess_uid,) = $usersess->get();
 
-mbs_import('', 'CInfoControl', 'CInfoPushControl');
-$type = isset($_REQUEST['type']) ? CInfoControl::txt2type($_REQUEST['type']) : false;
+mbs_import('', 'CInfoPushControl');
+mbs_import('info', 'CInfoControl');
+
+$type = isset($_REQUEST['class_type']) ? CUserDepControl::txt2id($_REQUEST['class_type']) : false;
 $sql = sprintf('SELECT i.* FROM %s i, %s p 
-		WHERE i.id=p.info_id AND p.recv_uid=%d AND status=%d ORDER BY i.id desc %s LIMIT %d,%d',
+		WHERE i.id=p.info_id AND p.recv_uid=%d AND status=%d %s ORDER BY i.id desc LIMIT %d,%d',
 		mbs_tbname('info'), 
 		mbs_tbname('info_push_event'),
 		$sess_uid, 
 		CInfoPushControl::ST_WAIT_PUSH,
-		false === $type ? '' : 'AND attachment_format='.$type,
+		false === $type ? '' : 'AND dep_id='.$type,
 		ROWS_OFFSET, 
 		ROWS_PER_PAGE
 );

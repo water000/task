@@ -95,7 +95,7 @@ if(isset($_REQUEST['phone'])){
 					if('files' == ini_get('session.save_handler')){
 						$sess_path = session_save_path();
 						$sess_path = empty($sess_path) ? getenv('TMP') : $sess_path;
-						unlink($sess_path.'/sess_'.$llog['token']);
+						@unlink($sess_path.'/sess_'.$llog['token']);
 					}else{
 						session_id($llog['token']);
 						session_destroy();

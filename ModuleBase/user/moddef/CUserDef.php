@@ -55,7 +55,7 @@ class CUserDef extends CModDef {
 				)',
 				'user_department' => '(
 					id                   int unsigned auto_increment not null,
-					name                 varchar(16),
+					name           		 varchar(16),
 					password             char(32),
 					edit_time            int unsigned,
 					primary key (id),
@@ -100,6 +100,7 @@ class CUserDef extends CModDef {
 					self::P_TLE => '编辑',
 					self::G_DC  => '编辑用户信息',
 					self::P_MGR => true,
+					self::P_NCD => true,
 					self::P_ARGS => array(
 						'name'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2, 17'),
 						'password'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6, 17'),
@@ -122,15 +123,17 @@ class CUserDef extends CModDef {
 					self::P_TLE => '分类',
 					self::G_DC  => '获取、删除用户分类',
 					self::P_MGR => true,
-					self::P_ARGS => array(
-						'name'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2, 16'),
-						'code'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'编码', self::PA_RNG=>'2, 32'),
-					),
+					
 				),
 				'class_edit' => array(
 					self::P_TLE => '分类编辑',
 					self::G_DC => '对分类进行批量编辑',
 					self::P_MGR => true,
+					self::P_NCD => true,
+					self::P_ARGS => array(
+						'name'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2, 16'),
+						'code'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'编码', self::PA_RNG=>'2, 32'),
+					),
 				),
 				'department' => array(
 					self::P_TLE => '部门',
@@ -145,15 +148,31 @@ class CUserDef extends CModDef {
 					self::P_TLE => '部门编辑',
 					self::G_DC => '对部门进行批量编辑, 以及加入指定用户到当前部门',
 					self::P_MGR => true,
+					self::P_NCD => true,
 				),
+				'myinfo'  => array(
+					self::P_TLE => '我的信息',
+					self::G_DC  => '显示或修改我的信息，如果提供参数列表中的参数时，则进行修改.没有则返回当前用户信息',
+					self::P_ARGS => array(
+						'pwd1'     => array(self::PA_REQ=>1, self::G_DC=>'新密码', self::PA_RNG=>'6, 32'),
+						'pwd2'     => array(self::PA_REQ=>1, self::G_DC=>'确认密码，须与1密码相同', self::PA_RNG=>'6, 32'),
+						'src_pwd'  => array(self::PA_REQ=>1, self::G_DC=>'原来密码', self::PA_RNG=>'6, 32'),
+					),
+					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG", data:{user-info}',
+					self::LD_FTR => array(
+						array('user', 'checkLogin', true)
+					),
+				)
 			),
 		);
 	}
 	
+	const BANNED_DEL_MAX_CLASS_ID = 3;
+	
 	function install($dbpool, $mempool=null){
 		parent::install($dbpool, $mempool);
 		
-		mbs_import('', 'CUserControl');
+		mbs_import('', 'CUserControl', 'CUserClassControl', 'CUserDepControl');
 		try {
 			$ins = CUserControl::getInstance(self::$appenv, $dbpool, $mempool);
 			$uid = $ins->add(array(
@@ -164,7 +183,6 @@ class CUserDef extends CModDef {
 				'reg_time'  => time(),
 				'reg_ip'    => self::$appenv->item('client_ip')
 			));
-			
 			$uid = $ins->add(array(
 				'id'        => 2,
 				'name'      => 'developer',
@@ -174,19 +192,26 @@ class CUserDef extends CModDef {
 				'reg_ip'    => self::$appenv->item('client_ip')
 			));
 			
-			$uid = $ins->add(array(
-				'id'        => 3,
-				'name'      => 'tester',
-				'password'  => CUserControl::formatPassword('123123'),
-				'phone'     => '13666666666',
-				'reg_time'  => time(),
-				'IMEI'      => '358882041675207',
-				'IMSI'      => '460003044165002',
-				'class_id'  => 1,
-				'reg_ip'    => self::$appenv->item('client_ip')
-			));
+			//由于系统的要求，分类和部门的id需要一一对应.且在CUserDepControl中的$DEP_MAP的内容也是遵循这里的顺序
+			$uc = CUserClassControl::getInstance(self::$appenv, $dbpool, $mempool);
+			$pre_class = array(
+				array('id' => 1, 'name' => '干警', 'code' => 'POLICE', 'create_time' => time()),
+				array('id' => 2, 'name' => '厅、处领导', 'code' => 'TC_LDR', 'create_time' => time()),
+				array('id' => 3, 'name' => '省委领导', 'code' => 'PV_LDR', 'create_time' => time()),
+			);
+			foreach($pre_class as $c){
+				$uc->add($c);
+			}
 			
-			
+			$ud = CUserDepControl::getInstance(self::$appenv, $dbpool, $mempool);
+			$pre_dep = array(
+				array('id' => 1, 'name' => '业务系统查询结果', 'password'=>'123123', 'edit_time'=>time()),
+				array('id' => 2, 'name' => '舆情报告', 'password'=>'123123', 'edit_time'=>time()),
+				array('id' => 3, 'name' => '声像信息（视频）', 'password'=>'123123', 'edit_time'=>time()),
+			);
+			foreach($pre_dep as $d){
+				$ud->add($d);
+			}
 		} catch (Exception $e) {
 			throw $e;
 		}

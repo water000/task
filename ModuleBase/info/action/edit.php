@@ -25,6 +25,19 @@ if(isset($_REQUEST['delete']) && isset($_REQUEST['id'])){
 	exit(0);
 }
 
+if(isset($_FILES['imgFile']) && $_FILES['imgFile']['size'] > 0){
+	mbs_import('', 'CInfoControl');
+	
+	$path = CInfoControl::moveEditorImg('imgFile', $mbs_appenv);
+	if(false === $path)
+		echo json_encode(array('error'=>1, 'message'=>'error'));
+	else 
+		echo json_encode(array('error'=>0, 'url'=>$mbs_appenv->uploadURL($path)));
+	
+	exit(0);
+}
+
+
 $req_info = null;
 if(isset($_REQUEST['id'])){
 	mbs_import('', 'CInfoControl');
@@ -72,6 +85,16 @@ if(isset($_REQUEST['__timeline'])){
 				&& !empty($req_info['attachment_name'])){
 				unlink($mbs_appenv->uploadPath($req_info['attachment_path']));
 			}
+			$imgtag_ptn = '/<img src="([^"]+?)"/i';
+			if(preg_match_all($imgtag_ptn, $req_info['abstract'], $src_match) > 0){
+				$simgs = $src_match[1];
+				if(preg_match_all($imgtag_ptn, $info['abstract'], $cur_match) > 0){
+					$simgs = array_diff($simgs, $cur_match[1]);
+				}
+				foreach($simgs as $img){
+					$mbs_appenv->unlinkUploadFile($img);
+				}
+			}
 			$info_id = $_REQUEST['id'];
 		}else{
 			mbs_import('user', 'CUserDepSession', 'CUserSession');
@@ -115,6 +138,9 @@ if(isset($_REQUEST['__timeline'])){
 <link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>" />
 <link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('core.css')?>" />
 <link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('createInfo.css')?>" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('keditor/default.css')?>" />
+<script src="<?php echo $mbs_appenv->sURL('kindeditor-all-min.js')?>"></script>
+<script src="<?php echo $mbs_appenv->sURL('zh-CN.js')?>"></script>
 <style type="text/css">
 .popimg{position:fixed;top:0;left:0;width:100%;height:100%;display:none;background:#333;}
 .popimg div{height:89%;width:89%;margin:5%;overflow:auto;}
@@ -126,19 +152,20 @@ div.thumb_img{position:relative;display:inline-block;}
 </head>
 <body>
 <div class="createInfo">
-	<?php if(isset($_REQUEST['__timeline'])){ if(!empty($error)){ ?>
-	<div class=error><p><?php echo implode('<br/>', $error)?></p>
-	<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
-	</div>
-	<?php }else {?>
-	<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common'),  isset($notice) ? '('.$notice.')': '';?>
-		<a href="<?php echo $mbs_appenv->toURL('push', '', array('id[]'=>$info_id));?>">
-			<?php echo $mbs_appenv->lang('push')?></a>
-			<?php echo $mbs_appenv->lang(array('or', 'continue')), $page_title?>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
-	<?php }}?>
 	<h2 class="tit"><?php echo $mbs_appenv->lang('add_info')?></h2>
 	<form action="" method="post" enctype="multipart/form-data">
+		<?php if(isset($_REQUEST['__timeline'])){ if(!empty($error)){ ?>
+		<div class=error><p><?php echo implode('<br/>', $error)?></p>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+		</div>
+		<?php }else {?>
+		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common'),  isset($notice) ? '('.$notice.')': '';?>
+			<a href="<?php echo $mbs_appenv->toURL('push', '', array('id[]'=>$info_id));?>">
+				<?php echo $mbs_appenv->lang('push')?></a>
+				<?php echo $mbs_appenv->lang(array('or', 'continue')), $page_title?>
+			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
+		<?php }}?>
+		
 		<input type="hidden" name="__timeline" value="<?php echo time()?>" />
 		<div class="inpBox mb17"> 
 			<label for="" class="labelL"><?php echo $mbs_appenv->lang('title')?>&nbsp;:&nbsp;</label>
@@ -147,7 +174,7 @@ div.thumb_img{position:relative;display:inline-block;}
 		</div>
 		<div class="inpBox mb22">
 			<label for="" class="labelL"><?php echo $mbs_appenv->lang('abstract')?>&nbsp;:&nbsp;</label>
-			<textarea type="text" rows="6" class="inpWord" name="abstract" 
+			<textarea id=IDT_AREA type="text" rows="6" class="inpWord" name="abstract" style="height:420px;"
 				placeholder="<?php echo $mbs_appenv->lang('please_input')?>..."><?php echo htmlspecialchars($info['abstract'])?></textarea>
 		</div>
 		<div class="inpBox" style="position:relative;">
@@ -168,7 +195,7 @@ div.thumb_img{position:relative;display:inline-block;}
 	    </div>
 		<?php } ?>
 		<div class="btnBox" style="margin-top:40px;">
-			<a href="javascript:;" class="btn-send" onclick="this.parentNode.parentNode.submit();"><?php echo $mbs_appenv->lang('submit')?></a>
+			<a href="javascript:;" class="btn-send" id=IDA_SUBMIT onclick="this.parentNode.parentNode.submit();"><?php echo $mbs_appenv->lang('submit')?></a>
 			<a href="<?php echo $mbs_appenv->toURL('list')?>" class="btn-cancle"><?php echo $mbs_appenv->lang('cancel')?></a>
 		</div>
 	</form>
@@ -198,6 +225,22 @@ div.thumb_img{position:relative;display:inline-block;}
 			}
 		}
 	}
+
+	KindEditor.ready(function (K) {
+		var editor = K.create('#IDT_AREA', {
+			basePath : '../',
+			filterMode : false,
+			wellFormatMode : false,
+			uploadJson : '',
+			afterCreate : function() {
+				var self = this;
+				document.getElementById("IDA_SUBMIT").onclick = function(e){
+					self.sync();
+					this.parentNode.parentNode.submit();
+				}
+			}
+		});
+	});
 })(window, document);
 </script>
 </body>

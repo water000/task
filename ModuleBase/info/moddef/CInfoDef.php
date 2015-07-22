@@ -17,7 +17,7 @@ class CInfoDef extends CModDef {
 				'info' => '(
 				   id                   int unsigned auto_increment not null,
 				   title                varchar(32) not null,
-				   abstract             varchar(255),
+				   abstract             text,
 				   attachment_format    tinyint,
 				   attachment_path      varchar(255),
 				   attachment_name      varchar(32),
@@ -47,7 +47,7 @@ class CInfoDef extends CModDef {
 					),
 					self::P_ARGS => array(
 						'title'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'标题', self::PA_RNG=>'6,33'),
-						'abstract'  => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'概要', self::PA_RNG=>'6,255'),
+						'abstract'  => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'概要', self::PA_RNG=>'6,'),
 						'attachment' => array(self::PA_TYP=>'file', self::G_DC=>'附件'),
 					)
 				),

@@ -3,6 +3,13 @@
 class CUserDepControl extends CUniqRowControl{
 
 	private static $instance = null;
+	
+	private static $DEP_MAP = array(
+		'',
+		'CX', //业务系统查询结果 
+		'YQ', //舆情报告
+		'SX'  //声像信息（视频）
+	);
 
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
@@ -32,6 +39,10 @@ class CUserDepControl extends CUniqRowControl{
 			self::$instance->setPrimaryKey($primarykey);
 		}
 		return self::$instance;
+	}
+	
+	static function txt2id($txt){
+		return array_search($txt, self::$DEP_MAP);
 	}
 }
 

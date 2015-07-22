@@ -90,13 +90,13 @@ function _fn_icon($mod, $ac){
 				if(empty($actions)) continue;
 		?>
 		<dt class="group-type"><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></dt>
-		<?php foreach($actions as $ac => $def){?>
+		<?php foreach($actions as $ac => $def){ if(isset($def[CModDef::P_NCD])) continue; ?>
 		<dd class="type"><a href="#" class="link-type" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)">
 			<?php _fn_icon($mod, $ac)?><?php echo $def[CModDef::P_TLE]?></a></dd>
 		<?php }}}else{  ?>
 		<?php foreach($priv_group as $mod => $actions){ if('core' == $mod) continue; $moddef=mbs_moddef($mod);if(empty($moddef)) continue; ?>
 		<dt class="group-type"><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></dt>
-		<?php foreach($actions as $ac => $def){?>
+		<?php foreach($actions as $ac){ $def=$mod->item(CModDef::PAGES, $ac); if(isset($def[CModDef::P_NCD])) continue;?>
 		<dd class="type"><a href="#" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)">
 			<?php echo _fn_icon($mod, $ac)?><?php echo $def[CModDef::P_TLE]?></a></dd>
 		<?php }}} ?>
@@ -172,14 +172,13 @@ function _to(link, is_redirect){
 							break;
 						}
 					}
-					if(i == links.length){
+					/*if(i == links.length){
 						document.location = frame.contentWindow.document.location.href;
-					}
+					}*/
 				}
 			}
 		}
 	}
-	
 }
 
 /*document.onkeydown = frame.contentWindow.document.onkeydown = function(e){

@@ -55,6 +55,10 @@ $lang_zh_CN = array(
 	'dep_login'         => '部门登录',
 		
 	'data'              => '资料',
+	'pwd_diff_or_error' => '密码不同或有误',
+	'total_member'      => '共%d人',
+	'member'            => '成员',
+	'num'               => '数',
 		
 	'menu'              => function(){
 		global $mbs_appenv;

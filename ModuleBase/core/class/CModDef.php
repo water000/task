@@ -35,6 +35,7 @@ abstract class CModDef {
 	CONST P_OUT  = 'p_out'; // output something like json format to mobile app
 	CONST P_ARGS = 'p_args'; // the page's arguments appeared in $_REQUEST, $args, $_FILES
 	CONST P_DOF  = 'p_debug_output_off'; // close the debug_output if set
+	CONST P_NCD  = 'p_no_click_direct_on_mgr';
 	//CONST P_LGC  = 'p_logo_class'; // <a href="..."><i class=P_LGC></i>P_TLE</a>
 	CONST PA_TYP = 'pa_type';    // the arg's type what appears in gettype(). default is 'string'
 	CONST PA_REQ = 'pa_required';// the arg MUST be required in the page. default is 1
