@@ -4,29 +4,18 @@ mbs_import('privilege', 'CPrivGroupControl', 'CPrivUserControl');
 mbs_import('user', 'CUserControl');
 
 $error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
+$priv_info = null;
 if(empty($error)){
 	try {
 		
 		$pg = CPrivGroupControl::getInstance($mbs_appenv, 
-				CDbPool::getInstance(), CMemcachedPool::getInstance());
-		$pg_all = $pg->getDB()->listAll();
-		if(empty($pg_all) || !($pg_all = $pg_all->fetchAll(PDO::FETCH_ASSOC))){
-			echo $mbs_appenv->lang('create_before_join');
-			exit;
+				CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['group_id']);
+		$priv_info = $pg->get();
+		if(empty($priv_info)){
+			$mbs_appenv->echoex('invalid group_id', 'PRIV_JOIN_REQ_INVALID');
+			exit(0);
 		}
 		
-		if(isset($_REQUEST['group_id'])){
-			foreach($pg_all as $row){
-				if($row['id'] == $_REQUEST['group_id']){
-					$pg_info = $row;
-					break;
-				}
-			}
-		}else{
-			$_REQUEST['group_id'] = $pg_all[0]['id'];
-			$pg_info = $pg_all[0];
-		}		
-		$pg_list = $pg->decodePrivList($pg_info['priv_list']);
 		
 		$pu = CPrivUserControl::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['group_id']);
@@ -57,7 +46,7 @@ if(empty($error)){
 		
 		$pu_list = $pu->getDB()->getAll();
 		
-		$usctr = CUserControl::getInstance($mbs_appenv,
+		$usr = CUserControl::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance());
 	} catch (Exception $e) {
 		$error[] = $e->getMessage();
@@ -70,165 +59,124 @@ if(empty($error)){
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
-<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
+<!--[if lt ie 9]>
+<script>
+	document.createElement("article");
+	document.createElement("section");
+	document.createElement("aside");
+	document.createElement("footer");
+	document.createElement("header");
+	document.createElement("nav");
+</script>
+<![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,minimum-scale=1.0,maximum-scale=1.0">
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('allInfo.css')?>">
 <style type="text/css">
-body, .warpper{background-color:#fff;}
-.content{background-color:#fff;}
-h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
-.left{width:600px;float:left;}
-.right{width:360px;float:right;}
-.left h2{text-align:center;color:#777;}
-
-.right .group_info{padding:0 20px 20px;background-color:#eee;margin-top:5px;}
-.right p.title{font-weight:bold;padding:2px 0;margin-top:20px;}
-.right .text{width:100%; padding:3px;}
-.right label{width:150px;display:inline-block;float:left;padding:2px 0;}
-.right .allmod{padding:0 5px;}
-.right .mod{padding:0 3px;}
-.mod span{margin-right:10px;}
-.right .allmod p{color:#000;margin-top:10px;}
-
-table{margin:10px 0 0;}
-input{width:120px;padding:3px 0;}
-fieldset{border: 2px solid #85BBEF;border-left-width:5px; border-right-width:5px; border-radius:3px;padding:10px;}
-fieldset span{margin-left:5px;}
-.submit_btn{width:60px;font-weight:bold;margin-left:5px;}
-.even{background-color:#eee}
+.col1{width:60px;}
+.col2{width:185px;}
+.col3{width:285px;}
+.col4{width:520px;}
+.name{font-size:14px; color:#111;}
+.dep-desc{margin:22px 8px 0;;font-size:14px;}
+.dep-desc span{color:rgb(0,67,144);margin-right:20px;}
+.dep-desc i{margin-right:5px;position:inherit;left:0;right:0;display:inline-block;width:16px;vertical-align:middle;}
+.ico-dep{background-position:-3px -236px}
+.ico-mbr{background-position:-4px -216px}
 </style>
 </head>
 <body>
-<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<div class="warpper">
-	<div class=content>
-		<h1><?php echo $mbs_cur_actiondef[CModDef::P_TLE]?></h1>
-		<?php if(!empty($error)){ ?>
-		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a></div>
-		<?php }else if(isset($_REQUEST['join']) || isset($_REQUEST['del'])){?>
-		<div class=success><?php echo $mbs_appenv->lang('oper_succ')?>
-			<a href="<?php echo $mbs_appenv->toURL('group_list')?>"><?php echo $mbs_appenv->lang('group_list')?></a>
-			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a>
-		</div>
-		<?php }?>
-		<div class=left>
-			<h3><?php echo $mbs_appenv->lang('joined_user')?></h3>
-			<form action="" method="post">
-			<table cellspacing=0 style="margin-bottom:10px;">
-				<tr>
-					<th>USER ID</th>
-					<th><?php echo $mbs_appenv->lang('name')?></th>
-					<th><?php echo $mbs_appenv->lang('join_ts')?></th>
-				</tr>
-<?php 
-if(!empty($pu_list)){
-	$n = 1; 
-	$pu_list = $pu_list->fetchAll(PDO::FETCH_ASSOC);
-	foreach($pu_list as $row){ 
-		$usctr->setPrimaryKey($row['user_id']); 
-		$usinfo = $usctr->get(); 
-?>
-				<tr <?php echo 0 == $n++%2 ? 'class=even':''?>>
-					<td><input style="width:30px;" type="checkbox" name="del[]" value="<?php echo $row['user_id']?>" /><?php echo $row['user_id']?></td>
-					<td><?php echo CStrTools::txt2html($usinfo['name'])?></td>
-					<td><?php echo date('Y-m-d', $row['join_ts'])?></td>
-				</tr>
-<?php }?>
-				<tr><td colspan=3 style="border:0;padding-top:10px;">
-					<input type="submit" style="width: 80px;" class="submit_btn" value="<?php echo $mbs_appenv->lang('exit_user')?>" /></td></tr>
-<?php }else{?>
-				<tr><td colspan=3><?php echo $mbs_appenv->lang('no_data', 'common')?></td></tr>
-<?php } ?>
+<div class="allInfo">
+	<h2 class="tit">
+		<?php echo $mbs_appenv->lang(array('group', 'member', 'manage'))?>
+		<a href="<?php echo $mbs_appenv->toURL('group_list')?>" class="btn-cancel"><span class="back-icon"></span><?php echo $mbs_appenv->lang('back')?></a>
+	</h2>
+	
+	<?php if(!empty($error)){ ?>
+	<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
+	<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+	</div>
+	<?php }else if(isset($_REQUEST['join']) || isset($_REQUEST['del'])){ ?>
+	<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+	</div>
+	<?php }?>
+	
+	<div class=dep-desc>
+		<i class="ico ico-dep"></i><?php echo $mbs_appenv->lang(array('group', 'name')), '&nbsp;:&nbsp;<span>', $priv_info['name'], '</span>'?>
+		<i class="ico ico-mbr"></i><?php echo $mbs_appenv->lang(array('member', 'num')), '&nbsp;:&nbsp;<span>', count($pu_list), '</span>'?>
+		<a href="javascript:;" class="btn-create" style="position: relative;top:0;right:0;display:inline-block;margin-left:50px;">
+			+<?php echo $mbs_appenv->lang(array('add', 'member'))?></a>
+	</div>
+    <div class="box-tabel mb17" style="margin-top:28px;">
+		<form name="_form" method="post" action="">
+			<input type="hidden" name="del" value="1" />
+			<table class="info-table" style="width: 100%;margin-top:1em;">
+			    <thead>
+			        <tr>
+			            <th class="first-col col1"><input type="checkbox" name="" value="" /></th>
+			            <th class="col2"><?php echo $mbs_appenv->lang('name')?></th>
+			            <th class="col4"><?php echo $mbs_appenv->lang('join_ts')?></th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			    <?php foreach($pu_list as $k=>$row){ $usr->setPrimaryKey($row['user_id']); $uinfo=$usr->get();?>
+			        <tr>
+			            <td class="first-col">
+			            	<input type="checkbox" name="del[]" value="<?php echo $row['user_id']?>" />
+			            </td>
+			            <td class=name><?php echo empty($uinfo) ? '(delete)' : $uinfo['name']?></td>
+			            <td><?php echo date('Y-m-d H:i', $row['join_ts'])?></td>
+			        </tr>
+			    <?php }?>
+			    </tbody>
 			</table>
-			</form>
-			
-			<h3 style="margin-top:30px;"><?php echo $mbs_appenv->lang('join_user')?>
-				&nbsp;&nbsp;<a href="javascript:;" onclick="window.open('<?=$mbs_appenv->toURL('list', 'user')?>', '_blank,_top', 'height=600,width=900,location=no', true)">
-				<?php echo $mbs_appenv->lang('select_user')?></a>
-			</h3>
-			<form action="" method="post">
-			<table cellspacing=0 style="margin-bottom:10px;" id="IDT_JOIN_LIST">
-				<tr>
-					<th>USER ID</th>
-					<th><?php echo $mbs_appenv->lang('name')?></th>
-					<th><?php echo $mbs_appenv->lang('delete', 'common')?></th>
-				</tr>
-				<tr><td colspan=2 style="border:0;padding-top:10px;"> <input type="submit" style="width: 80px;" class="submit_btn" value="<?php echo $mbs_appenv->lang('join_user')?>" /></td></tr>
-			</table>
-			</form>
+			<div style="margin-top:10px;" class=box-bottom>
+				<a href="javascript:document._form.submit();" class="btn-del" >
+					<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
+			</div>
+		</form>
+		<form action="" method="post" name="form_join">
+		</form>
+    </div>
+</div>
+<script type="text/javascript" src="<?php echo $mbs_appenv->sURL('jquery-1.3.1.min.js')?>"></script>
+<script type="text/javascript" src="<?php echo $mbs_appenv->sURL('jquery.avgrund.js')?>"></script>
 <script type="text/javascript">
-var g_join_list = document.getElementById("IDT_JOIN_LIST"), g_selected_user=[];
-function _del(oa){
-	delete g_selected_user[oa.previousSibling.value];
-	oa.parentNode.parentNode.parentNode.removeChild(oa.parentNode.parentNode);
-}
-window.cb_class_selected = function(selected_class, popwin){
-	if(selected_class.length > 0){
-		for(var i=0, j=selected_class.length/2; i<j; i++){
-			if("undefined" == typeof g_selected_user[selected_class[i*2]]){
-				var tr = g_join_list.insertRow(g_join_list.rows.length-1);
-				tr.insertCell().innerHTML = selected_class[i*2];
-				tr.insertCell().innerHTML = selected_class[i*2+1];
-				tr.insertCell().innerHTML = "<input type=hidden name='join[]' value='"+selected_class[i*2]
-					+"' /><a href='javascript:;' onclick='_del(this)'><?php echo $mbs_appenv->lang('delete', 'common')?></a>";
-				g_selected_user[selected_class[i*2]] = 1;
-			}
-		}
-		popwin.close();
+var link = window.top.document.createElement("link");
+window.top.document.body.appendChild(link);
+link.href = "<?php echo $mbs_appenv->sURL('avgrund.css')?>"; 
+link.rel="stylesheet";
+
+$('.avgrund-popin', window.top.document).remove();
+var g_avgrund = $('.btn-create').avgrund({
+	height: 555,
+	width: 760,
+	holderClass: 'avgrund-custom',
+	showClose: true,
+	showCloseText: '<?php echo $mbs_appenv->lang('close')?>',
+	title: '<?php echo $mbs_appenv->lang(array('select', 'member'))?>',
+	onBlurContainer: '.container',
+	body: window.top.document.getElementsByTagName("div")[0],
+	template: function(obj){
+		return '<iframe style="width:100%;height:100%;" src="<?php echo $mbs_appenv->toURL('list', 'user')?>'+'"></iframe>';
 	}
+});
+
+window.top.on_user_selected = function(arr){
+	g_avgrund.deactivate();
+	
+	var inp;
+	for(var i=0; i<arr.length; i++){
+		inp = document.createElement("input");
+		inp.type = "hidden";
+		inp.name = "join[]";
+		inp.value = arr[i][0];
+		document.form_join.appendChild(inp);
+	}
+	document.form_join.submit();
 }
 </script>
-		</div>
-		<div class=right>
-			<div><select style="float: right;" onchange="location.href='<?php echo $mbs_appenv->item('cur_action_url')?>?group_id='+this.options[this.selectedIndex].value">
-				<?php foreach($pg_all as $row){?>
-				<option value="<?php echo $row['id']?>" <?php echo $row['id']==$_REQUEST['group_id']?' selected':''?>>
-					<?php echo CStrTools::txt2html($row['name'])?>
-				</option>
-				<?php }?>
-				</select>
-			</div>
-			<div style="clear: both"></div>
-			<div class=group_info>
-			<p class=title><?php echo $mbs_appenv->lang('group_name')?></p>
-			<p><?php echo $pg_info['name']?></p>
-			<p class=title><?php echo $mbs_appenv->lang('group_type')?></p>
-			<p><?php echo $pg_info['type']==CPrivilegeDef::TYPE_ALLOW ? $mbs_appenv->lang('type_allow'):$mbs_appenv->lang('type_deny')?></p>
-			<p class=title><?php echo $mbs_appenv->lang('priv_list')?></p>
-			<p>
-<?php 
-if(empty($error)){
-	if(CPrivGroupControl::isTopmost($pg_list)){ 
-		echo $mbs_appenv->lang('topmost_group');
-	}else{
-		$_moddef = null;
-		foreach($pg_list as $mod => $actions){
-			$_moddef = mbs_moddef($mod);
-			if(empty($_moddef)){
-				echo '<p class=title>', $mod, '<span style="color:red">(not found)</span></p>';
-				continue;
-			}
-			echo '<p class=title>', $_moddef->item(CModDef::MOD, CModDef::G_TL), '</p>';
-			echo '<div class=mod>';
-			foreach($actions as $action){
-				$ac = $_moddef->item(CModDef::PAGES, $action, CModDef::P_TLE);
-				if(empty($ac)){
-					echo '<span>', $action, '</span>';
-				}else{
-					echo '<span>', $ac, '</span>';
-				}
-			}
-			echo '</div>';
-		}
-	}
-}
-?>
-			</p>
-			</div>
-		</div>
-		<div style="clear: both"></div>
-	</div>
-	<div class=footer></div>
-</div>
 </body>
 </html>

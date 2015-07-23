@@ -106,8 +106,8 @@ if($count > ROWS_OFFSET){
 			placeholder="<?php echo $mbs_appenv->lang('please_input')?>" 
 			value="<?php echo htmlspecialchars($search_keys['phone'])?>" />
 		<label for="" class="label-word"><?php echo $mbs_appenv->lang(array('user', 'class'))?>&nbsp;:&nbsp;</label>
-		<select name="class" class="sel-format">
-       		<option value=0><?php echo $mbs_appenv->lang('all')?></option>
+		<select name="class_id" class="sel-format">
+       		<option value=-1><?php echo $mbs_appenv->lang('all')?></option>
        		<?php foreach($class_list as $c){ ?>
        		<option value="<?php echo $c['id']?>" <?php echo $search_keys['class_id']==$c['id']?' selected':''?>><?php echo $c['name']?></option>
        		<?php } ?>
@@ -133,7 +133,7 @@ if($count > ROWS_OFFSET){
 		    	<?php 
 		    	$k=-1;
 		    	foreach($list as $k => $row){ ?>
-		        <tr <?php echo 1 == $k%2 ? 'class=pure-table-odd':'' ?>>
+		        <tr>
 		            <td class=first-col><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /></td>
 		            <td class=name><?php echo CStrTools::txt2html($row['name'])?></td>
 		            <td><?php echo CStrTools::txt2html($row['organization'])?></td>
@@ -149,7 +149,7 @@ if($count > ROWS_OFFSET){
 	</div>
 	<!-- 列表end -->
 	<div class="box-bottom">
-		<a href="javascript:;" class="btn-del" onclick="document.form_list.action='<?php echo $mbs_appenv->toURL('edit', '', array('delete'=>''))?>';document.form_list.submit();">
+		<a id=IDA_BTN_DEL href="javascript:;" class="btn-del" onclick="document.form_list.action='<?php echo $mbs_appenv->toURL('edit', '', array('delete'=>''))?>';document.form_list.submit();">
 			<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
 		<?php if(count($page_num_list) > 1){ ?>
 		<p class="pageBox">
@@ -170,5 +170,39 @@ if($count > ROWS_OFFSET){
 	</div>
 	</form>
 </div>
+<script type="text/javascript">
+if(window.parent.on_user_selected){
+	var big_title = document.getElementsByTagName("h2")[0];
+	big_title.parentNode.removeChild(big_title);
+
+	var tb = document.getElementsByTagName("table")[0],i;
+	tb.className += " pop-table";
+	for(i=0; i<tb.rows.length; i++){
+		tb.rows[i].deleteCell(tb.rows[i].cells.length-1);
+		tb.rows[i].deleteCell(tb.rows[i].cells.length-1);
+	}
+
+	var del_btn = document.getElementById("IDA_BTN_DEL"),
+		confirm_btn = document.createElement("a");
+	confirm_btn.innerHTML = "<?php echo $mbs_appenv->lang(array('confirm', 'select'))?>";
+	confirm_btn.className = "btn-primary";
+	confirm_btn.style.fontSize = "12px";
+	confirm_btn.onclick = function(e){
+		var arr = [], chbox;
+		for(i=0; i<tb.rows.length; i++){
+			chbox = tb.rows[i].cells[0].getElementsByTagName("input")[0];
+			if(chbox.checked){
+				arr.push([chbox.value, tb.rows[i].cells[1].innerHTML, 
+					tb.rows[i].cells[2].innerHTML,tb.rows[i].cells[3].innerHTML]);
+			}
+		}
+		if(arr.length > 0){
+			window.parent.on_user_selected(arr);
+		}
+	}
+	del_btn.parentNode.insertBefore(confirm_btn, del_btn);
+	del_btn.parentNode.removeChild(del_btn);
+}
+</script>
 </body>
 </html>

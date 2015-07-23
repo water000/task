@@ -157,10 +157,13 @@ a:active {
 .info-table thead tr{height:32px;background: url(../images/bg-headChart.jpg) repeat-x;}
 .info-table th{border-left:1px solid #ced7e2;font-weight:normal;text-align:left;}
 .info-table .first-col{padding-left:20px;border:0;}
-.info-table td{padding:12px 0;}
+.info-table td{padding:10px 0;}
 .info-table th, .info-table td{padding-left:10px;}
 .info-table tbody tr{border-bottom: 1px solid #e3e3e3;}
 .info-table tbody tr:nth-child(2n) {background-color: #f8f8f8; }
+
+.pop-table thead tr{height:auto;}
+.pop-table thead tr th{padding: 3px 0;background-color: #e8e8e8;border:0;}
 
 .success, .error{position:relative;padding: 1em 0;text-align: center;width: 90%;margin: 2em auto;}
 .success p, .error p{margin-top:.5em;font-size:60%;}
@@ -170,4 +173,24 @@ a:active {
 .success a.link{font-size:80%;margin-left:10px;}
 .error { background-color: #f2dede;}
 
-
+.btn-primary {border: 1px solid #4374c6;background-color: #4374c6;color: #fff;border-radius: 3px;padding:5px 13px;cursor:pointer; }
+.btn-cancel{width: 70px;
+  height: 28px;
+  line-height: 28px;
+  color: #333333;
+  font-size: 14px;
+  text-align: center;
+  background-color: #f6f6f6;
+  border-radius: 3px;
+  position: absolute;
+  right: 20px;
+  top: 11px;
+  border: 1px solid #c5c5c5;}
+  
+.back-icon {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  background: url("../images/ico-back_03.png") no-repeat;
+}

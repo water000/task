@@ -156,7 +156,7 @@ if($count > ROWS_OFFSET){
 				<p class="con-info">
 					<a class="link-tit" href="<?php echo $mbs_appenv->toURL('edit', 'info', array('id'=>$row['id']))?>">
 					            		<?php echo CStrTools::txt2html($row['title'])?></a>
-					<span class="subWord"><?php echo CStrTools::cutstr($row['abstract'], 55, $mbs_appenv->item('charset'))?></span>
+					<span class="subWord"><?php echo CStrTools::cutstr($row['abstract'], 50, $mbs_appenv->item('charset'))?></span>
 				</p>
 				<p class="time-con"><?php echo date('m-d H:i', $row['create_time'])?></p>
 				<p class="file-name"><?php echo $mbs_appenv->lang(CInfoControl::type2txt($row['attachment_format']))?></p>

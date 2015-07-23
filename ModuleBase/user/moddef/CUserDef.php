@@ -139,16 +139,17 @@ class CUserDef extends CModDef {
 					self::P_TLE => '部门',
 					self::G_DC => '添加、删除部门，及获取列表',
 					self::P_MGR => true,
-					self::P_ARGS => array(
-						'name'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2,16'),
-						'password' => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6,'),
-					)
+					
 				),
 				'dep_edit' => array(
 					self::P_TLE => '部门编辑',
 					self::G_DC => '对部门进行批量编辑, 以及加入指定用户到当前部门',
 					self::P_MGR => true,
 					self::P_NCD => true,
+					self::P_ARGS => array(
+						'name'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2,16'),
+						'password' => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6,'),
+					)
 				),
 				'myinfo'  => array(
 					self::P_TLE => '我的信息',

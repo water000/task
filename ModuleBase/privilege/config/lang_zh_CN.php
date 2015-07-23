@@ -22,7 +22,6 @@ $lang_zh_CN = array(
 		
 	'search_user'   => '搜索用户',
 	'phone'     => '手机号码',
-	'name'     => '昵称',
 	'reg_time'      => '注册时间',
 	'joined_user'   => '已加入用户',
 	'join_ts'       => '加入时间',
@@ -30,6 +29,13 @@ $lang_zh_CN = array(
 	'create_before_join' => '在加入用户前需要先<a href="'.$mbs_appenv->toURL('edit_group').'">创建权限组</a>',
 	'join_user'   => '加入用户',
 	'select_user' => '选择用户',
+		
+	'group'       => '权限组',
+	'create'      => '创建',
+	'member'      => '成员',
+	'total_person'=> '共%d人',
+	'priv'        => '权限',
+	'num'         => '数',
 );
 
 

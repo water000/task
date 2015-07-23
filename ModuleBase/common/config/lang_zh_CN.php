@@ -82,6 +82,7 @@ $lang_zh_CN = array(
 	'total_count'           => '共%d条',
 	'please_input'          => '请输入...',
 	'cancel'                => '取消',
+	'slash'                 => '、',
 		
 	UPLOAD_ERR_INI_SIZE      => '上传的文件大小超过了系统的限制',
 	UPLOAD_ERR_FORM_SIZE     => '上传文件的大小超过了 HTML 表单中 MAX_FILE_SIZE 选项指定的值',

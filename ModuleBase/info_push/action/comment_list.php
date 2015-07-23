@@ -72,12 +72,6 @@ try {
 	if($cmt_count > ROWS_OFFSET){
 		$sql_list = 'SELECT i.*, c.*, c.id as cid '.$sql.' ORDER BY c.id LIMIT '.ROWS_OFFSET.','.ROWS_PER_PAGE;
 		$pdos = CDbPool::getInstance()->getDefaultConnection()->prepare($sql_list);
-		var_dump($pdos);
-		if(!$pdos){
-			var_dump(CDbPool::getInstance()->getDefaultConnection()->errorInfo());
-			exit();
-		}
-		exit();
 		$pdos->execute(isset($req_search_keys['title']) ? array($req_search_keys['title']) : array());
 		$cmt_list = $pdos->fetchAll(PDO::FETCH_ASSOC);
 	

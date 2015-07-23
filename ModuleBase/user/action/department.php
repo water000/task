@@ -8,21 +8,6 @@ $dep_ins = CUserDepControl::getInstance($mbs_appenv,
 $udepmbr_ctr = CUserDepMemberControl::getInstance($mbs_appenv, 
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
 
-$dep = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
-if(isset($_REQUEST['name'])){
-	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
-	$dep = array_intersect_key($_REQUEST, $dep);
-	if(empty($error)){
-		$dep['edit_time'] = time();
-		$id = $dep_ins->add($dep);
-		if(empty($id)){
-			$error[] = $mbs_appenv->lang('dep_exists');
-		}else{
-			$dep = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
-		}
-	}
-}
-
 
 $list = $dep_ins->getDB()->listAll()->fetchAll();
 ?>
@@ -89,9 +74,9 @@ $list = $dep_ins->getDB()->listAll()->fetchAll();
 			    </tbody>
 			</table>
 			<div style="margin-top:10px;" class=box-bottom>
-				<a href="javascript:document._form.action='<?php echo $mbs_appenv->toURL('class_edit', '', array('delete'=>1))?>';document._form.submit();" class="btn-del" >
+				<a href="javascript:document._form.action='<?php echo $mbs_appenv->toURL('dep_edit', '', array('delete'=>1))?>';document._form.submit();" class="btn-del" >
 					<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
-				<a href="javascript:document._form.action='<?php echo $mbs_appenv->toURL('class_edit', '', array('edit'=>1))?>';document._form.submit();" class="btn-send" >
+				<a href="javascript:document._form.submit();" class="btn-send" >
 					<i class="ico"></i><?php echo $mbs_appenv->lang('edit')?></a>
 			</div>
 		</form>

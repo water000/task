@@ -181,7 +181,7 @@ function _to(link, is_redirect){
 	}
 }
 
-/*document.onkeydown = frame.contentWindow.document.onkeydown = function(e){
+document.onkeydown = frame.contentWindow.document.onkeydown = function(e){
 	e = e || this.parentWindow.event;
 	if(116 == (e.keyCode || e.which)){ // forriden F5 key in parent window
 		frame.contentWindow.location.reload();
@@ -190,7 +190,7 @@ function _to(link, is_redirect){
 		e.keyCode = 0;
 		return false;
 	}
-}*/
+}
 
 
 

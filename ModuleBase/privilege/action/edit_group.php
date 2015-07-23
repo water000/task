@@ -6,6 +6,8 @@ mbs_import('user', 'CUserSession');
 $action_def = $mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'));
 $args_def = $action_def[CModDef::P_ARGS];
 
+$title = 'create';
+
 $error = array();
 if(isset($_REQUEST['name'])){
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
@@ -40,6 +42,7 @@ if(isset($_REQUEST['group_id'])){
 	if(empty($args_value)){
 		exit('access denied');
 	}
+	$title = 'edit';
 }
 
 ?>
@@ -47,82 +50,94 @@ if(isset($_REQUEST['group_id'])){
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
-<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,minimum-scale=1.0,maximum-scale=1.0">
+<title><?php mbs_title()?></title>
+<!--[if lt ie 9]>
+	<script>
+		document.createElement("article");
+		document.createElement("section");
+		document.createElement("aside");
+		document.createElement("footer");
+		document.createElement("header");
+		document.createElement("nav");
+</script>
+<![endif]-->
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('userManager.css')?>">
 <style type="text/css">
-body, .warpper{background-color:#fff;}
-.content{background-color:#fff;}
-h1{color:#555;margin:60px 0;text-align:center;margin-top:30px;font-size:38px;}
-.left{width:600px;float:left;}
-.right{width:320px;float:left;padding:0 20px 20px;background-color:#eee;}
-.left h2, .left p{text-align:center;color:#777;}
-.left p{padding:5px;}
+form{margin-top:50px;font-size:12px;}
+dl, dl dd{display:inline-block;}
+dl{width:750px;}
+dl{background-color:rgb(248,248,248); border:1px solid rgb(228,228, 228);padding:0 25px 25px;}
+dt{margin:30px 0 10px;}
+dd{margin-right:20px;}
 
-.right p.title{font-weight:bold;padding:2px 0;margin-top:20px;}
-.right .text{width:100%; padding:3px;}
-.right label{width:150px;display:inline-block;float:left;padding:2px 0;}
-.right .allmod{padding:0 5px;}
-.right .mod{padding:0 3px;}
-.right .allmod p{color:#000;margin-top:10px;}
 
-.submit_btn{display:block;width:100%;height:32px;font-weight:bold;margin:0 auto;}
 </style>
 </head>
 <body>
-<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<div class="warpper">
-	<div class=content>
-		<h1><?php echo $action_def[CModDef::P_TLE]?></h1>
-		<?php if(isset($_REQUEST['name'])){if(!empty($error)){ ?>
-		<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a></div>
-		<?php }else{?>
-		<div class=success><?php echo $mbs_appenv->lang('oper_succ')?>
-			<a href="<?php echo $mbs_appenv->toURL('group_list')?>"><?php echo $mbs_appenv->lang('group_list')?></a>
-			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" ><?php echo $mbs_appenv->lang('close')?></a>
-		</div>
-		<?php }}?>
-		<div class=left><?php echo $mbs_appenv->lang('group_can')?></div>
-		<div class=right>
-			<form action="" method="post">
-				<?php if(isset($_REQUEST['group_id'])){?>
-				<input type=hidden name="group_id" value="<?php echo $_REQUEST['group_id']?>" />
-				<?php }?>
-				<p class=title><?php echo $mbs_appenv->lang('group_name')?></p>
-				<p><input type="text" class=text name="name" value="<?php echo isset($args_value['name'])?$args_value['name']:''?>" /></p>
-				<p class=title><?php echo $mbs_appenv->lang('group_type')?></p>
-				<p><?php $args_value['type'] = isset($args_value['type']) ? $args_value['type'] : CPrivilegeDef::TYPE_ALLOW; ?>
-					<input type=radio name=type value=<?php echo CPrivilegeDef::TYPE_ALLOW?> <?php echo $args_value['type']==CPrivilegeDef::TYPE_ALLOW ? ' checked':''?> /><?php echo $mbs_appenv->lang('type_allow')?>
-					<input type=radio name=type value=<?php echo CPrivilegeDef::TYPE_DENY?> <?php echo $args_value['type']==CPrivilegeDef::TYPE_DENY ? ' checked':''?> /><?php echo $mbs_appenv->lang('type_deny')?>
-				</p>
-				<?php 
-				$mod_list = $mbs_appenv->getModList();
-				foreach($mod_list as $mod){
-					$moddef = mbs_moddef($mod);
-					if(empty($moddef))
-						continue;
-					$mgr_list = $moddef->filterActions();
-					if(empty($mgr_list))
-						continue;
-				?>
-				<div class=allmod>
-					<p class=title><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></p>
-					<div class=mod>
-						<?php foreach($mgr_list as $key => $def){?><label>
-							<input type="checkbox" name="priv_list[<?php echo $mod?>][]" value="<?php echo $key?>" <?php echo (isset($_REQUEST['group_id'])&&$priv_group->privExists($mod, $key)) ? ' checked' : ''?> /><?php echo $def[CModDef::P_TLE]?>
-						</label><?php }?>
-						<div style="clear: both"></div>
-					</div>
-				</div>
-				<?php
-				}
-				?>
-				<p class=title style="margin-top:30px;"><input class=submit_btn type=submit /></p>
-			</form>
-		</div>
-		<div style="clear: both"></div>
+<div class="userManager">
+    <h2 class="tit"><?php echo $mbs_appenv->lang(array($title, 'group'))?>
+        <a href="<?php echo $mbs_appenv->toURL('group_list')?>" class="btn-create">
+        	<span class="back-icon"></span><?php echo $mbs_appenv->lang('back')?></a>
+    </h2>
+        
+    <?php if(isset($_REQUEST['__timeline'])){ if(!empty($error)){ ?>
+	<div class=error><p><?php echo implode('<br/>', $error)?></p>
+	<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 	</div>
-	<div class=footer></div>
+	<?php }else {?>
+	<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?>
+		<?php if(isset($new_user['class_id']) && empty($new_user['class_id']) ){ ?>
+		<a href="<?php echo $mbs_appenv->toURL('department')?>" class=link ><?php echo $mbs_appenv->lang('join_department')?></a>
+		<?php } ?>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
+	<?php }}?>
+	
+	<form name="_form" method="post">
+        <div class="inpBox mb17">
+            <label for="name" class="labelL"><?php echo $mbs_appenv->lang('group_name')?>&nbsp;:&nbsp;</label>
+		    <input id="name" class="inpTit" name="name" type="text" value="<?php echo isset($args_value['name'])?$args_value['name']:''?>" 
+		    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" required />
+        </div>
+        <div class="inpBox mb17">
+            <label for="group_type" class="labelL"><?php echo $mbs_appenv->lang('group_type')?>&nbsp;:&nbsp;</label>
+		    <label style="margin-right:20px;"><input type=radio name=type value=<?php echo CPrivilegeDef::TYPE_ALLOW?> 
+		    	<?php echo isset($args_value['type']) && $args_value['type']==CPrivilegeDef::TYPE_ALLOW ? ' checked':''?> /><?php echo $mbs_appenv->lang('type_allow')?></label>
+			<label><input type=radio name=type value=<?php echo CPrivilegeDef::TYPE_DENY?> 
+				<?php echo isset($args_value['type']) && $args_value['type']==CPrivilegeDef::TYPE_DENY ? ' checked':''?> /><?php echo $mbs_appenv->lang('type_deny')?></label>
+        </div>
+        <div class="inpBox mb17">
+            <label for="name" class="labelL" style="vertical-align: top; "><?php echo $mbs_appenv->lang(array('priv', 'select'))?>&nbsp;:&nbsp;</label>
+		    <dl>
+		    <?php 
+			$mod_list = $mbs_appenv->getModList();
+			foreach($mod_list as $mod){
+				$moddef = mbs_moddef($mod);
+				if(empty($moddef))
+					continue;
+				$mgr_list = $moddef->filterActions();
+				if(empty($mgr_list))
+					continue;
+			?>
+				<dt><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></dt>
+				<?php foreach($mgr_list as $key => $def){?>
+				<dd><label><input type="checkbox" name="priv_list[<?php echo $mod?>][]" value="<?php echo $key?>" 
+					<?php echo (isset($_REQUEST['group_id'])&&$priv_group->privExists($mod, $key)) ? ' checked' : ''?> />
+					<?php echo $def[CModDef::P_TLE]?></label><dd><?php }?>
+			<?php
+			}
+			?>
+		    </dl>
+        </div>
+        <div class="btnBox">
+        	<label for="" class="labelL"></label>
+            <a href="javascript:document._form.submit();" class="btn-send"><?php echo $mbs_appenv->lang('submit')?></a>
+            <a href="<?php echo $mbs_appenv->toURL('group_list')?>" class="btn-cancle"><?php echo $mbs_appenv->lang('cancel')?></a>
+        </div>
+    </form>
 </div>
 </body>
 </html>
