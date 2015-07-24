@@ -52,40 +52,55 @@ foreach($all as $row){
 <html>
 <head>
 <title><?php mbs_title()?></title>
-<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
-<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
+<!--[if lt ie 9]>
+<script>
+	document.createElement("article");
+	document.createElement("section");
+	document.createElement("aside");
+	document.createElement("footer");
+	document.createElement("header");
+	document.createElement("nav");
+</script>
+<![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,minimum-scale=1.0,maximum-scale=1.0">
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>" />
+<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('allInfo.css')?>">
 <style type="text/css">
-.content{background-color:#fff}
-.content p.title{padding:2px 0;margin-top:5px;color:green;}
-.mg-content{margin:0 10px;padding:20px 0;}
-.content span{width:150px;display:inline-block;float:left;padding:2px 0;}
-.content .mod{padding:0 5px;}
-.even{background-color:#eee;}
-p.table_title a{background:#3385ff;color:white;padding:4px;margin:0 2px;display:inline-block;float:right;font-size:12px;text-decoration:none;}
-p.table_title a:hover{text-decoration:underline;color:white;}
-.submit_btn{display:block;height:32px;padding:5px 30px;font-weight:bold;margin:0 auto;}
+.col1{width:60px;}
+.col2{width:185px;}
+.col3{width:285px;}
+.col4{width:520px;}
+.name{font-size:14px; color:#111;}
+.dep-desc{margin:22px 8px 0;;font-size:14px;}
+.dep-desc span{color:rgb(0,67,144);margin-right:20px;}
+.dep-desc i{margin-right:5px;position:inherit;left:0;right:0;display:inline-block;width:16px;vertical-align:middle;}
+.ico-dep{background-position:-3px -236px}
+.ico-mbr{background-position:-4px -216px}
 </style>
 </head>
 <body>
-<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<div class="warpper">
-	<div class=content>
-		<div class=mg-content>
-			<?php if($modified){ ?>
-			<div class=success><?php echo $mbs_appenv->lang('oper_succ')?>
-				<a href="<?php echo $mbs_appenv->toURL('group_list')?>"><?php echo $mbs_appenv->lang('group_list')?></a>
-				<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
-			</div>
-			<?php }?>
-			<p class=table_title style="margin-bottom: 16px;"><?php echo $mbs_appenv->lang('group_list')?></p>
-			<form action="" method="post">
-			<table cellspacing=0>
-				<tr>
+<div class="allInfo">
+	<h2 class="tit"><?php echo $mbs_appenv->lang('group_list')?></h2>
+	
+	<?php if(!empty($error)){ ?>
+	<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
+	<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+	</div>
+	<?php }else if($modified){ ?>
+	<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+	</div>
+	<?php }?>
+	
+	<form name=_form action="" method="post" >
+			<table cellspacing=0 class=info-table style="margin-top: 26px">
+				<thead><tr>
 					<th>MODULE</th>
 					<th>NOT FOUND</th>
 					<th>CHANGE TO</th>
 					<th>DELETE</th>
-				</tr>
+				</tr></thead>
 <?php 
 $no =1; 
 $diff_num = 0;
@@ -119,11 +134,13 @@ foreach($mod_items as $mod => &$actions){
 				</tr>
 <?php } ?>
 			</table>
-			<p style="text-align: center;color:#999;font-size:13px;"><?php if($diff_num > 0){?><input type=submit class=submit_btn /><?php }else{?> no action was changed <?php }?></p>
-			</form>
-		</div>
-	</div>
-	<div class=footer></div>
+			<div style="margin-top:50px;text-align:center;color:#999;">
+			<?php if($diff_num > 0){?>
+			<a href="javascript:document._form.submit();" class="btn-primary" style="padding:6px 35px;"><?php echo $mbs_appenv->lang('submit')?></a>
+			<?php }else{?> no action was changed <?php }?>
+			</div>
+	</form>
+			
 </div>
 </body>
 </html>

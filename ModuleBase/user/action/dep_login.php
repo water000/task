@@ -34,6 +34,10 @@ if(empty($dep_info)){
 	exit(0);
 }
 
+$user_dep_sess->set($dep_info['id'], $dep_info);
+$mbs_appenv->echoex($dep_info, '', REDIRECT_AFTER_LOGIN); // passed directly without using password 
+exit(0);
+
 if(isset($_REQUEST['password'])){
 	if($dep_info['password'] != $_REQUEST['password']){
 		$error[] = $mbs_appenv->lang('invalid_password');

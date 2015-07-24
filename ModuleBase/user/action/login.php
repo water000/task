@@ -132,54 +132,100 @@ else{
 <html>
 <head>
 <title><?php mbs_title($mbs_appenv->lang('login'))?></title>
-<link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
-<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('reset.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('global.css')?>" rel="stylesheet">
 <style type="text/css">
 img{vertical-align:bottom;margin: 0 6px;}
+body{
+            background: url("/static/images/curves-2.png") no-repeat top center #092d6a;
+            font-family: "Microsoft Yahei";
+        }
+        input::-webkit-input-placeholder{
+            color: #eeeeee;
+        }
+        input::-moz-input-placeholder{
+            color: #eeeeee;
+        }
+        input::-ms-input-placeholder{
+            color: #eeeeee;
+        }
+        .w760{
+            width: 760px;
+            margin: 100px auto 0;
+            text-align: center;
+        }
+        .title{
+            margin-top: 20px;
+        }
+        .title span{
+            font-size: 24px;
+            color: #ffffff;
+            line-height: 24px;
+        }
+        .login{
+            background: url("/static/images/field-box.png") no-repeat;
+            width: 333px;
+            /*height: 95px;*/
+            margin: 30px auto 0;
+        }
+        .login .inp{
+            width: 280px;
+            border: none;
+            background-color: transparent;
+            color: #eeeeee;
+            font-size: 16px;
+            font-family: "Microsoft Yahei";
+            height: 30px;
+            line-height: 30px;
+            padding:10px 0 7px 53px;
+            *padding:8px 0 7px 53px;
+        }
+        .text_l{ text-align: left; font-size: 14px; color: #eeeeee; margin-top: 10px; margin-left: 10px;}
+        .text_l input[type="checkbox"]{ position: relative; top: 2px;}
+        .login_btn input[type="submit"]{ background: url("/static/images/shape.png") no-repeat; width: 332px; height: 49px; border:none; cursor: pointer; margin-top: 15px;}
+       .captcha{width:170px;height:30px;line-height:30px;background-color: transparent;color: #eeeeee;
+       		border: 1px solid rgb(40,80,145);border-radius: 6px;padding-left: 6px; font-size:13px;}
 </style>
 </head>
 <body>
-<div class=header><?php echo $mbs_appenv->lang('header_html', 'common')?></div>
-<?php if(isset($_REQUEST['phone'])){if(!empty($error)){ ?>
-<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
-<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
-</div>
-<?php }}?>
-<div class="pure-g wrapper">
-    <div class="pure-u-1-3"></div>
-    <div class="pure-u-1-3">
-    	<form class="pure-form pure-form-stacked" method="post">
-    		<input type="hidden" name="redirect" value="<?php echo urlencode(REDIRECT_AFTER_LOGIN)?>" />
-    		<?php if(defined('NEED_TESTING_COOKIE')){?><input type="hidden" name="need_testing_cookie" value=1 /><?php }?>
-		    <fieldset>
-		    	<legend style="font-size: 1.5em;"><?php echo $mbs_appenv->lang('login')?></legend>
-		    	
-		        <label for="phone"><?php echo $mbs_appenv->lang('phone')?></label>
-		        <input id=phone name="phone" class="pure-input-1-2"  /><br />
-		
-		        <label for="password"><?php echo $mbs_appenv->lang('password')?></label>
-		        <input id="password" type="password" name="password" class="pure-input-1-2" /><br />
-		        
-		        <?php if((isset($_REQUEST['phone']) && !empty($error) || isset($_SESSION['common_img_captcha']))){?>
-		        <label for=captcha><?php echo $mbs_appenv->lang('captcha')?></label>
-		        <div class="pure-u-1-3">
-		        <input id="captcha" type="text" name="captcha" class="pure-input-1" />
-				</div>
-				<img alt="<?php echo $mbs_appenv->lang('captcha')?>"  src="<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>" 
-				/><a href="#"  style="vertical-align: bottom;" onclick="this.previousSibling.src='<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>?n='+Math.random();"><?php echo $mbs_appenv->lang('reload_on_unclear')?></a>
-				<br />
-				<?php } ?>
-				
-		        <label for="remember" class="pure-checkbox" style="font-size: 12px;">
-		            <input id="remember" type="checkbox" />&nbsp;<?php echo $mbs_appenv->lang('remember_me')?>
-		        </label><br />
-		
-		        <button type="submit" class="pure-button pure-button-primary"><?php echo $mbs_appenv->lang('login')?></button>
-		    </fieldset>
-		</form>
+<div class="w760">
+    <div><img src="/static/images/logo.png" alt=""/></div>
+    <div class="title">
+        <img src="/static/images/line-copy-2.png" alt=""/>
+        <span><?php echo $mbs_appenv->lang('welcome')?></span>
+        <img src="/static/images/line-copy.png" alt=""/>
     </div>
-    <div class="pure-u-1-3"></div>
+    <?php if(isset($_REQUEST['phone'])){if(!empty($error)){ ?>
+	<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
+	<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+	</div>
+	<?php }}?>
+	<form action="" method="post">
+    <div class="login">
+        <div><input type="text" class="inp" name="phone" 
+        	placeholder="<?php echo $mbs_appenv->lang(array('please_input', 'phone'))?>" /></div>
+        <div><input type="password" class="inp" name="password" 
+        	placeholder="<?php echo $mbs_appenv->lang(array('please_input', 'password'))?>" /></div>
+        <?php if((isset($_REQUEST['phone']) && !empty($error) || isset($_SESSION['common_img_captcha']))){?>
+        <div style="margin-top: 20px;">
+        <input id="captcha" type="text" name="captcha" class="captcha" 
+        	placeholder="<?php echo $mbs_appenv->lang(array('please_input', 'captcha'))?>" />
+		<img alt="<?php echo $mbs_appenv->lang('captcha')?>"  src="<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>" 
+		/><a href="#"  style="vertical-align: bottom;" onclick="this.previousSibling.src='<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>?n='+Math.random();"><?php echo $mbs_appenv->lang('reload_on_unclear')?></a>
+		<br />
+		</div>
+	<?php } ?>	
+        <div class="text_l">
+            <label><input type="checkbox"/><?php echo $mbs_appenv->lang('auto_login_in_next')?></label>
+        </div>
+         <div class="login_btn">
+            <input type="submit" value="" />
+        </div>
+    </div>
+    
+        
+   
+    </form>
 </div>
-<div class=footer></div>
 </body>
 </html>

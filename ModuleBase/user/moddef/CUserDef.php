@@ -115,12 +115,12 @@ class CUserDef extends CModDef {
 					),
 				),
 				'list' => array(
-					self::P_TLE => '列表',
+					self::P_TLE => '用户管理',
 					self::G_DC  => '用户的列表，也可以搜索用户(phone, name, email)，都是精确查询，不支持模糊查询',
 					self::P_MGR => true
 				),
 				'class' => array(
-					self::P_TLE => '分类',
+					self::P_TLE => '分类管理',
 					self::G_DC  => '获取、删除用户分类',
 					self::P_MGR => true,
 					
@@ -136,7 +136,7 @@ class CUserDef extends CModDef {
 					),
 				),
 				'department' => array(
-					self::P_TLE => '部门',
+					self::P_TLE => '部门管理',
 					self::G_DC => '添加、删除部门，及获取列表',
 					self::P_MGR => true,
 					

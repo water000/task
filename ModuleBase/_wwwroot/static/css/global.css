@@ -99,6 +99,10 @@ a:active {
   .navBar .ico9 {
     background-position: -4px -194px;
     height: 15px; }
+   .navBar .ico10 {background-position: -4px -258px; }
+   .navBar .ico11 {background-position: -4px -277px; }
+   .navBar .ico12 {background-position: -4px -299px; }
+   .navBar .ico13 {background-position: -4px -321px; }
 
 .wrap {
   position: absolute;
@@ -173,7 +177,8 @@ a:active {
 .success a.link{font-size:80%;margin-left:10px;}
 .error { background-color: #f2dede;}
 
-.btn-primary {border: 1px solid #4374c6;background-color: #4374c6;color: #fff;border-radius: 3px;padding:5px 13px;cursor:pointer; }
+.btn-primary {border: 1px solid #4374c6;background-color: #4374c6;color: #fff;
+	border-radius: 3px;padding:5px 13px;cursor:pointer; display:inline-block;}
 .btn-cancel{width: 70px;
   height: 28px;
   line-height: 28px;

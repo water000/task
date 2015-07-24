@@ -55,7 +55,7 @@ class CInfoPushDef extends CModDef {
 					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG"}',
 				),
 				'push' => array(
-					self::P_TLE => '推送消息',
+					self::P_TLE => '推送新消息',
 					self::G_DC => '推送选中的消息，选择相应的接收用户进行推送',
 					self::P_MGR => true,
 					self::LD_FTR => array(
@@ -63,7 +63,7 @@ class CInfoPushDef extends CModDef {
 					),
 				),
 				'push_list' => array(
-					self::P_TLE => '推送列表',
+					self::P_TLE => '已推送',
 					self::G_DC => '当前用户推送的消息列表',
 					self::P_MGR => true,
 					self::LD_FTR => array(
@@ -71,7 +71,7 @@ class CInfoPushDef extends CModDef {
 					),
 				),
 				'comment_list' => array(
-					self::P_TLE => '批阅列表',
+					self::P_TLE => '批阅管理',
 					self::G_DC  => '显示最新（7天）的评论',
 					self::P_ARGS => array(
 						'info_id'     => array(self::PA_TYP=>'integer', self::PA_EMP=>0, self::G_DC=>'消息id'),

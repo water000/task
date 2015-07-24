@@ -80,7 +80,7 @@ $lang_zh_CN = array(
 	'select'                 => '选择',
 	'operation'              => '操作',
 	'total_count'           => '共%d条',
-	'please_input'          => '请输入...',
+	'please_input'          => '请输入',
 	'cancel'                => '取消',
 	'slash'                 => '、',
 		

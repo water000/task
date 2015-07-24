@@ -39,7 +39,7 @@ class CInfoDef extends CModDef {
 					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG", data:{info:{详见数据表info中的字段}}',
 				),
 				'edit' => array(
-					self::P_TLE => '编辑消息',
+					self::P_TLE => '创建消息',
 					self::G_DC => '添加、编辑、删除消息',
 					self::P_MGR => true,
 					self::LD_FTR => array(
@@ -52,7 +52,7 @@ class CInfoDef extends CModDef {
 					)
 				),
 				'list' => array(
-					self::P_TLE => '消息列表',
+					self::P_TLE => '所有消息',
 					self::G_DC => '仅限当前用户编辑过的消息列表',
 					self::P_MGR => true,
 					self::LD_FTR => array(

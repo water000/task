@@ -44,6 +44,14 @@ function _fn_icon($mod, $ac){
 		'info_push.push'         => 'ico3',
 		'info_push.push_list'    => 'ico4',
 		'info_push.comment_list' => 'ico5',
+		
+		'user.list'              => 'ico6',
+		'user.class'             => 'ico7',
+		'user.department'        => 'ico8',
+			
+		'privilege.group_list'   => 'ico11',
+		'privilege.edit_group'   => 'ico12',
+		'privilege.rematch_action' => 'ico13',
 	);
 	echo isset($icon_map[$mod.'.'.$ac]) ?  '<i class="ico '. $icon_map[$mod.'.'.$ac]. '"></i>' : '';
 }

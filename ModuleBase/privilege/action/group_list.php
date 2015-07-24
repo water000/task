@@ -99,7 +99,7 @@ if(CPrivGroupControl::isTopmost($priv_list)){
 			$modified_priv[$row['id']][] = $mod;
 			continue;
 		}
-		echo '<tr><td>', $_moddef->item(CModDef::MOD, CModDef::G_TL), '</td>';
+		echo '<tr><td style="width:50px">', $_moddef->item(CModDef::MOD, CModDef::G_TL), '</td>';
 		echo '<td>&nbsp;(&nbsp;';
 		foreach($actions as $k => $action){
 			if($k > 0){

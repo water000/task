@@ -52,14 +52,14 @@ class CPrivilegeDef extends CModDef {
 					)
 				),
 				'group_list' => array(
-					self::P_TLE => '权限组列表',
+					self::P_TLE => '权限组管理',
 					self::G_DC  => '列出权限组包含的信息',
 					self::P_MGR => true,
 					self::P_ARGS => array(
 					),
 				),
 				'edit_group' => array(
-					self::P_TLE => '权限组编辑',
+					self::P_TLE => '创建权限组',
 					self::G_DC  => '将系统中所有P_MGR 标记为true 的 action按模块分组列出，然后选择相应的action并保存到组中',
 					self::P_MGR => true,
 					self::P_ARGS => array(
@@ -86,7 +86,7 @@ class CPrivilegeDef extends CModDef {
 					),
 				),
 				'rematch_action' => array(
-					self::P_TLE => '重新匹配action',
+					self::P_TLE => '重新匹配权限',
 					self::P_MGR => true,
 					self::G_DC => '重新匹配被重命名或删除的action，然后修改，或删除这些变更',
 					self::P_ARGS => array(

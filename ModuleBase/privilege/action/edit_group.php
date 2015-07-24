@@ -84,17 +84,14 @@ dd{margin-right:20px;}
         	<span class="back-icon"></span><?php echo $mbs_appenv->lang('back')?></a>
     </h2>
         
-    <?php if(isset($_REQUEST['__timeline'])){ if(!empty($error)){ ?>
+    <?php if(!empty($error)){ ?>
 	<div class=error><p><?php echo implode('<br/>', $error)?></p>
 	<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
 	</div>
-	<?php }else {?>
+	<?php }else if(isset($_REQUEST['name'])) {?>
 	<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common')?>
-		<?php if(isset($new_user['class_id']) && empty($new_user['class_id']) ){ ?>
-		<a href="<?php echo $mbs_appenv->toURL('department')?>" class=link ><?php echo $mbs_appenv->lang('join_department')?></a>
-		<?php } ?>
 		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
-	<?php }}?>
+	<?php }?>
 	
 	<form name="_form" method="post">
         <div class="inpBox mb17">

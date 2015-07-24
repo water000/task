@@ -12,7 +12,7 @@ $lang_zh_CN = array(
 	'phone'         => '手机号码',
 	'password'      => '密码',
 	'captcha'       => '验证码',
-	'reload_on_unclear' => '看不清，换一个',
+	'reload_on_unclear' => '换一个',
 	'invalid_phone' => '手机号码无效',
 	'invalid_password'  => '密码无效',
 	'invalid_captcha'   => '验证码无效',
@@ -59,6 +59,8 @@ $lang_zh_CN = array(
 	'total_member'      => '共%d人',
 	'member'            => '成员',
 	'num'               => '数',
+	'auto_login_in_next'=> '下次自动登录',
+	'welcome'           => '欢迎登录快讯服务平台',
 		
 	'menu'              => function(){
 		global $mbs_appenv;
