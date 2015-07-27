@@ -36,6 +36,7 @@ $lang_zh_CN = array(
 	'total_person'=> '共%d人',
 	'priv'        => '权限',
 	'num'         => '数',
+	'user_exsits' => '所选用户(id:%d)已被加入当前组（或其他组）',
 );
 
 

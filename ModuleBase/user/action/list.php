@@ -121,7 +121,7 @@ if($count > ROWS_OFFSET){
 		<table class="info-table" style="margin-top:1em;">
 		    <thead>
 		        <tr>
-		            <th class="first-col col-chbox"><input type="checkbox" /></th>
+		            <th class="first-col col-chbox"><input type="checkbox" onclick="_checkall(this, document.form_list)" /></th>
 		            <th class=col-name><?php echo $mbs_appenv->lang('name')?></th>
 		            <th class=col-org><?php echo $mbs_appenv->lang('organization')?></th>
 		            <th class=col-phone><?php echo $mbs_appenv->lang('phone')?></th>
@@ -202,6 +202,13 @@ if(window.parent.on_user_selected){
 	}
 	del_btn.parentNode.insertBefore(confirm_btn, del_btn);
 	del_btn.parentNode.removeChild(del_btn);
+}
+function _checkall(chkbox, form){
+	var i, boxes=form.elements["id[]"];
+	boxes = boxes.length ? boxes : [boxes];
+	for(i=0; i<boxes.length; i++){
+		boxes[i].checked = chkbox.checked;
+	}
 }
 </script>
 </body>

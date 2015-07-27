@@ -101,7 +101,7 @@ if(isset($_REQUEST['dep_id'])){
 			<table class="info-table" style="width: 100%;margin-top:1em;">
 			    <thead>
 			        <tr>
-			            <th class="first-col col1"><input type="checkbox" name="" value="" /></th>
+			            <th class="first-col col1"><input type="checkbox" onclick="_checkall(this, document._form)" /></th>
 			            <th class="col2"><?php echo $mbs_appenv->lang('name')?></th>
 			            <th class="col4"><?php echo $mbs_appenv->lang('join_time')?></th>
 			        </tr>
@@ -163,6 +163,13 @@ window.top.on_user_selected = function(arr){
 		document.form_join.appendChild(inp);
 	}
 	document.form_join.submit();
+}
+function _checkall(chkbox, form){
+	var i, boxes=form.elements["user_id[]"];
+	boxes = boxes.length ? boxes : [boxes];
+	for(i=0; i<boxes.length; i++){
+		boxes[i].checked = chkbox.checked;
+	}
 }
 </script>
 </body>

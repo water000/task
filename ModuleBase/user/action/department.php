@@ -51,7 +51,7 @@ $list = $dep_ins->getDB()->listAll()->fetchAll();
 			<table class="info-table" style="width: 100%;margin-top:1em;">
 			    <thead>
 			        <tr>
-			            <th class="first-col col1"><input type="checkbox" name="" value="" /></th>
+			            <th class="first-col col1"><input type="checkbox" onclick="_checkall(this, document._form)" /></th>
 			            <th><?php echo $mbs_appenv->lang('name', 'common')?></th>
 			            <th><?php echo $mbs_appenv->lang('password')?></th>
 			            <th><?php echo $mbs_appenv->lang(array('edit', 'time'), 'common')?></th>
@@ -82,5 +82,14 @@ $list = $dep_ins->getDB()->listAll()->fetchAll();
 		</form>
     </div>
 </div>
+<script type="text/javascript">
+function _checkall(chkbox, form){
+	var i, boxes=form.elements["id[]"];
+	boxes = boxes.length ? boxes : [boxes];
+	for(i=0; i<boxes.length; i++){
+		boxes[i].checked = chkbox.checked;
+	}
+}
+</script>
 </body>
 </html>

@@ -108,6 +108,7 @@ class CPrivilegeDef extends CModDef {
 		try {
 			$ins = CPrivGroupControl::getInstance(self::$appenv, $dbpool, $mempool);
 			$pgid = $ins->add(array(
+				'id'        => 1,
 				'name'      => 'topmost',
 				'type'      => self::TYPE_ALLOW,
 				'priv_list' => CPrivGroupControl::encodePrivList(array(CPrivGroupControl::PRIV_TOPMOST=>'')),

@@ -59,12 +59,12 @@ $page_num_list = array();
 	</h2>
 	
 	<!-- 列表 -->
-	<form name="form_list" action="<?php echo $mbs_appenv->toURL('push', 'info_push')?>" method="post">
+	<form name="form_list" action="<?php echo $mbs_appenv->toURL('edit_group', '', array('delete'=>1))?>" method="post">
 	<div class="box-tabel mb17">
 		<table class="info-table" style="margin-top:23px;">
 		    <thead>
 		        <tr>
-		            <th class="first-col col-chbox"><input type="checkbox" /></th>
+		            <th class="first-col col-chbox"><input type="checkbox" onclick="_checkall(this, document.form_list)" /></th>
 		            <th><?php echo $mbs_appenv->lang('group_name')?></th>
 					<th><?php echo $mbs_appenv->lang('creator')?></th>
 					<th><?php echo $mbs_appenv->lang('create_time')?></th>
@@ -79,7 +79,7 @@ $page_num_list = array();
 		    	$k=-1;
 		    	foreach($all as $k => $row){ $priv_user_ctr->setPrimaryKey($row['id']);?>
 		        <tr >
-		            <td><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /></td>
+		            <td class="first-col"><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /></td>
 		            <td class=name><?php echo CStrTools::txt2html($row['name'])?></td>
 				<td><?php if($row['creator_id'] != 0){$user_ctr->setPrimaryKey($row['creator_id']); $uinfo=$user_ctr->get(); echo empty($uinfo)?'(delete)':$uinfo['name'];}?></td>
 				<td><?php echo date('Y-m-d', $row['create_ts'])?></td>
@@ -131,7 +131,7 @@ if(CPrivGroupControl::isTopmost($priv_list)){
 	</div>
 	<!-- 列表end -->
 	<div class="box-bottom">
-		<a id=IDA_BTN_DEL href="javascript:;" class="btn-del" onclick="document.form_list.action='<?php echo $mbs_appenv->toURL('edit', '', array('delete'=>''))?>';document.form_list.submit();">
+		<a id=IDA_BTN_DEL href="javascript:;" class="btn-del" onclick="document.form_list.submit();">
 			<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
 		<?php if(count($page_num_list) > 1){ ?>
 		<p class="pageBox">
@@ -152,5 +152,14 @@ if(CPrivGroupControl::isTopmost($priv_list)){
 	</div>
 	</form>
 </div>
+<script type="text/javascript">
+function _checkall(chkbox, form){
+	var i, boxes=form.elements["id[]"];
+	boxes = boxes.length ? boxes : [boxes];
+	for(i=0; i<boxes.length; i++){
+		boxes[i].checked = chkbox.checked;
+	}
+}
+</script>
 </body>
 </html>

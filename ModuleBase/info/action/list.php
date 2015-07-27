@@ -146,7 +146,7 @@ $info_push_ctr = CInfoPushControl::getInstance($mbs_appenv,
 				<input type="checkbox" class="check-part" name="id[]" value="<?php echo $row['id']?>" /><?php echo $k+1?>
 				<p class="con-info">
 					<a class="link-tit" href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$row['id']))?>">
-					            		<?php echo CStrTools::txt2html($row['title'])?></a>
+					     <?php echo CStrTools::txt2html($row['title'])?></a>
 					<span class="subWord"><?php echo CStrTools::cutstr($row['abstract'], 55, $mbs_appenv->item('charset'))?></span>
 				</p>
 				<p class="time-con"><?php echo date('m-d H:i', $row['create_time'])?></p>

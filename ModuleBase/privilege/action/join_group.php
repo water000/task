@@ -38,7 +38,7 @@ if(empty($error)){
 					'join_ts'       => time()
 				));
 				if(!$ret){
-					$error[] = 'user(id:'.$uid.') already exists';
+					$error[] = sprintf($mbs_appenv->lang('user_exsits'), $uid);
 				}
 			}
 		}
@@ -176,6 +176,9 @@ window.top.on_user_selected = function(arr){
 		document.form_join.appendChild(inp);
 	}
 	document.form_join.submit();
+}
+window.onbeforeunload = function(e){
+	window.top.on_user_selected = null;
 }
 </script>
 </body>

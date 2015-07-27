@@ -8,6 +8,20 @@ $args_def = $action_def[CModDef::P_ARGS];
 
 $title = 'create';
 
+if(isset($_REQUEST['delete']) && isset($_REQUEST['id'])){
+	foreach($_REQUEST['id'] as $gid){
+		$priv_group = CPrivGroupControl::getInstance($mbs_appenv,
+				CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($gid));
+		$priv_user = CPrivUserControl::getInstance($mbs_appenv,
+				CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($gid));
+		$priv_group->destroy();
+		$priv_user->destroy();
+	}
+	
+	$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', $mbs_appenv->toURL('group_list'));
+	exit(0);
+}
+
 $error = array();
 if(isset($_REQUEST['name'])){
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));

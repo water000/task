@@ -58,7 +58,7 @@ $list = $uc->getDB()->listAll()->fetchAll();
 			<table class="info-table" style="width: 100%;margin-top:1em;">
 			    <thead>
 			        <tr>
-			            <th class="first-col col1"><input type="checkbox" name="" value="" /></th>
+			            <th class="first-col col1"><input type="checkbox" onclick="_checkall(this, document._form)" /></th>
 			            <th class="col2"><?php echo $mbs_appenv->lang('class_name')?></th>
 			            <th class="col3"><?php echo $mbs_appenv->lang('class_code')?></th>
 			            <th class="col4"><?php echo $mbs_appenv->lang(array('add', 'time'), 'common')?></th>
@@ -86,5 +86,14 @@ $list = $uc->getDB()->listAll()->fetchAll();
 		</form>
     </div>
 </div>
+<script type="text/javascript">
+function _checkall(chkbox, form){
+	var i, boxes=form.elements["id[]"];
+	boxes = boxes.length ? boxes : [boxes];
+	for(i=0; i<boxes.length; i++){
+		boxes[i].checked = chkbox.checked;
+	}
+}
+</script>
 </body>
 </html>
