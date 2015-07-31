@@ -44,7 +44,7 @@ if(empty($error)){
 		}
 		
 		
-		$pu_list = $pu->getDB()->getAll();
+		$pu_list = $pu->get();
 		
 		$usr = CUserControl::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance());
@@ -133,7 +133,7 @@ if(empty($error)){
 			    </tbody>
 			</table>
 			<div style="margin-top:10px;" class=box-bottom>
-				<a href="javascript:document._form.submit();" class="btn-del" >
+				<a href="javascript:if(confirm('<?php echo $mbs_appenv->lang('confirmed')?>')) document._form.submit();" class="btn-del" >
 					<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
 			</div>
 		</form>

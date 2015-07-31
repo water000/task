@@ -74,7 +74,7 @@ $list = $dep_ins->getDB()->listAll()->fetchAll();
 			    </tbody>
 			</table>
 			<div style="margin-top:10px;" class=box-bottom>
-				<a href="javascript:document._form.action='<?php echo $mbs_appenv->toURL('dep_edit', '', array('delete'=>1))?>';document._form.submit();" class="btn-del" >
+				<a href="javascript:if(confirm('<?php echo $mbs_appenv->lang('confirmed_delete_dep')?>')) {document._form.action='<?php echo $mbs_appenv->toURL('dep_edit', '', array('delete'=>1))?>';document._form.submit();}" class="btn-del" >
 					<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
 				<a href="javascript:document._form.submit();" class="btn-send" >
 					<i class="ico"></i><?php echo $mbs_appenv->lang('edit')?></a>

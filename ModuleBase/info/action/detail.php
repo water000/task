@@ -5,7 +5,8 @@ if(!isset($_REQUEST['id'])){
 	exit(0);
 }
 
-mbs_import('', 'CInfoControl', 'CInfoPushControl');
+mbs_import('', 'CInfoControl');
+mbs_import('info_push','CInfoPushControl');
 
 $info_ctr = CInfoControl::getInstance($mbs_appenv,
 		CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['id']);
@@ -40,17 +41,18 @@ $info = $info_ctr->get();
 <!doctype html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,minimum-scale=1.0,maximum-scale=1.0">
 <style type="text/css">
 .win{padding:2% 1%; color:#333;font-size:1.5em;}
-h1{text-align:center;font-size:130%;padding:0;margin:0;}
+.title{text-align:center;font-size:130%;padding:0;margin:0;}
 .date{text-align:center;color:#888;border-bottom:1px solid #ccc;padding: 10px 0;margin:10px 0 20px;}
-p{padding:1%;color:#555;}
+.content{padding:1%;color:#555;}
 video, img{width:100%;}
 </style>
 </head>
 <body>
 	<div class=win>
-		<h1><?php echo CStrTools::txt2html($info['title'])?></h1>
+		<h1 class=title><?php echo CStrTools::txt2html($info['title'])?></h1>
 		<div class=date><?php echo $mbs_appenv->lang('site_name'), '&nbsp;', date('Y-m-d H:i:s', $info['create_time'])?></div>
 		<div>
 		<?php if($info['attachment_format'] == CInfoControl::AT_VDO){?>
@@ -59,10 +61,10 @@ video, img{width:100%;}
 			unsupport video format
 		</video>
 		<?php }else if($info['attachment_format'] == CInfoControl::AT_IMG){ ?>
-		<img src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" />
+		<img src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'], '', $_SERVER['HTTP_HOST'])?>" />
 		<?php } ?>
 		</div>
-		<p><?php echo CStrTools::txt2html($info['abstract'])?></p>
+		<div class=content><?php echo $info['abstract']?></div>
 	</div>
 </body>
 </html>

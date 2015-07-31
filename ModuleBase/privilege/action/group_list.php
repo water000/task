@@ -59,7 +59,7 @@ $page_num_list = array();
 	</h2>
 	
 	<!-- 列表 -->
-	<form name="form_list" action="<?php echo $mbs_appenv->toURL('edit_group', '', array('delete'=>1))?>" method="post">
+	<form name="form_list" action="<?php echo $mbs_appenv->toURL('edit_group', '', array('delete'=>1))?>" method="post" >
 	<div class="box-tabel mb17">
 		<table class="info-table" style="margin-top:23px;">
 		    <thead>
@@ -131,7 +131,8 @@ if(CPrivGroupControl::isTopmost($priv_list)){
 	</div>
 	<!-- 列表end -->
 	<div class="box-bottom">
-		<a id=IDA_BTN_DEL href="javascript:;" class="btn-del" onclick="document.form_list.submit();">
+		<a id=IDA_BTN_DEL href="javascript:;" class="btn-del" 
+			onclick="if(confirm('<?php echo $mbs_appenv->lang('confirm_delete_group') ?>')) document.form_list.submit();">
 			<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
 		<?php if(count($page_num_list) > 1){ ?>
 		<p class="pageBox">

@@ -116,7 +116,7 @@ if($count > ROWS_OFFSET){
 	</div>
 	</form>
 	<!-- 列表 -->
-	<form name="form_list" action="<?php echo $mbs_appenv->toURL('push', 'info_push')?>" method="post">
+	<form name="form_list" action="<?php echo $mbs_appenv->toURL('edit', '', array('delete'=>''))?>" method="post">
 	<div class="box-tabel mb17">
 		<table class="info-table" style="margin-top:1em;">
 		    <thead>
@@ -149,7 +149,7 @@ if($count > ROWS_OFFSET){
 	</div>
 	<!-- 列表end -->
 	<div class="box-bottom">
-		<a id=IDA_BTN_DEL href="javascript:;" class="btn-del" onclick="document.form_list.action='<?php echo $mbs_appenv->toURL('edit', '', array('delete'=>''))?>';document.form_list.submit();">
+		<a id=IDA_BTN_DEL href="javascript:;" class="btn-del" onclick="if(confirm('<?php echo $mbs_appenv->lang('confirmed')?>')) document.form_list.submit();">
 			<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
 		<?php if(count($page_num_list) > 1){ ?>
 		<p class="pageBox">

@@ -147,7 +147,7 @@ $info_push_ctr = CInfoPushControl::getInstance($mbs_appenv,
 				<p class="con-info">
 					<a class="link-tit" href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$row['id']))?>">
 					     <?php echo CStrTools::txt2html($row['title'])?></a>
-					<span class="subWord"><?php echo CStrTools::cutstr($row['abstract'], 55, $mbs_appenv->item('charset'))?></span>
+					<span class="subWord"><?php echo CStrTools::cutstr(strip_tags($row['abstract']), 55, $mbs_appenv->item('charset'))?></span>
 				</p>
 				<p class="time-con"><?php echo date('m-d H:i', $row['create_time'])?></p>
 				<p class="format-con"><?php echo $mbs_appenv->lang(CInfoControl::type2txt($row['attachment_format']))?></p>
@@ -163,7 +163,7 @@ $info_push_ctr = CInfoPushControl::getInstance($mbs_appenv,
 		<?php }else{ ?>
 		<a href="javascript:;" class="btn-send" onclick="document.form_list.submit();" >
 			<i class="ico"></i><?php echo $mbs_appenv->lang('push')?></a>
-		<a href="javascript:;" class="btn-del" onclick="document.form_list.action='<?php echo $mbs_appenv->toURL('edit', '', array('delete'=>''))?>';document.form_list.submit();">
+		<a href="javascript:;" class="btn-del" onclick="if(confirm('<?php echo $mbs_appenv->lang('confirmed')?>')) {document.form_list.action='<?php echo $mbs_appenv->toURL('edit', '', array('delete'=>''))?>';document.form_list.submit();}">
 			<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
 		<?php }?>
 		<?php if(count($page_num_list) > 1){ if(isset($_REQUEST['popup'])){$search_keys['popup']=1;}?>

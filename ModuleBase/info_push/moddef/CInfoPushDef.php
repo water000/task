@@ -34,6 +34,14 @@ class CInfoPushDef extends CModDef {
 				    comment_content      text,
 				    primary key (id),
 					key(info_id)
+				)',
+				'info_push_stat'   => '(
+					info_id int unsigned not null,
+					new_comment_count int unsigned not null,
+					comment_count int unsigned not null,
+					push_count int unsigned not null,
+					read_count int unsigned not null,
+					primary key(info_id)
 				)'
 			),
 			self::PAGES => array(
@@ -78,8 +86,30 @@ class CInfoPushDef extends CModDef {
 					),
 					self::P_MGR => true,
 				),
+				'mgr_notify' => array(
+					self::P_TLE => '管理通知',
+					self::G_DC  => '用于在管理页面中，定期提醒新消息',
+					self::P_MGR => true,
+					self::P_MGNF => true,
+				)
 			),
 		);
+	}
+	
+	function install($dbpool, $mempool=null){
+		mbs_import('', 'CInfoPushStatControl');
+		
+		try {
+			parent::install($dbpool, $mempool);
+			
+			$info_push_stat = CInfoPushStatControl::getInstance(self::$appenv, $dbpool, $mempool);
+			$info_push_stat->add(array(
+				'info_id'           => 0, // which means the all info exists
+				'new_comment_count' => 0
+			));
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
 }
 

@@ -35,7 +35,17 @@ $info_push_ctr->setNode(array(
 ));
 $info = $info_ctr->get();
 
-
+mbs_import('', 'CInfoPushStatControl');
+$info_push_stat = CInfoPushStatControl::getInstance($mbs_appenv,
+		CDbPool::getInstance(), CMemcachedPool::getInstance());
+$info_push_stat->setPrimaryKey(0);
+$info_push_stat->getDB()->incrDup(array(
+	'read_count'     => '1',
+));
+$info_push_stat->setPrimaryKey($info['id']);
+$info_push_stat->getDB()->incrDup(array(
+	'read_count'     => '1',
+));
 ?>
 <!doctype html>
 <html>
@@ -59,7 +69,7 @@ video, img{width:100%;}
 			unsupport video format
 		</video>
 		<?php }else if($info['attachment_format'] == CInfoControl::AT_IMG){ ?>
-		<img src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" />
+		<img src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'], '', $_SERVER['HTTP_HOST'])?>" />
 		<?php } ?>
 		</div>
 		<p><?php echo CStrTools::txt2html($info['abstract'])?></p>

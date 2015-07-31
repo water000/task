@@ -32,7 +32,7 @@ if(isset($_FILES['imgFile']) && $_FILES['imgFile']['size'] > 0){
 	if(false === $path)
 		echo json_encode(array('error'=>1, 'message'=>'error'));
 	else 
-		echo json_encode(array('error'=>0, 'url'=>$mbs_appenv->uploadURL($path)));
+		echo json_encode(array('error'=>0, 'url'=>'http://'.$mbs_appenv->uploadURL($path,'', $_SERVER['HTTP_HOST'])));
 	
 	exit(0);
 }
@@ -160,7 +160,7 @@ div.thumb_img{position:relative;display:inline-block;}
 		</div>
 		<?php }else {?>
 		<div class=success><?php echo $mbs_appenv->lang('operation_success', 'common'),  isset($notice) ? '('.$notice.')': '';?>
-			<a href="<?php echo $mbs_appenv->toURL('push', '', array('id[]'=>$info_id));?>">
+			<a href="<?php echo $mbs_appenv->toURL('push', 'info_push', array('id[]'=>$info_id));?>">
 				<?php echo $mbs_appenv->lang('push')?></a>
 				<?php echo $mbs_appenv->lang(array('or', 'continue')), $page_title?>
 			<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>

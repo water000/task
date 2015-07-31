@@ -51,7 +51,7 @@ $lang_zh_CN = array(
 	'member_exists'     => '成员已存在，或已加入其它部门',
 	'dep_member'        => '部门成员',
 	'join_time'         => '加入时间',
-	'confirmed'         => '确认删除此部门和部门下所有的成员吗？删除后，操作无法撤销',
+	'confirmed_delete_dep'         => '确认删除此部门及其成员吗？删除后，操作无法撤销',
 	'dep_login'         => '部门登录',
 		
 	'data'              => '资料',
@@ -61,6 +61,7 @@ $lang_zh_CN = array(
 	'num'               => '数',
 	'auto_login_in_next'=> '下次自动登录',
 	'welcome'           => '欢迎登录快讯服务平台',
+	'user_must_modify_pwd' => '用户须在首次登陆的时候修改密码',
 		
 	'menu'              => function(){
 		global $mbs_appenv;

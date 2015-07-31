@@ -48,6 +48,9 @@ $lang_zh_CN = array(
 	'person'                => '人',
 	'input_name_to_search'  => '输入姓名搜索人员',
 	'select_info_to_push'   => '选择要推送的信息',
+	'info_push_new_comment' => '消息批阅',
+	'new_comment'           => '条新批阅',
+	
 		
 	'menu'              => function(){
 		global $mbs_appenv;

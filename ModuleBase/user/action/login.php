@@ -48,6 +48,7 @@ if(isset($_REQUEST['phone'])){
 		$error[] = $mbs_appenv->lang('invalid_captcha');
 	}
 	
+	$error_code = 'LOGIN_FAILED';
 	if(empty($error)){
 		mbs_import('', 'CUserControl');
 		$uc = CUserControl::getInstance($mbs_appenv, CDbPool::getInstance(), CMemcachedPool::getInstance());
@@ -69,12 +70,16 @@ if(isset($_REQUEST['phone'])){
 				if(isset($_REQUEST['IMEI']) && isset($_REQUEST['IMSI']) 
 					&& $_REQUEST['IMEI'] == $rs['IMEI'] && $_REQUEST['IMSI'] == $rs['IMSI'])
 				{
-					;
+					if(0 == $rs['pwd_modify_count']){ // for app only
+						$error[] = $mbs_appenv->lang('user_must_modify_pwd');
+						$error_code = 'USER_MUST_MODIFY_PWD_ON_FIRST_LOGIN';
+					}
 				}
 				else{
 					$error[] = 'invalid device';
 				}
 			}
+			
 			if(empty($error)){
 				if(isset($_COOKIE[ini_get('session.name')])){
 					session_regenerate_id();
@@ -107,7 +112,7 @@ if(isset($_REQUEST['phone'])){
 		}
 	}
 	if(!empty($error) && $mbs_appenv->item('client_accept') != 'html'){
-		$mbs_appenv->echoex(implode(';', $error), 'LOGIN_FAILED');
+		$mbs_appenv->echoex(implode(';', $error), $error_code);
 		exit(0);
 	}
 }
@@ -196,10 +201,10 @@ body{
         <img src="/static/images/line-copy.png" alt=""/>
     </div>
     <?php if(isset($_REQUEST['phone'])){if(!empty($error)){ ?>
-	<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
-	<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
-	</div>
-	<?php }}?>
+		<div class=error style="background-color:transparent;color:rgb(184, 0, 0);font-size:12px;padding:0;"><?php  echo implode('&nbsp;;&nbsp;', $error)?>
+		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
+		</div>
+		<?php }}?>
 	<form action="" method="post">
     <div class="login">
         <div><input type="text" class="inp" name="phone" 
@@ -221,6 +226,7 @@ body{
          <div class="login_btn">
             <input type="submit" value="" />
         </div>
+        
     </div>
     
         

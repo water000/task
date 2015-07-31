@@ -34,6 +34,21 @@ if(isset($_REQUEST['id'])){
 			'info_id'        => $info_id,
 			'comment_time'   => time(),	 
 		));
+		
+		mbs_import('', 'CInfoPushStatControl');
+		$info_push_stat = CInfoPushStatControl::getInstance($mbs_appenv, 
+				CDbPool::getInstance(), CMemcachedPool::getInstance());
+		$info_push_stat->setPrimaryKey(0);
+		$info_push_stat->getDB()->incrDup(array(
+			'comment_count'     => '1',
+			'new_commnet_count' => '1'
+		));
+		$info_push_stat->setPrimaryKey($info_id);
+		$info_push_stat->getDB()->incrDup(array(
+			'comment_count'     => '1',
+			//'new_commnet_count' => 'new_comment_count+1'
+		));
+		
 		$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '');
 		
 		exit(0);

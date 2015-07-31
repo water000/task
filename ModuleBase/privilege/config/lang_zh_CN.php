@@ -37,6 +37,7 @@ $lang_zh_CN = array(
 	'priv'        => '权限',
 	'num'         => '数',
 	'user_exsits' => '所选用户(id:%d)已被加入当前组（或其他组）',
+	'confirm_delete_group' => '确认删除组及其成员吗？删除后，数据无法恢复！',
 );
 
 

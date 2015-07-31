@@ -21,6 +21,7 @@ if(isset($_REQUEST['pwd1'])){
 			exit(0);
 		}
 		$req_args['password'] = CUserControl::formatPassword($_REQUEST['pwd1']);
+		$req_args['pwd_modify_count'] = 1;
 		$user_ins->set($req_args);
 		$mbs_appenv->echoex(null);
 	}else{

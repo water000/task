@@ -75,8 +75,14 @@ function _fn_icon($mod, $ac){
 	<![endif]-->
 	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css"/>
 	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>">
+	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('zebra-dialog/zebra_dialog.css')?>" />
 	<style type="text/css">
 	iframe{width:100%;border:0;}
+	.myclass td.col1{font-size:12px;font-weight:bold;}
+	.myclass td.col2{padding-left:15px;cursor:pointer;color:rgb(20, 90,170);}
+	.myclass td.col2 b{color:red;padding-right:3px;}
+	.myclass td.col2 a{text-decoration:none;}
+	.myclass td.col2 a:hover{text-decoration:underline;}
 	</style>
 </head>
 <body>
@@ -87,27 +93,40 @@ function _fn_icon($mod, $ac){
 	<!-- 左边栏 -->
 	<nav id="navBar">
 		<dl class="navBar">
-		<?php 
-		if(isset($priv_group[CPrivGroupControl::PRIV_TOPMOST])){
-			$list = $mbs_appenv->getModList();
-			foreach($list as $mod){
-				if('core' == $mod) continue;
-				$moddef=mbs_moddef($mod);
-				if(empty($moddef)) continue;
-				$actions = $moddef->filterActions(CModDef::P_MGR);
-				if(empty($actions)) continue;
-		?>
+<?php 
+$mgr_notify_list = array();
+
+$mod_list = isset($priv_group[CPrivGroupControl::PRIV_TOPMOST]) ? 
+	$mbs_appenv->getModList() : array_keys($priv_group);
+$actions = array();
+foreach($mod_list as $mod){
+	if('core' == $mod) continue;
+	$moddef=mbs_moddef($mod);
+	if(empty($moddef)) continue;
+	$actions = $moddef->filterActions(CModDef::P_MGR);
+	if(empty($actions)) continue;
+	if(isset($priv_group[$mod])){
+		foreach($priv_group[$mod] as $ac){
+			if(!isset($actions[$ac])){
+				unset($actions[$ac]);
+			}
+		}
+	}
+?>
 		<dt class="group-type"><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></dt>
-		<?php foreach($actions as $ac => $def){ if(isset($def[CModDef::P_NCD])) continue; ?>
+<?php 
+foreach($actions as $ac => $def){ 
+	if(isset($def[CModDef::P_MGNF])){
+		$mgr_notify_list[$mod.'.'.$ac] = $def[CModDef::P_MGNF];
+		continue;
+	} 
+	if(isset($def[CModDef::P_NCD])) continue; 
+?>
 		<dd class="type"><a href="#" class="link-type" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)">
 			<?php _fn_icon($mod, $ac)?><?php echo $def[CModDef::P_TLE]?></a></dd>
-		<?php }}}else{  ?>
-		<?php foreach($priv_group as $mod => $actions){ if('core' == $mod) continue; $moddef=mbs_moddef($mod);if(empty($moddef)) continue; ?>
-		<dt class="group-type"><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></dt>
-		<?php foreach($actions as $ac){ $def=$mod->item(CModDef::PAGES, $ac); if(isset($def[CModDef::P_NCD])) continue;?>
-		<dd class="type"><a href="#" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)">
-			<?php echo _fn_icon($mod, $ac)?><?php echo $def[CModDef::P_TLE]?></a></dd>
-		<?php }}} ?>
+<?php
+}}
+?>
 		</dl>
 	</nav>
 	<!-- 左边栏end -->
@@ -119,10 +138,13 @@ function _fn_icon($mod, $ac){
 
 	<!-- 加载jquery.js -->
 	<!--[if ie 6]>
-	<script src="<?php echo $mbs_appenv->sURL('jquery-1.3.1.min.js')?>"></script>
+	<script src="<?php echo $mbs_appenv->sURL('jquery-1.10.2.js')?>"></script>
 	<script src="<?php echo $mbs_appenv->sURL('fixIE6.js')?>"></script>
 	<![endif]-->
 </div>
+<script type="text/javascript" src="<?php echo $mbs_appenv->sURL('jquery-1.10.2.js')?>"></script>
+<script type="text/javascript" src="<?php echo $mbs_appenv->sURL('zebra_dialog.js')?>"></script>
+
 <script type="text/javascript">
 var frame = document.getElementsByTagName("iframe")[0], prev = null, visit_actions = [];
 var links = document.getElementsByTagName("a"), i, j=0, firstlink=null;
@@ -162,47 +184,88 @@ function _to(link, is_redirect){
 	
 	if(is_redirect){
 		frame.src = url;
-		frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
-			if (frame.contentWindow.document.readyState=="complete"){
-				frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-65)+"px";
-				document.title = frame.contentWindow.document.title;
-				history.pushState(null, null, "<?php echo $mbs_appenv->item('cur_action_url') ?>?to="
-						+encodeURIComponent( frame.contentWindow.location.href));
-				//frame.contentWindow.document.body.onclick = function(e){
-				//	if(prev)
-				//		prev.className = "blur_a";
-				//}
-				
-				if( -1 == frame.contentWindow.document.location.href.indexOf(prev.getAttribute("data")) ){
-					for(var i=0; i<links.length; i++){
-						if(frame.contentWindow.document.location.href.indexOf(links[i].getAttribute("data")) != -1){
-							_to(links[i], false);
-							break;
-						}
-					}
-					/*if(i == links.length){
-						document.location = frame.contentWindow.document.location.href;
-					}*/
+	}
+}
+
+frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
+	if (frame.contentWindow.document.readyState=="complete"){
+		frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-65)+"px";
+		document.title = frame.contentWindow.document.title;
+		history.pushState(null, null, "<?php echo $mbs_appenv->item('cur_action_url') ?>?to="
+				+encodeURIComponent( frame.contentWindow.location.href));
+		//frame.contentWindow.document.body.onclick = function(e){
+		//	if(prev)
+		//		prev.className = "blur_a";
+		//}
+		
+		if( -1 == frame.contentWindow.document.location.href.indexOf(prev.getAttribute("data")) ){
+			for(var i=0; i<links.length; i++){
+				if(frame.contentWindow.document.location.href.indexOf(links[i].getAttribute("data")) != -1){
+					_to(links[i], false);
+					break;
 				}
+			}
+			/*if(i == links.length){
+				document.location = frame.contentWindow.document.location.href;
+			}*/
+		}
+
+		document.onkeydown = frame.contentWindow.document.onkeydown = function(e){
+			e = e || this.parentWindow.event;
+			if(116 == (e.keyCode || e.which)){ // forriden F5 key in parent window
+				frame.contentWindow.document.location.reload();
+				e.returnValue = false;
+				e.cancelBubble = true;
+				e.keyCode = 0;
+				return false;
 			}
 		}
 	}
 }
 
-document.onkeydown = frame.contentWindow.document.onkeydown = function(e){
-	e = e || this.parentWindow.event;
-	if(116 == (e.keyCode || e.which)){ // forriden F5 key in parent window
-		frame.contentWindow.location.reload();
-		e.returnValue = false;
-		e.cancelBubble = true;
-		e.keyCode = 0;
-		return false;
+var _zbdlg, _body, item_map={};
+function _init_dialog(){
+	_zbdlg = new $.Zebra_Dialog("<table id=IDT_ZDDLG></table>", {
+		'title': '<?php echo $mbs_appenv->lang('mgr_msg_notify')?>',
+		 'custom_class':  'myclass',
+	    'buttons':  false,
+	    'modal': false,
+	    'type':     'question',
+	    'position': ['right - 20', 'bottom - 20'],
+	});
+	_body = document.getElementById("IDT_ZDDLG");
+}
+var _click = function(url, obj, id){
+	frame.src = url;
+	obj.parentNode.parentNode.parentNode.removeChild(obj.parentNode.parentNode);
+	item_map[id]  = null;
+}
+function _handle(data){
+	if('SUCCESS' == data.retcode && data.data.length > 0){
+		if(!_zbdlg)
+			_init_dialog();
+		var tr;
+		for(var i=0; i<data.data.length; i++){
+			if(item_map[data.data[i].id]){
+				tr = item_map[data.data[i].id];
+				tr.innerHTML = "";
+			}else{
+				tr = _body.insertRow();
+				item_map[data.data[i].id] = tr;
+			}
+			tr.insertCell().innerHTML = data.data[i].title;
+			tr.insertCell().innerHTML = "<a href='#' onclick='_click(\""+data.data[i].redirect
+				+"\", this, \""+data.data[i].id+"\")'>"+data.data[i].html+"</a>";
+			tr.cells[0].className = "col1";
+			tr.cells[1].className = "col2";
+		}
 	}
 }
-
-
-
-
+<?php foreach($mgr_notify_list as $ac => $interval){ list($mod, $ac) = explode('.', $ac, 2); ?>
+setInterval(function(){
+	$.ajax({url:"<?php echo $mbs_appenv->toURL($ac, $mod)?>", headers:{Accept:"application/json"}, dataType:"json", success:_handle});
+}, <?php echo (is_integer($interval) ? $interval : CModDef::MGR_NOTIFY_INTERVAL_SEC)*1000?>);
+<?php } ?>
 </script>
 </body>
 </html>

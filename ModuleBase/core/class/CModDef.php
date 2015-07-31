@@ -36,6 +36,7 @@ abstract class CModDef {
 	CONST P_ARGS = 'p_args'; // the page's arguments appeared in $_REQUEST, $args, $_FILES
 	CONST P_DOF  = 'p_debug_output_off'; // close the debug_output if set
 	CONST P_NCD  = 'p_no_click_direct_on_mgr';
+	CONST P_MGNF = 'p_mgr_notification';// P_MGNF=>[true(system default interval)/integer(interval in second)], include(P_MGR,P_NCD)
 	//CONST P_LGC  = 'p_logo_class'; // <a href="..."><i class=P_LGC></i>P_TLE</a>
 	CONST PA_TYP = 'pa_type';    // the arg's type what appears in gettype(). default is 'string'
 	CONST PA_REQ = 'pa_required';// the arg MUST be required in the page. default is 1
@@ -49,6 +50,7 @@ abstract class CModDef {
 	CONST MGR    = 'mgrpage';
 	CONST LD_FTR = 'load_filter'; // do filter checking on each script in the module
 	CONST DEPEXT = 'dependent'; // checking whether the current environment included the extension or function. = array(ext1, ext2, ...)
+	CONST MGR_NOTIFY_INTERVAL_SEC = 60;
 	
 	protected static $appenv = null;
 	private $desc = null;
@@ -74,6 +76,7 @@ abstract class CModDef {
 	 *   			'sign' => array('type'=>'string', required=>true, depend=>'arg1', desc=>'md5(arg1+arg2)'),
 	 *  		),
 	 *			self::P_MGR => true,
+	 *			self::P_MGNF=> true,
 	 *			self::P_OUT => '{
 	 *				'error': 'message if error happened or empty else',
 	 *				'gift_id' : '100',

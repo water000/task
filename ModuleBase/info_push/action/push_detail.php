@@ -157,7 +157,7 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
         </ul>
         <div class="box-bottom">
         	<?php if(count($plist) > 0){ ?>
-            <a href="javascript:;" class="btn-del" onclick="document.form_list.submit();">
+            <a href="javascript:;" class="btn-del" onclick="if(confirm('<?php echo $mbs_appenv->lang('confirmed')?>')) document.form_list.submit();">
 				<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?>
 			</a>
 			<?php } ?>

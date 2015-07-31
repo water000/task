@@ -8,6 +8,12 @@ $uclass_ctr = CUserClassControl::getInstance($mbs_appenv,
 $class_list = $uclass_ctr->getDB()->listAll();
 $class_list = $class_list->fetchAll(PDO::FETCH_ASSOC);
 
+$user_def_pwd = '******';
+
+if(isset($_REQUEST['password']) && $_REQUEST['password'] == $user_def_pwd){
+	$_REQUEST['password'] = '';
+}
+
 
 $user = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 
@@ -44,6 +50,9 @@ if(isset($_REQUEST['id'])){
 			if(empty($ret)){
 				$error[] = $mbs_appenv->lang('existed'. 'common').':'.$_REQUEST['phone'];
 			}
+			if(!isset($user['password'])){
+				$user['password'] = $user_def_pwd;
+			}
 		}
 	}else{
 		$user_spec = $user_ins->get();
@@ -53,7 +62,6 @@ if(isset($_REQUEST['id'])){
 		}
 		$user = array_intersect_key($user_spec, $user);
 	}
-	$user['password']='';
 }
 else if(isset($_REQUEST['__timeline'])){
 	$new_user = array_intersect_key($_REQUEST, $user);
@@ -71,6 +79,10 @@ else if(isset($_REQUEST['__timeline'])){
 	}
 }else{
 	$user = array_merge($user, array_intersect_key($_REQUEST, $user));
+}
+
+if(!empty($user['password'])){
+	$user['password'] = $user_def_pwd;
 }
 
 ?>
@@ -134,7 +146,7 @@ else if(isset($_REQUEST['__timeline'])){
         </div>
         <div class="inpBox mb17">
         	<label for="password" class="labelL"><?php echo $mbs_appenv->lang(array('login', 'password'))?>&nbsp;:&nbsp;</label>
-		    <input id="password" class="inpTit" name="password" type="text" value="<?php echo $user['password']?>" 
+		    <input id="password" class="inpTit" name="password" type="password" value="<?php echo $user['password']?>" 
 		    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" required />
         </div>
         <div class="inpBox mb17">
@@ -167,7 +179,8 @@ else if(isset($_REQUEST['__timeline'])){
             <select name="class_id" id="" class="sel-format">
             <option class="format" value="0"></option>
             <?php foreach($class_list as $c){?>
-            <option class="format" value="<?php echo $c['id']?>"><?php echo CStrTools::txt2html($c['name'])?></option>
+            <option class="format" value="<?php echo $c['id']?>" 
+            	<?php echo $c['id'] == $user['class_id'] ? ' selected':''?>><?php echo CStrTools::txt2html($c['name'])?></option>
             <?php }?>
             </select>
         </div>

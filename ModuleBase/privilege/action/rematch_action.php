@@ -3,7 +3,7 @@
 mbs_import('privilege', 'CPrivGroupControl');
 $priv_group = CPrivGroupControl::getInstance($mbs_appenv,
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
-$all = $priv_group->getDB()->listAll();
+$all = $priv_group->getDB()->listAll()->fetchAll();
 
 $modified = false;
 if(isset($_REQUEST['modify']) || isset($_REQUEST['del'])){

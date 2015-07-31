@@ -119,7 +119,7 @@ if(isset($_REQUEST['dep_id'])){
 			    </tbody>
 			</table>
 			<div style="margin-top:10px;" class=box-bottom>
-				<a href="javascript:document._form.submit();" class="btn-del" >
+				<a href="javascript:if(confirm('<?php echo $mbs_appenv->lang('confirmed')?>')) document._form.submit();" class="btn-del" >
 					<i class="ico"></i><?php echo $mbs_appenv->lang('delete')?></a>
 			</div>
 		</form>
@@ -163,6 +163,9 @@ window.top.on_user_selected = function(arr){
 		document.form_join.appendChild(inp);
 	}
 	document.form_join.submit();
+}
+window.onbeforeunload = function(e){
+	window.top.on_user_selected = null;
 }
 function _checkall(chkbox, form){
 	var i, boxes=form.elements["user_id[]"];

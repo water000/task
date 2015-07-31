@@ -14,7 +14,8 @@ if(isset($_REQUEST['delete']) && isset($_REQUEST['id'])){
 	foreach($_REQUEST['id'] as $id){
 		$info_push_ctr->destroy(array('id'=>$id));
 	}
-	$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', $mbs_appenv->toURL('push_list'));
+	$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', 
+		isset($_REQUEST['redirect']) ? urldecode($_REQUEST['redirect']) : $mbs_appenv->toURL('push_list'));
 	exit(0);
 }
 
@@ -30,6 +31,8 @@ if(isset($_REQUEST['user_id'])){
 	$login = '{"MSG_TOKEN" : "'.session_id().'","MSG_TYPE" : "M_LOGIN"}';
 	$ret = $wsock->sendData($login);
 	
+	$push_count = 0;
+	$push_count_per_info = array();
 	$error = array();
 	foreach($_REQUEST['user_id'] as $uid){
 		$push_num = 0;
@@ -46,6 +49,8 @@ if(isset($_REQUEST['user_id'])){
 				$error[] = $info_push_ctr->error();
 			}else{
 				++$push_num;
+				$push_count_per_info[$info_id] = isset($push_count_per_info[$info_id]) ? 
+					$push_count_per_info[$info_id] + 1 : 1;
 			}
 			if($push_num > 0){
 				$_msg = sprintf('{"MSG_SENDER" : "%d","MSG_RECEIVER" : "%d","MSG_CREATE_TIME" : "%s","MSG_CONTENT" : "SYSTEM_NEWS_UPDATE","MSG_TYPE" : "M_SYSTEM_COMMAND"}',
@@ -53,8 +58,25 @@ if(isset($_REQUEST['user_id'])){
 				$ret = $wsock->sendData($_msg);
 			}
 		}
+		$push_count += $push_num;
 	}
 	$wsock->disconnect();
+	
+	if($push_count > 0){
+		mbs_import('', 'CInfoPushStatControl');
+		$info_push_stat = CInfoPushStatControl::getInstance($mbs_appenv,
+				CDbPool::getInstance(), CMemcachedPool::getInstance());
+		$info_push_stat->setPrimaryKey(0);
+		$info_push_stat->getDB()->incrDup(array(
+			'push_count'     => $push_count,
+		));
+		foreach($push_count_per_info as $info_id => $count){
+			$info_push_stat->setPrimaryKey($info_id);
+			$info_push_stat->getDB()->incrDup(array(
+				'push_count'     => $count,
+			));
+		}
+	}
 	
 	if(empty($error))
 		$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', $mbs_appenv->toURL('push_list'));

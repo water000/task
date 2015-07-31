@@ -316,7 +316,7 @@ class CAppEnvironment{
 				return ;
 			}
 			else if(!empty($redirect_url)){
-				$meta = '<meta http-equiv="Refresh" content="'.(empty($errcode)? 3 : 10).';'.$redirect_url.'">';
+				$meta = '<meta http-equiv="Refresh" content="'.(empty($errcode)? 3 : 8).';'.$redirect_url.'">';
 				$msg .= sprintf('<p style="text-align:right;font-size: 12px;padding: 0 10px;">%s&nbsp;<a href="%s">%s</a></p>', 
 						$this->lang('click_if_not_redirect', 'common'), $redirect_url, $redirect_url);
 			}

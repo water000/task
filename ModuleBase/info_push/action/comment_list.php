@@ -82,6 +82,14 @@ try {
 	echo $e->getMessage();
 }
 
+mbs_import('', 'CInfoPushStatControl');
+$info_push_stat = CInfoPushStatControl::getInstance($mbs_appenv,
+		CDbPool::getInstance(), CMemcachedPool::getInstance());
+$info_push_stat->setPrimaryKey(0);
+$info_push_stat->set(array(
+	'new_commnet_count' => 0
+));
+
 ?>
 <!doctype html>
 <html>

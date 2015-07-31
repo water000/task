@@ -28,6 +28,7 @@ class CUserDef extends CModDef {
 				    class_id             int unsigned,
 				    reg_time             int unsigned,
 				    reg_ip               varchar(32),
+					pwd_modify_count     int unsigned not null,
 					primary key(id),
 					unique key(phone)
 				)',
@@ -112,6 +113,7 @@ class CUserDef extends CModDef {
 						'class_id'     => array(self::PA_REQ=>0, self::G_DC=>'分类id'),
 						'VPDN_name'    => array(self::PA_REQ=>0, self::G_DC=>'VPDN名称', self::PA_RNG=>'6, 32'),
 						'VPDN_pass'    => array(self::PA_REQ=>0, self::G_DC=>'VPDN密码', self::PA_RNG=>'6, 32'),
+						'class_id'     => array(self::PA_REQ=>0, self::G_DC=>'分类id', self::PA_TYP=>'integer', self::PA_RNG=>'1, 4'),
 					),
 				),
 				'list' => array(
