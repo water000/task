@@ -232,13 +232,17 @@ function _init_dialog(){
 	    'modal': false,
 	    'type':     'question',
 	    'position': ['right - 20', 'bottom - 20'],
+	    'onClose' : function(){_zbdlg = null;item_map={};}
 	});
 	_body = document.getElementById("IDT_ZDDLG");
 }
 var _click = function(url, obj, id){
 	frame.src = url;
 	obj.parentNode.parentNode.parentNode.removeChild(obj.parentNode.parentNode);
-	item_map[id]  = null;
+	delete item_map[id];
+	if(0 == _body.rows.length){
+		_zbdlg.close();
+	}
 }
 function _handle(data){
 	if('SUCCESS' == data.retcode && data.data.length > 0){

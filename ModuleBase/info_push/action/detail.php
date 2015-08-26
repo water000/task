@@ -22,10 +22,10 @@ $search_keys = array(
 	'info_id'  => intval($_REQUEST['id'])
 );
 $ret = $info_push_ctr->getDB()->search($search_keys);
-if(empty($ret) || !($ret = $ret->fetchAll(PDO::FETCH_ASSOC))){
-	$mbs_appenv->echoex('no such info', 'INFO_NOT_FOUND');
-	exit(0);
-}
+// if(empty($ret) || !($ret = $ret->fetchAll(PDO::FETCH_ASSOC))){
+// 	$mbs_appenv->echoex('no such info', 'INFO_NOT_FOUND');
+// 	exit(0);
+// }
 
 $info_push_ctr->setPrimaryKey($ret[0]['pusher_uid']);
 $info_push_ctr->setSecondKey($ret[0]['id']);

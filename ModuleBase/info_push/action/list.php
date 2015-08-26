@@ -72,8 +72,6 @@ if($count > ROWS_OFFSET){
 	$page_num_list = CTools::genPagination(PAGE_ID, ceil($count/ROWS_PER_PAGE), 8);
 }
 
-$info_push_ctr = CInfoPushControl::getInstance($mbs_appenv, 
-		CDbPool::getInstance(), CMemcachedPool::getInstance());
 ?>
 <!doctype html>
 <html>

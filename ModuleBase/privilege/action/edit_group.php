@@ -10,6 +10,9 @@ $title = 'create';
 
 if(isset($_REQUEST['delete']) && isset($_REQUEST['id'])){
 	foreach($_REQUEST['id'] as $gid){
+		if(1 == $gid){ // 'topmost' can not be destroy
+			continue;
+		}
 		$priv_group = CPrivGroupControl::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($gid));
 		$priv_user = CPrivUserControl::getInstance($mbs_appenv,

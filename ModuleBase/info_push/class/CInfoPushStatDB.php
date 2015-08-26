@@ -17,6 +17,21 @@ class CInfoPushStatDB extends CUniqRowOfTable{
 			throw $e;
 		}
 	}
+	
+	function countNewComment($user_id, $info_table){
+		$sql = sprintf('SELECT sum(new_comment_count) FROM %s s, %s i 
+				WHERE s.info_id = i.id AND i.creator_id=%d AND new_comment_count>0',
+				$this->tbname, $info_table, $user_id);
+		$ret = $this->oPdoConn->query($sql)->fetchAll();
+		return empty($ret) ? 0 : $ret[0][0];
+	}
+	
+	function resetNewCommentCount($user_id, $info_table){
+		$sql = sprintf('UPDATE %s s, %s i SET new_comment_count =0
+				WHERE s.info_id = i.id AND i.creator_id=%d AND new_comment_count>0',
+				$this->tbname, $info_table, $user_id);
+		return $this->oPdoConn->exec($sql);
+	}
 }
 
 

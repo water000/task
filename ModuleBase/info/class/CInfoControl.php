@@ -222,6 +222,11 @@ class CInfoControl extends CUniqRowControl {
 			break;
 		}
 		
+// 		$download_file_host = self::$appenv->config('download_file_host');
+// 		if(!empty($download_file_host) && $download_file_host != $_SERVER['HTTP_HOST']){
+			
+// 		}
+		
 		return $subdir.'/'.$name;
 	}
 	

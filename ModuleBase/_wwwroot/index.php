@@ -2,7 +2,7 @@
 
 date_default_timezone_set('Asia/Shanghai');
 
-define('RTM_DEBUG', 1);
+define('RTM_DEBUG', 0);
 error_reporting(RTM_DEBUG ? E_ALL : 0);
 	
 define('IN_INDEX', 1); //ref file: CAppEnvironment.php

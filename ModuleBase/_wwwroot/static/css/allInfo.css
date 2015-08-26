@@ -1,5 +1,6 @@
 .allInfo {
   padding: 0 14px;
+  overflow-x:hidden;
   /*min-width: 1069px;
   _width: 1069px;*/ }
   .allInfo .tit {

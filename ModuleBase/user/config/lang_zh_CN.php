@@ -62,6 +62,7 @@ $lang_zh_CN = array(
 	'auto_login_in_next'=> '下次自动登录',
 	'welcome'           => '欢迎登录快讯服务平台',
 	'user_must_modify_pwd' => '用户须在首次登陆的时候修改密码',
+	'invalid_device'    => '无效设备',
 		
 	'menu'              => function(){
 		global $mbs_appenv;

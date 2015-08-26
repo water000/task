@@ -62,7 +62,7 @@ $list = $dep_ins->getDB()->listAll()->fetchAll();
 			    <?php foreach($list as $k=>$row){ $udepmbr_ctr->setPrimaryKey($row['id']); ?>
 			        <tr>
 			            <td class="first-col">
-			            	<input type="checkbox" name="id[]" value="<?php echo $row['id']?>" />
+			            	<input type="checkbox" name="id[]" value="<?php echo $row['id']?>" <?php echo $row['id'] <= CUserDef::BANNED_DEL_MAX_CLASS_ID ? ' disabled':''?> />
 			            </td>
 			            <td class=name><?php echo $row['name']?></td>
 			            <td><?php echo $row['password']?></td>
