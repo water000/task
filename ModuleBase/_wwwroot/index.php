@@ -55,7 +55,6 @@ function mbs_moddef($mod){
 			trigger_error($class.' not instance of CModDef', E_USER_WARNING);
 		}
 	}else{
-		var_dump($class, $path);
 		trigger_error($mod.' mod not exists', E_USER_WARNING);
 	}
 	
@@ -136,6 +135,7 @@ function _main($mbs_appenv){
 	}
 	
 	if(!CStrTools::isModifier($mod) || !CStrTools::isModifier($action)){
+		header('HTTP/1.1 404');
 		trigger_error('Invalid request', E_USER_ERROR);
 	}
 	
