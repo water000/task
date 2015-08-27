@@ -1,8 +1,5 @@
 <?php 
 
-
-?><?php 
-
 class CMctProductControl extends CMultiRowControl{
 	private static $product_ins = array();
 	
