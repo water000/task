@@ -1,0 +1,11 @@
+body {font-family: Tahoma,Verdana,STHeiTi,simsun,sans-serif; font-size:14px;}
+body, div, span, object, frame, h1, h2, h3, h4, h5, h6, p, blockquote, a, code, em, img, q, small, strong, dd, dl, dt, li, ol, ul, fieldset, form, label, table, tbody, tr, th, td, input, menu {
+    margin: 0;padding: 0; border:0;}
+caption, th, td{text-align:left;font-weight:normal;}
+input{outline-style: none; }
+.wrap{width:1280px;margin:0 auto;font-size:12px;}
+.header{height:60px; padding:0 20px 0 15px;background:#135097;}
+.left{width:156px;display:inline-block;background:#3c64a7;}
+.left a{display:block;height:35px;line-height:35px;padding-left:25px;}
+.left a i{margin-rigth:10px;}
+.main{ width:950px; margin: 0 auto;}

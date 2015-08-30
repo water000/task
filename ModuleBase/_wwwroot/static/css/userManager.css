@@ -1,0 +1,85 @@
+.userManager {
+    padding: 0 14px; }
+.userManager .tit {
+    border-bottom: 1px solid #ebebeb;
+    line-height: 48px;
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 23px; }
+.userManager .tit .btn-create {
+    width: 70px;
+    height: 28px;
+    line-height: 28px;
+    color: #333333;
+    font-size: 14px;
+    text-align: center;
+    background-color: #f6f6f6;
+    border-radius: 3px;
+    position: absolute;
+    right: 20px;
+    top: 11px;
+    border:1px solid #c5c5c5;
+}
+.userManager .tit .back-icon{
+    display: inline-block;
+    width:10px;
+    height:10px;
+    margin-right: 5px;
+    background: url("../images/ico-back_03.png") no-repeat;
+}
+.userManager .inpBox {
+    overflow: hidden;}
+.userManager .labelL {
+    width: 165px;
+    display:inline-block;
+    line-height: 32px;
+    color: #333;
+    font-size: 14px;
+    text-align: right; }
+.userManager .inpTit {
+    width: 400px;
+    height: 30px;
+    border: 1px solid #cfcfcf;
+    border-radius: 3px;
+    padding: 0 10px;
+    line-height: 30px;
+    font-size: 14px;
+    color: #333; }
+.userManager .btnBox {
+    overflow: hidden; }
+.userManager .btn-send {
+    width: 88px;
+    height: 31px;
+    line-height: 31px;
+    border: 1px solid #4374c6;
+    background-color: #4374c6;
+    display:inline-block;
+    text-align: center;
+    font-size: 16px;
+    color: #fff;
+    border-radius: 3px; }
+.userManager .btn-cancle {
+    width: 88px;
+    height: 31px;
+    line-height: 31px;
+    border: 1px solid #c5c5c5;
+    border-radius: 3px;
+    background-color: #ededed;
+    display:inline-block;
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+    margin-left: 6px;
+    _margin-left: 3px; }
+
+.mb17 {
+    margin-bottom: 17px; }
+.sel-format {
+    width: 422px;
+    height: 33px;
+    border: 1px solid #cfcfcf;
+    border-radius: 3px;
+    padding: 0 0 0 10px;
+    line-height: 30px;
+    font-size: 14px;
+    color: #333; }

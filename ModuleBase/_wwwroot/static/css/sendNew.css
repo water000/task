@@ -1,0 +1,152 @@
+.sendNew .partRight .ico-sear, .sendNew .partRight .ico-arrow {
+  background: url(../images/sprites-send.png) no-repeat;
+  _background: url(../images/sprites-send.gif) no-repeat; }
+
+.sendNew {
+  padding: 0 14px; }
+  .sendNew .tit {
+    border-bottom: 1px solid #ebebeb;
+    line-height: 48px;
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 9px; }
+  .sendNew .content {
+    width: 1088px;
+    display: inline-block; }
+    .sendNew .content:after {
+      content: ".";
+      display: block;
+      clear: both;
+      visibility: hidden;
+      line-height: 0;
+      height: 0; }
+  .sendNew .partLeft {
+    width: 844px;
+    float: left; }
+    .sendNew .partLeft .ul-news {
+      border: 1px solid #ccc;
+      min-height: 494px; }
+    .sendNew .partLeft .list-news {
+      padding: 18px 0 14px 20px;
+      position: relative;
+      border-bottom: 1px solid #e3e3e3; }
+      .sendNew .partLeft .list-news:nth-child(2n) {
+        background-color: #f8f8f8; }
+      .sendNew .partLeft .list-news .btn-dele {
+        padding: 2px 4px;
+        background-color: #d75959;
+        border-radius: 3px;
+        font-size: 12px;
+        color: #fff;
+        position: absolute;
+        right: 20px;
+        top: 22px; }
+    .sendNew .partLeft .tit-news {
+      font-size: 14px;
+      font-weight: bold; }
+      .sendNew .partLeft .tit-news a {
+        color: #333; }
+    .sendNew .partLeft .word-news {
+      font-size: 12px;
+      color: #666666;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 674px; }
+    .sendNew .partLeft .add-news {
+      margin-top: 24px;
+      margin-left: 22px;
+      width: 118px;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      font-size: 14px;
+      color: #0458b6;
+      border: 1px solid #d0d5db;
+      border-radius: 3px;
+      background-color: #e7f1fa;
+      display: block; }
+  .sendNew .partRight {
+    width: 209px;
+    float: right; }
+    .sendNew .partRight .container {
+      border: 1px solid #cccccc;
+      position: relative;
+      min-height: 494px; }
+    .sendNew .partRight .inp-sear {
+      padding-left: 24px;
+      height: 25px;
+      line-height: 25px; }
+    .sendNew .partRight .ico-sear {
+      width: 13px;
+      height: 13px;
+      background-position: 0 0;
+      position: absolute;
+      left: 6px;
+      top: 6px; }
+    .sendNew .partRight .nav-tab {
+      border-top: 1px solid #e6e6e6;
+      border-bottom: 1px solid #e6e6e6;
+      height: 27px;
+      line-height: 27px;
+      font-size: 12px;
+      color: #333;
+      background: url(../images/bg-line.jpg) repeat-x;
+      position: relative;
+      padding-left: 24px; }
+      .sendNew .partRight .nav-tab.show .ico-arrow {
+        background-position: 0 -14px; }
+    .sendNew .partRight .btn-checkAll {
+      position: absolute;
+      font-size: 12px;
+      color: #3b71bf;
+      top: 6px;
+      right: 8px;
+      line-height: 12px; }
+    .sendNew .partRight .ico-arrow {
+      width: 13px;
+      height: 13px;
+      background-position: 0 -27px;
+      position: absolute;
+      left: 7px;
+      top: 6px; }
+    .sendNew .partRight .labelH {
+      display: block;
+      cursor: pointer; }
+    .sendNew .partRight .list-name {
+      height: 30px;
+      line-height: 30px;
+      position: relative;
+      padding-left: 24px;
+      font-size: 12px;
+      color: #6d6b6b;
+      margin-bottom: 1px; }
+      .sendNew .partRight .list-name .check-part {
+        position: absolute;
+        right: 11px;
+        top: 7px; }
+      .sendNew .partRight .list-name.check {
+        background-color: #f2f6fb;
+        color: #000; }
+  .sendNew .subTit {
+    font-size: 16px;
+    color: #333;
+    line-height: 36px;
+    height: 36px; }
+  .sendNew .btnBox {
+    width: 100%;
+    clear: both;
+    padding: 38px 0; }
+  .sendNew .btn-send {
+    width: 120px;
+    height: 39px;
+    line-height: 39px;
+    color: #fff;
+    text-align: center;
+    border-radius: 3px;
+    background-color: #4374c6;
+    clear: both;
+    font-size: 18px;
+    display: block;
+    margin: 0 auto; }
+

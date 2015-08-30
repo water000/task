@@ -1,0 +1,74 @@
+<html><head>
+<title>开发相关</title>
+<style type="text/css">
+.pure-g{color:#333;padding-bottom:10px;}
+.pure-u-1-2{width:48%;padding:0 1%;float:left;}
+h1{text-align:center;border-bottom:1px solid #ccc;padding:10px 0;}
+h3{border-left:3px solid green;padding-left:5px;}
+ul li{padding:5px 0;}
+pre{display:block;width:90%;margin:10px auto; border-left:3px solid green;padding:5px;}
+</style>
+</head>
+<body>
+<h1>开发相关</h1>
+<div class="pure-g">
+    <div class="pure-u-1-2" >
+    	<h3>服务端</h3>
+	    <ul>
+	    	<li>[PHP version]<br/>5.3 or higher(using the Anonymous functions defined in common/config/default.php and called in index.php)</li>
+	    	<li>
+	    		[框架开发目标]<br />
+	    		1. 完全基于模块化开发 <br /> 
+	    		2.基于mvc进行开发，不过view和controller不是通过类来实现，而是直接用php脚本<br />
+	    		3.会为每个action进行cache，如果发现action的时间戳大于cache，则重新进行cache。cache功能可以进行开关。 <br />
+	    		4.每个模块应该有安装（install）和卸载（uninstall）以及更新（update）的接口方法，安装、卸载和更新只能在cli模式下进行。<br />
+	    		5.支持标签及模板的概念。标签及模板每个模块都可以进行定义，其他模块可以按照约定进行调用。标签的实质是为节省多次调用造成的重复编码而进行的冗余替换。模板的概念和标签类似。在模块安装及更新的时候，会进行模板和标签的替换。<br />
+	    	</li>
+	    	<li>
+	    		[框架组成]<br />
+	    		以user模块为例<br />
+				user/<br />
+				|-class/   (2选1）<br />
+				|-action/ (2选1）<br />
+				|-moddef/CUserDef.php（必须存在, 实现core/IModDef.php接口，类名必须和文件名除后缀外完全一样） <br />
+				|-cache/（系统生成，开发者无须关心）<br />
+	    	</li>
+	    	<li>
+	    		[调用方式（url和cli）]<br />
+	    		url: 例如 /index.php?m=user&a=login&...  这样的url实际会调用user模块下action中的login.php。url的组成方式可以自己定义。<br />
+				cli: php index.php m=user&a=login&.. 
+	    	</li>
+	    	<li>
+	    		[开发须知]<br />
+	    		1.定义的目录必须在末尾加上'/'<br/>
+	    		2.全局变量:$mbs_appenv, an instance of CAppEnvironment.php; <br/>
+	    		$mbs_cur_moddef, a current module-def instance of CModDef<br />
+	    		$mbs_cur_actiondef, action-def defined moddef <br />
+	    		3.由于app端使用cookie有问题，改成由app端在header中加入X-LOGIN-TOKEN, 然后在 common/config/default.php中做出相应处理<br/>
+	    		4.编写class的时候，注意类名和文件名应该一样，例如文件名CUserControl.php,那么类名CUserControl。<br/>在引用的时候，如果是同模块用
+	    		  <pre>require dirname(__FILE__).'/CUserControl.php'，</pre><br/>不同模块用全局函数mbs_import, 例如引用user/CUserControl,
+	    		  <pre>mbs_import('user', 'CUserControl');</pre>
+	    	</li>
+	    	<li>
+	    		[模块安装]<br />
+	    		1.以user模块举例：php index.php user install，在安装过程中<b>务必注意</b>相应定义文件中的敏感信息是否安全，比如密码
+	    	</li>
+	    	<li>
+	    		[跨设备登录]<br />
+	    	</li>
+	    </ul>
+    </div>
+    <div class="pure-u-1-2" >
+    	<h3>客户端</h3>
+	    <ul>
+	    	<li>*停用*登录完成后，服务端会产生cookie发送到客户端作为客户端登录凭证，每次请求接口的时候，需要将所有cookie再回传</li>
+	    	<li>登录完成后，系统返回token， 以后发起请求的时候，在http head中加入X-LOGIN-TOKEN: ****</li>
+	    	<li>如果需要非html的返回输出，在http头中加入Accept，例如Accept， Accept:text/json</li>
+	    	<li>需要在http头中加入当前客户端的版本，例如 Accept:text/json;version=1.0</li>
+	    	<li>返回值结构，['retcode':'SUCCESS/ERROR', 'error':'DESC', 'data':data]，
+     			 当retcode=SUCCESS时，error字段不会出现；当retcode=ERROR是，data的值是null</li>
+	    </ul>
+    </div>
+</div>
+<div style="clear:both"></div>
+</body></html>
