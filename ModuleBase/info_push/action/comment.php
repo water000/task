@@ -41,12 +41,20 @@ if(isset($_REQUEST['id'])){
 		$info_push_stat->setPrimaryKey(0);
 		$info_push_stat->getDB()->incrDup(array(
 			'comment_count'     => '1',
+<<<<<<< HEAD
 			'new_commnet_count' => '1'
+=======
+			'new_comment_count' => '1'
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 		));
 		$info_push_stat->setPrimaryKey($info_id);
 		$info_push_stat->getDB()->incrDup(array(
 			'comment_count'     => '1',
+<<<<<<< HEAD
 			//'new_commnet_count' => 'new_comment_count+1'
+=======
+			'new_comment_count' => '1'
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 		));
 		
 		$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '');

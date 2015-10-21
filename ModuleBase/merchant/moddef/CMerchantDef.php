@@ -15,7 +15,11 @@ class CMerchantDef extends CModDef {
 					owner_id int unsigned not null,
 					title varchar(32) not null,
 					abstract varchar(128),
+<<<<<<< HEAD
 					phone varchar(16) not null,
+=======
+					mobile_phone varchar(16) not null,
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 					telephone varchar(16) not null,
 					address varchar(32) not null,
 					status tinyint,

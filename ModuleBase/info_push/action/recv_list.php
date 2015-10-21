@@ -29,6 +29,10 @@ $ret = array();
 $k = -1;
 foreach($pdos as $k=> $row){
 	$row['attachment_format'] = CInfoControl::type2txt($row['attachment_format']);
+<<<<<<< HEAD
+=======
+	$row['abstract'] = strip_tags($row['abstract']);
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 	$ret[] = $row;
 }
 

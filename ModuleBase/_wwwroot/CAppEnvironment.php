@@ -233,7 +233,8 @@ class CAppEnvironment{
 					trigger_error('no such config item defined: '.$cfg, E_USER_WARNING);
 				}
 			}else{
-				trigger_error('no such config file found: '.$mod.'.'.$cfg, E_USER_WARNING);
+				return false;
+				//trigger_error('no such config file found: '.$mod.'.'.$cfg, E_USER_WARNING);
 			}
 		}
 		

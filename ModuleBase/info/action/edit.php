@@ -33,7 +33,36 @@ if(isset($_FILES['imgFile']) && $_FILES['imgFile']['size'] > 0){
 		echo json_encode(array('error'=>1, 'message'=>'error'));
 	else 
 		echo json_encode(array('error'=>0, 'url'=>'http://'.$mbs_appenv->uploadURL($path,'', $_SERVER['HTTP_HOST'])));
+}
 	
+if(isset($_REQUEST['dir'])){
+	if(empty($_FILES)){
+		echo json_encode(array('error'=>1, 'message'=>$mbs_appenv->lang(UPLOAD_ERR_INI_SIZE)));
+	}
+	else if($_FILES['imgFile']['error'] != UPLOAD_ERR_OK){
+		echo json_encode(array('error'=>1, 'message'=>$mbs_appenv->lang($_FILES['imgFile']['error'])));
+	}
+	else if( $_FILES['imgFile']['size'] > 0){
+		mbs_import('', 'CInfoControl');
+		
+		$atype = CInfoControl::getAttachType($_FILES['imgFile']['name']);
+		if(0 == $atype){
+			$error[] = $mbs_appenv->lang('unsupport_attachment_type')
+			.'('.$_FILES['attachment']['name'].')';
+		}else{
+			try {
+				$path = CInfoControl::moveAttachment('imgFile', $atype, $mbs_appenv);
+			} catch (Exception $e) {
+				$error[] = $mbs_appenv->lang('unsupport_attachment_type').';'.$e->getMessage();
+			}
+		}
+		
+		if(false === $path)
+			echo json_encode(array('error'=>1, 'message'=>'error'));
+		else 
+			echo json_encode(array('error'=>0, 'url'=>'http://'.$mbs_appenv->uploadURL($path,'', 
+					$mbs_appenv->config('download_file_host'))));
+	}
 	exit(0);
 }
 
@@ -179,16 +208,18 @@ div.thumb_img{position:relative;display:inline-block;}
 		</div>
 		<div class="inpBox" style="position:relative;">
 			<label for="upFile" class="labelFile"><?php echo $mbs_appenv->lang('attachment')?>&nbsp;:&nbsp;
-			<input type="file" id="upFile" name="attachment" class="inpFile" />
+			<input type="file" id="upFile" name="attachment" class="inpFile" 
+				onchange="document.getElementById('IDS_FILE').innerHTML=this.value;" />
 				<span class="btnFile"><i class="icoFile"></i><?php echo $mbs_appenv->lang('click_to_add')?></span>
 			</label>
+			<span style="position:absolute;left:200px;right:0;top:0;" id="IDS_FILE"></span>
 		</div>
 		<?php if(isset($info['attachment_path']) && !empty($info['attachment_path'])){ ?>
 	    <div class="thumb_img" style="margin-top:15px;">
 	    	<label for="" class="labelL">&nbsp;</label>
-			<img __to_url="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" 
+			<img __to_url="<?php echo $mbs_appenv->uploadURL($info['attachment_path'], '', $mbs_appenv->config('download_file_host'))?>" 
 				title="<?php echo $info['attachment_name'];?>"
-		            src="<?php echo $mbs_appenv->uploadURL($info['attachment_path']).CInfoControl::MIN_ATTACH_SFX?>" />
+		            src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'].CInfoControl::MIN_ATTACH_SFX, '', $mbs_appenv->config('download_file_host'))?>" />
 		   <?php if($info['attachment_format'] == CInfoControl::AT_VDO){ ?>
 		    <div class=player __video_type="video/<?=pathinfo($info['attachment_name'], PATHINFO_EXTENSION )?>"></div>
 		    <?php }?>

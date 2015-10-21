@@ -107,7 +107,11 @@ if($count > ROWS_OFFSET){
 <body>
 <div class="tuisong">
 	<h2 class="tit">
+<<<<<<< HEAD
 		<?php echo $mbs_appenv->lang('all_info')?>
+=======
+		<?php echo $mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'), CModDef::P_TLE)?>
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 		<span class="tips"><?php echo sprintf($mbs_appenv->lang('total_count'), $count)?></span>
 	</h2>
 	
@@ -173,6 +177,7 @@ if($count > ROWS_OFFSET){
 		<?php if(count($page_num_list) > 1){?>
 		<p class="pageBox">
 			<?php if(PAGE_ID > 1){ ?>
+<<<<<<< HEAD
 			<a href="<?php echo $mbs_appenv->toURL('list', '', array_merge($search_keys, array('page_id'=>PAGE_ID-1))) ?>" 
 				class="btn-page"><?php echo $mbs_appenv->lang('prev_page')?></a>
 			<?php } ?>
@@ -182,6 +187,17 @@ if($count > ROWS_OFFSET){
         	<?php }?>
         	<?php if(PAGE_ID < count($page_num_list)){ ?>
 	        <a href="<?php echo $mbs_appenv->toURL('list', '', array_merge($search_keys, array('page_id'=>PAGE_ID+1))) ?>" 
+=======
+			<a href="<?php echo $mbs_appenv->toURL('push_list', '', array_merge($search_keys, array('page_id'=>PAGE_ID-1))) ?>" 
+				class="btn-page"><?php echo $mbs_appenv->lang('prev_page')?></a>
+			<?php } ?>
+        	<?php foreach($page_num_list as $n => $v){ ?>
+        	<a href="<?php echo $mbs_appenv->toURL('push_list', '', array_merge($search_keys, array('page_id'=>$n))) ?>" 
+        		class="btn-page <?php echo $n==PAGE_ID?' check':''?>" ><?php echo $v?></a>
+        	<?php }?>
+        	<?php if(PAGE_ID < count($page_num_list)){ ?>
+	        <a href="<?php echo $mbs_appenv->toURL('push_list', '', array_merge($search_keys, array('page_id'=>PAGE_ID+1))) ?>" 
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 	        	class="btn-page"><?php echo $mbs_appenv->lang('next_page')?></a>
 	        <?php }?>
 	    </p>

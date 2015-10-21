@@ -180,9 +180,9 @@ class CUserDef extends CModDef {
 			$ins = CUserControl::getInstance(self::$appenv, $dbpool, $mempool);
 			$uid = $ins->add(array(
 				'id'        => 1,
-				'name'      => 'tiger',
+				'name'      => 'admin',
 				'password'  => CUserControl::formatPassword('123321'),
-				'phone'     => '15312999188',
+				'phone'     => '13666666666',
 				'reg_time'  => time(),
 				'reg_ip'    => self::$appenv->item('client_ip')
 			));

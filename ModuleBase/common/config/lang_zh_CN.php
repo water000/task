@@ -69,6 +69,7 @@ $lang_zh_CN = array(
 	'continue'               => '继续',
 	'or'                     => '或',
 	'remove'                 => '移除',
+	'error_on_field_exists'  => '提交的数据可能已经存在',
 		
 	'prev_page'              => '上一页',
 	'next_page'              => '下一页',

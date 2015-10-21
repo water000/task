@@ -1,5 +1,5 @@
 <?php 
-
+var_dump($_SERVER);
 
 define('REDIRECT_AFTER_LOGIN', isset($_REQUEST['redirect']) 
 	? urldecode($_REQUEST['redirect']) : $mbs_appenv->toURL('index', 'privilege'));
@@ -70,13 +70,13 @@ if(isset($_REQUEST['phone'])){
 				if(isset($_REQUEST['IMEI']) && isset($_REQUEST['IMSI']) 
 					&& $_REQUEST['IMEI'] == $rs['IMEI'] && $_REQUEST['IMSI'] == $rs['IMSI'])
 				{
-					if(0 == $rs['pwd_modify_count']){ // for app only
-						$error[] = $mbs_appenv->lang('user_must_modify_pwd');
-						$error_code = 'USER_MUST_MODIFY_PWD_ON_FIRST_LOGIN';
-					}
+// 					if(0 == $rs['pwd_modify_count']){ // for app only
+// 						$error[] = $mbs_appenv->lang('user_must_modify_pwd');
+// 						$error_code = 'USER_MUST_MODIFY_PWD_ON_FIRST_LOGIN';
+// 					}
 				}
 				else{
-					$error[] = 'invalid device';
+					$error[] = $mbs_appenv->lang('invalid_device');
 				}
 			}
 			
@@ -88,7 +88,7 @@ if(isset($_REQUEST['phone'])){
 				$us->set($rs['id'], $rs);
 				$sid = session_id();
 				$mbs_appenv->echoex(array('user'=>$rs, 'token'=>$sid,
-						'allow_comment'=>$rs['class_id']==3), '', REDIRECT_AFTER_LOGIN);
+						'allow_comment'=>$rs['class_id']>1), '', REDIRECT_AFTER_LOGIN);
 				
 				mbs_import('', 'CUserLoginLogControl');
 				$user_llog = CUserLoginLogControl::getInstance($mbs_appenv, 

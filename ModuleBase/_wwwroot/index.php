@@ -2,6 +2,7 @@
 
 date_default_timezone_set('Asia/Shanghai');
 
+
 define('RTM_DEBUG', 1);
 error_reporting(RTM_DEBUG ? E_ALL : 0);
 	

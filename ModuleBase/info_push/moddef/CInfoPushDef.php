@@ -85,6 +85,12 @@ class CInfoPushDef extends CModDef {
 						'info_id'     => array(self::PA_TYP=>'integer', self::PA_EMP=>0, self::G_DC=>'消息id'),
 					),
 					self::P_MGR => true,
+<<<<<<< HEAD
+=======
+					self::LD_FTR => array(
+						array('user', 'checkDepLogin', true)
+					),
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 				),
 				'mgr_notify' => array(
 					self::P_TLE => '管理通知',

@@ -52,11 +52,19 @@ if(isset($_REQUEST['user_id'])){
 				$push_count_per_info[$info_id] = isset($push_count_per_info[$info_id]) ? 
 					$push_count_per_info[$info_id] + 1 : 1;
 			}
+<<<<<<< HEAD
 			if($push_num > 0){
 				$_msg = sprintf('{"MSG_SENDER" : "%d","MSG_RECEIVER" : "%d","MSG_CREATE_TIME" : "%s","MSG_CONTENT" : "SYSTEM_NEWS_UPDATE","MSG_TYPE" : "M_SYSTEM_COMMAND"}',
 						$sess_uid, $uid, time());
 				$ret = $wsock->sendData($_msg);
 			}
+=======
+		}
+		if($push_num > 0){
+			$_msg = sprintf('{"MSG_SENDER" : "%d","MSG_RECEIVER" : "%d","MSG_CREATE_TIME" : "%s","MSG_CONTENT" : "SYSTEM_NEWS_UPDATE","MSG_TYPE" : "M_SYSTEM_COMMAND"}',
+					$sess_uid, $uid, time());
+			$ret = $wsock->sendData($_msg);
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 		}
 		$push_count += $push_num;
 	}
@@ -141,7 +149,12 @@ if(isset($_REQUEST['user_id'])){
 			<h3 class="subTit"><?php echo $mbs_appenv->lang('recipient')?>(<?php echo count($ulist) , $mbs_appenv->lang('person')?>)&nbsp;:&nbsp;</h3>
 			<div class="container">
 				<i class="ico-sear"></i>
+<<<<<<< HEAD
 				<input type="text" class="inp-sear" placeholder="<?php echo $mbs_appenv->lang('input_name_to_search')?>..." />
+=======
+				<input type="text" class="inp-sear" onkeyup="_search(this)" 
+					placeholder="<?php echo $mbs_appenv->lang('input_name_to_search')?>..." />
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 				<?php
 				$cid = 0;
 				foreach($ulist as $u){
@@ -252,7 +265,17 @@ function _submit(f){
 	}
 	return false;
 }
+<<<<<<< HEAD
 
+=======
+function _search(input){
+	var list = input.parentNode.getElementsByTagName("LI"), i;
+	for(i=0; i<list.length; i++){
+		list[i].style.display = -1 == list[i].innerHTML.replace(/<[^>]+>/g, '').indexOf(input.value) ? "none" : "";
+	}
+	
+}
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 </script>
 </body>
 </html>

@@ -49,6 +49,10 @@ $info = $info_ctr->get();
 .content{padding:1%;color:#555;}
 video, img{width:100%;}
 </style>
+<<<<<<< HEAD
+=======
+<link href="/static/css/video-js.css" rel="stylesheet" />
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 </head>
 <body>
 	<div class=win>
@@ -56,12 +60,29 @@ video, img{width:100%;}
 		<div class=date><?php echo $mbs_appenv->lang('site_name'), '&nbsp;', date('Y-m-d H:i:s', $info['create_time'])?></div>
 		<div>
 		<?php if($info['attachment_format'] == CInfoControl::AT_VDO){?>
+<<<<<<< HEAD
 		<video preload="preload" controls="controls">
 			<source src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'])?>" type="video/<?=pathinfo($info['attachment_name'], PATHINFO_EXTENSION )?>"></source>
 			unsupport video format
 		</video>
 		<?php }else if($info['attachment_format'] == CInfoControl::AT_IMG){ ?>
 		<img src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'], '', $_SERVER['HTTP_HOST'])?>" />
+=======
+		<!-- script src="/static/js/video-min.js"></script>
+		<video preload="auto" controls="controls" id="really-cool-video" class="video-js vjs-default-skin" data-setup='{}' -->
+		<video preload="auto" controls="controls">
+			<source src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'], '', 'http://'.$mbs_appenv->config('download_file_host'))?>" type="video/<?=pathinfo($info['attachment_name'], PATHINFO_EXTENSION )?>"></source>
+			unsupport video format
+		</video>
+		<script type="text/javascript">
+// 		var player = videojs('really-cool-video', { /* Options */ }, function() {
+// 			  console.log('Good to go!');
+// 			  this.play(); 
+// 			});
+		</script>
+		<?php }else if($info['attachment_format'] == CInfoControl::AT_IMG){ ?>
+		<img src="<?php echo $mbs_appenv->uploadURL($info['attachment_path'], '', 'http://'.$mbs_appenv->config('download_file_host'))?>" />
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 		<?php } ?>
 		</div>
 		<div class=content><?php echo $info['abstract']?></div>

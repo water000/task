@@ -112,7 +112,11 @@ if(isset($_REQUEST['id'])){
 	<?php }?>
 	<div <?php echo 1==$k%2 ? 'class="even"' : ''?>>
 	<div class="inpBox mb17">
+<<<<<<< HEAD
    		<label for="name" class="labelL"><?php echo $mbs_appenv->lang('name')?>&nbsp;:&nbsp;</label>
+=======
+   		<label for="name" class="labelL"><?php echo $mbs_appenv->lang('name', 'common')?>&nbsp;:&nbsp;</label>
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 	    <input id="name" class="inpTit" name="name[]" type="text" value="<?php echo $row['name']?>" 
 	    	placeholder="<?php echo $mbs_appenv->lang('please_input')?>" required />
     </div>

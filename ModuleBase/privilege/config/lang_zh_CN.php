@@ -38,6 +38,13 @@ $lang_zh_CN = array(
 	'num'         => '数',
 	'user_exsits' => '所选用户(id:%d)已被加入当前组（或其他组）',
 	'confirm_delete_group' => '确认删除组及其成员吗？删除后，数据无法恢复！',
+<<<<<<< HEAD
+=======
+		
+	'module'      => '模块',
+	'not_found'   => '未发现权限',
+	'change_to'   => '更改为', 
+>>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 );
 
 
