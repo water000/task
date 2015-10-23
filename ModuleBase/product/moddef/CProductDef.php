@@ -59,8 +59,8 @@ class CProductDef extends CModDef {
 					//self::P_MGR  => false,
 					self::P_ARGS => array(
 						'en_name'    => array(self::PA_REQ=>1, self::G_TL=>'英文名称', self::PA_RNG=>'3, 16'),
-						'name'       => array(self::PA_REQ=>1, self::G_TL=>'名称（中文）', self::PA_RNG=>'2, 16'),
-						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'产品的概要', self::PA_RNG=>'16, 64'),
+						'name'       => array(self::PA_REQ=>1, self::G_TL=>'中文名称', self::PA_RNG=>'2, 16'),
+						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'产品概要', self::PA_RNG=>'16, 64'),
 						'logo_path'  => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'logo图片'),
 						'baike_link' => array(self::G_TL=>'百科链接', self::G_DC=>'百科的站外链接，例如百度百科，维基百科'),
 					),

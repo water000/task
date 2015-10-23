@@ -2,6 +2,7 @@
 $page_title = 'add';
 $error = array();
 mbs_import('', 'CProductControl');
+mbs_import('common', 'CForm');
 
 $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 if(isset($_REQUEST['id'])){
@@ -38,7 +39,6 @@ if(isset($_REQUEST['id'])){
 			}
 		}
 	}
-	
 }
 else if(isset($_REQUEST['_timeline'])){
 	$info = array_intersect_key($_REQUEST,$info);
@@ -61,7 +61,6 @@ else if(isset($_REQUEST['_timeline'])){
 			$error[] = $mbs_appenv->lang('error_on_field_exists').'('.$pdt_ctr->error().')';
 		}
 	}
-	var_dump($error);
 }
 ?>
 <!doctype html>
@@ -73,43 +72,20 @@ else if(isset($_REQUEST['_timeline'])){
 <style type="text/css">
 aside {display:none;color:red;font-size:12px;}
 .logo-img{width:30px;height:30px;}
-input,textarea{width:25%;}
+input,textarea{width:300px;}
+textarea{height:85px;}
 .block{background-color:white;margin:10px 12px 0;}
 </style>
 </head>
 <body>
 <div class="warpper">
-	<div class="ptitle block"><?php echo $mbs_appenv->lang(array($page_title, 'product'))?></div>
-	<div class="block">
+	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title, 'product'))?></div>
+	<div class="">
 	<form class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
 		<input type="hidden" name="_timeline" value="<?php echo time()?>" />
 		<fieldset>
 			<?php if(!empty($error) && isset($error[0])){ ?><div class=pure-buton-error><?php echo $error[0]?></div><?php }?>
-			<div class="pure-control-group">
-                <label><?php echo $mbs_cur_actiondef[CModDef::P_ARGS]['en_name'][CModDef::G_TL]?></label>
-                <input type="text" name="en_name" value="<?php echo $info['en_name']?>">
-                <aside class="pure-form-message-inline"><?php echo $mbs_cur_actiondef[CModDef::P_ARGS]['en_name'][CModDef::G_DC]?></aside>
-            </div>
-            <div class="pure-control-group">
-                <label><?php echo $mbs_cur_actiondef[CModDef::P_ARGS]['name'][CModDef::G_TL]?></label>
-                <input type="text" name="name" value="<?php echo $info['name']?>">
-                <aside class="pure-form-message-inline"><?php echo $mbs_cur_actiondef[CModDef::P_ARGS]['name'][CModDef::G_DC]?></aside>
-            </div>
-            <div class="pure-control-group">
-                <label><?php echo $mbs_cur_actiondef[CModDef::P_ARGS]['abstract'][CModDef::G_TL]?></label>
-                <textarea name="abstract"><?php echo $info['abstract']?></textarea>
-                <aside class="pure-form-message-inline"><?php echo $mbs_cur_actiondef[CModDef::P_ARGS]['abstract'][CModDef::G_DC]?></aside>
-            </div>
-            <div class="pure-control-group">
-                <label><?php echo $mbs_cur_actiondef[CModDef::P_ARGS]['logo_path'][CModDef::G_TL]?></label>
-                <input type="file" name="logo_path" />
-                <?php if(!empty($info['logo_path'])){ ?><img class=logo-img src="<?php echo $info['logo_path']?>" onclick="this.className=''" /><?php }?>
-            </div>
-            <div class="pure-control-group">
-                <label><?php echo $mbs_cur_actiondef[CModDef::P_ARGS]['baike_link'][CModDef::G_TL]?></label>
-                <input type="text" name="baike_link" value="<?php echo $info['baike_link']?>">
-                <aside class="pure-form-message-inline"><?php echo $mbs_cur_actiondef[CModDef::P_ARGS]['baike_link'][CModDef::G_DC]?></aside>
-            </div>
+			<?php CForm::align($mbs_cur_actiondef[CModDef::P_ARGS], $info);?>
             <div class="pure-control-group">
                 <label></label>
                 <button type="submit" class="pure-button pure-button-primary" onclick="this.className +=' pure-input-disabled';this.innerHTML+='...';this.disabled=true;this.form.submit();"><?php echo $mbs_appenv->lang('submit')?></button>
@@ -117,7 +93,7 @@ input,textarea{width:25%;}
 		</fieldset>
 	</form>
 	</div>
-	<div class="footer block"></div>
+	<div class="footer"></div>
 </div>
 <?php if(!empty($error)){?>
 <script type="text/javascript">

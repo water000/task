@@ -20,7 +20,7 @@ abstract class CModDef {
 	//an valid identifier([_a-zA-Z][_a-zA-Z0-9]*)
 	CONST G_NM = 'name';
 	CONST G_CS = 'class';
-	CONST G_TL = 'title'; // the page's title in <title></title>
+	CONST G_TL = 'title';
 	CONST G_DC = 'desc';
 	
 	CONST MOD  = 'module';

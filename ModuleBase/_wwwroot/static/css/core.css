@@ -3,7 +3,7 @@ body{font-size:13px;color:#333;min-height:100%;margin:0;font-family:"Lucida Gran
 ul li{list-style-type:none;}
 .header{}
 .footer{height: 60px;background: #fff;border-top: 1px solid #eee;clear:both;margin-top:50px;}
-.warpper{position:relative;background-color:#ddd;width:100%;padding:1px 0;}/*padding:avoid the body have margin-top:8px in safari */
+.warpper{position:relative;width:100%;padding:1px 0;}/*padding:avoid the body have margin-top:8px in safari */
 .content{margin:0 auto;padding:15px 0;width:1000px;min-height:600px;}
 
 .vertical-menu{padding:2px;border:1px solid #bbb;border-top:3px solid #85BBEF;background-color:#fff;}
@@ -37,7 +37,8 @@ ul li{list-style-type:none;}
 .oper-bar{margin-top:13px;}
 .oper-bar-pop{position:fixed;bottom:0;background-color:white;width:850px;}
 
-.ptitle{/*border-bottom: 1px solid #eee;width: 100%;*/padding: 0.5em 0.25em;font-size:20px;}
+.ptitle{border-bottom: 1px solid #eee;padding: 20px 10px;margin-bottom:20px;font-size:20px;color:#4078c0;}
+.required{color:red;}
 
 /*
  * -- PURE MENU STYLES --
