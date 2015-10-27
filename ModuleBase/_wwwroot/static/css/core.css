@@ -17,16 +17,16 @@ ul li{list-style-type:none;}
 .warpper tbody td, .warpper ul li{border-bottom:1px solid #ddd;padding:5px 3px;color:#333;}
 
 
-.success, .error{position:relative;padding: 1em 0;text-align: center;width: 90%;margin: 2em auto;}
-.success p, .error p{margin-top:.5em;font-size:60%;}
+.success, .error{position:relative;padding: 1em 0;text-align: center;width: 60%;margin: 2em auto;font-weight: bold;}
+.success p, .error p{margin-top:.5em;}
 .success a.close, .error a.close{position:absolute; top:2px; right:5px; color:#666;font-size:60%;text-decoration:none;}
 .success a.close:hover, .error a.close:hover{color:#000;}
-.success {  background-color: #dff0d8;}
+.success {  background-color: #F0EED8; color:green;}
 .success a.link{font-size:80%;margin-left:10px;}
 .error { background-color: #f2dede;}
 
 .no-data{text-align:center;color:#bbb;font-size:80%;padding:10px 0;}
-.back{font-size:65%;color:rgb(92, 92, 245);float:right;display:inline-block;vertical-align:bottom;}
+.back{font-size:65%;color:rgb(92, 92, 245);float:right;display:inline-block;vertical-align:bottom;text-decoration:none;}
 .back:hover{color:blue;}
 
 .align-center{margin:0 auto;display:block;} /* blocked for some frames like 'div' */
@@ -39,6 +39,7 @@ ul li{list-style-type:none;}
 
 .ptitle{border-bottom: 1px solid #eee;padding: 20px 10px;margin-bottom:20px;font-size:20px;color:#4078c0;}
 .required{color:red;}
+.shortcut-a{text-decoration:none;font-size:12px;}
 
 /*
  * -- PURE MENU STYLES --
@@ -106,6 +107,4 @@ ul li{list-style-type:none;}
      background: rgb(66, 184, 221); /* this is a light blue */
  }
  
- .button-submitting{background-color:#eee;}
-
 

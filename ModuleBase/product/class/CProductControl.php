@@ -56,7 +56,7 @@ class CProductControl extends CUniqRowControl {
 	}
 	
 	static function moveLogo($src, $appenv){
-		$name = md5(uniqid('logo_', true));
+		$name = md5(uniqid('logo_', true)).'.'.self::THUMB_FORMAT;
 		$hash = substr($name, 0, 2);
 		$subdir = 'logo/'.$hash.'/';
 		$dest_dir = $appenv->mkdirUpload($subdir);

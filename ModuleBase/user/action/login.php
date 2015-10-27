@@ -1,5 +1,4 @@
 <?php 
-var_dump($_SERVER);
 
 define('REDIRECT_AFTER_LOGIN', isset($_REQUEST['redirect']) 
 	? urldecode($_REQUEST['redirect']) : $mbs_appenv->toURL('index', 'privilege'));

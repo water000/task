@@ -100,6 +100,37 @@ class CStrTools {
 		return iconv_strlen($str, $charset) > $maxlen ? 
 			iconv_substr($str, 0, $maxlen, $charset).$suffix : $str; 
 	}
+	
+	static function descTime($timestamp, $mbs_appenv){
+		$zero = mktime(0, 0, 0);
+		if($timestamp >= $zero){
+			return date('H:i', $timestamp);
+		}
+		$diff = $zero - $timestamp;
+		if($diff <= 86400){
+			return $mbs_appenv->lang('yesterday').date('H:i', $timestamp);
+		}
+		else if($diff <= 2*86400){
+			return $mbs_appenv->lang('before_yesterday').date('H:i', $timestamp);
+		}
+		else{
+			return date('Y/m/d H:i', $timestamp);
+		}
+	}
+	
+	static function fldTitle($def){
+		echo $def[CModDef::G_TL],
+			isset($def[CModDef::PA_REQ]) ? '<span class=required>*</span>':'';
+	}
+	
+	static function fldDesc($def, $mbs_appenv){
+		if(isset($def[CModDef::PA_RNG])){
+			$s = $e = 0;
+			$rnum = CModDef::pargRange($def, $s, $e);
+			echo $s, 2==$rnum?'~'.$e:'', $mbs_appenv->lang('num_of_char', 'common');
+		}
+		echo isset($def[CModDef::G_DC])?$def[CModDef::G_DC]:'';
+	}
 }
 
 ?>

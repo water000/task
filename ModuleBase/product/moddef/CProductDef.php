@@ -33,6 +33,7 @@ class CProductDef extends CModDef {
 					is_multi_opt tinyint not null default 0,
 					default_value varchar(64) not null default "",
 					last_edit_time int unsigned,
+					create_time int unsigned,
 					primary key(id),
 					unique key(en_name)
 				)',
@@ -58,7 +59,7 @@ class CProductDef extends CModDef {
 					self::G_DC   => '产品的编辑、添加，同时关联相应的属性',
 					//self::P_MGR  => false,
 					self::P_ARGS => array(
-						'en_name'    => array(self::PA_REQ=>1, self::G_TL=>'英文名称', self::PA_RNG=>'3, 16'),
+						'en_name'    => array(self::PA_REQ=>1, self::G_TL=>'英文名称', self::G_DC=>'有效的英文单词', self::PA_RNG=>'3, 16'),
 						'name'       => array(self::PA_REQ=>1, self::G_TL=>'中文名称', self::PA_RNG=>'2, 16'),
 						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'产品概要', self::PA_RNG=>'16, 64'),
 						'logo_path'  => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'logo图片'),

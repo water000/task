@@ -16,7 +16,7 @@ if(isset($_REQUEST['id'])){
 		exit(0);
 	}
 	if(isset($_REQUEST['_timeline'])){
-		$info = array_intersect_key($info, $_REQUEST);
+		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('logo_path'));
 		if(empty($error)){
 			if(isset($_FILES['logo_path']) && UPLOAD_ERR_OK == $_FILES['logo_path']['error']){
@@ -30,8 +30,6 @@ if(isset($_REQUEST['id'])){
 			}
 			if(empty($error)){
 				$info['last_edit_time'] = time();
-				$pdt_ctr = CProductControl::getInstance($mbs_appenv,
-						CDbPool::getInstance(), CMemcachedPool::getInstance());
 				$ret = $pdt_ctr->set($info);
 				if(empty($ret)){
 					$error[] = $pdt_ctr->error();
@@ -41,8 +39,12 @@ if(isset($_REQUEST['id'])){
 	}
 }
 else if(isset($_REQUEST['_timeline'])){
-	$info = array_intersect_key($_REQUEST,$info);
+	$info_def = $info;
+	$info = array_intersect_key($_REQUEST,$info) + $info;
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
+	if(!isset($error['en_name']) && !CStrTools::isWord($info['en_name'])){
+		$error['en_name'] = $mbs_appenv->lang('invalid_EN_word');
+	}
 	if(empty($error)){
 		$logo_path = CProductControl::moveLogo($_FILES['logo_path']['tmp_name'], $mbs_appenv);
 		if($logo_path){
@@ -56,11 +58,16 @@ else if(isset($_REQUEST['_timeline'])){
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
 			$info['last_edit_time'] = $info['create_time'] = time();
 			$ret = $info_id = $pdt_ctr->add($info);
-		}
-		if(empty($ret)){
-			$error[] = $mbs_appenv->lang('error_on_field_exists').'('.$pdt_ctr->error().')';
+			if(empty($ret)){
+				$error[] = $mbs_appenv->lang('error_on_field_exists').'('.$pdt_ctr->error().')';
+			}else{
+				$info = $info_def;
+			}
 		}
 	}
+}
+if(!empty($info['logo_path'])){
+	$info['logo_path'] = CProductControl::logourl($info['logo_path'], $mbs_appenv);
 }
 ?>
 <!doctype html>
@@ -68,10 +75,10 @@ else if(isset($_REQUEST['_timeline'])){
 <head>
 <title><?php mbs_title()?></title>
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
-<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet"> 
 <style type="text/css">
 aside {display:none;color:red;font-size:12px;}
-.logo-img{width:30px;height:30px;}
+.form-fld-img{width:30px;height:30px;}
 input,textarea{width:300px;}
 textarea{height:85px;}
 .block{background-color:white;margin:10px 12px 0;}
@@ -79,55 +86,63 @@ textarea{height:85px;}
 </head>
 <body>
 <div class="warpper">
-	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title, 'product'))?></div>
+	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title, 'product'))?>
+		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang(array('back', 'list'))?></a></div>
 	<div class="">
 	<form class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
 		<input type="hidden" name="_timeline" value="<?php echo time()?>" />
 		<fieldset>
-			<?php if(!empty($error) && isset($error[0])){ ?><div class=pure-buton-error><?php echo $error[0]?></div><?php }?>
-			<?php CForm::align($mbs_cur_actiondef[CModDef::P_ARGS], $info);?>
+			<?php if(isset($_REQUEST['_timeline'])){ if(isset($error[0])){ ?>
+			<div class=error>&times;<?php echo $error[0]?></div>
+			<?php }else if(empty($error)){?>
+			<div class=success><?php echo $mbs_appenv->lang('operation_success')?></div> 
+			<?php }} ?>
+						
+			<div class="pure-control-group">
+				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['en_name'])?></label>
+				<input type="text" name="en_name" value="<?php echo $info['en_name']?>" />
+				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['en_name'], $mbs_appenv)?></aside>
+			</div>
+			<div class="pure-control-group">
+				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['name'])?></label>
+				<input type="text" name="name" value="<?php echo $info['name']?>" />
+				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['name'], $mbs_appenv)?></aside>
+			</div>
+			<div class="pure-control-group">
+				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['abstract'])?></label>
+				<textarea name="abstract"><?php echo $info['abstract']?></textarea>
+				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['abstract'], $mbs_appenv)?></aside>
+			</div>
+			<div class="pure-control-group">
+				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['logo_path'])?></label>
+				<input type="file" name="logo_path" /><?php if(!empty($info['logo_path'])){?><img class=form-fld-img src="<?php echo $info['logo_path']?>" /><?php }?>
+			</div>
+			<div class="pure-control-group">
+				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['baike_link'])?></label>
+				<input type="text" name="baike_link" value="<?php echo $info['baike_link']?>" />
+				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['baike_link'], $mbs_appenv)?></aside>
+			</div>
+			
+			<?php if(isset($_REQUEST['id'])){?>
+			<div class="pure-control-group">
+                <label><?php $mbs_appenv->lang(array('add', 'time'))?></label>
+                <?php echo CStrTools::descTime($info['create_time'], $mbs_appenv)?>
+            </div>
+            <?php }?>
             <div class="pure-control-group">
                 <label></label>
-                <button type="submit" class="pure-button pure-button-primary" onclick="this.className +=' pure-input-disabled';this.innerHTML+='...';this.disabled=true;this.form.submit();"><?php echo $mbs_appenv->lang('submit')?></button>
+                <button type="submit" class="pure-button pure-button-primary" onclick="submitForm(this)"><?php echo $mbs_appenv->lang('submit')?></button>
             </div>
 		</fieldset>
 	</form>
 	</div>
 	<div class="footer"></div>
 </div>
+<script type="text/javascript" src="<?php echo $mbs_appenv->sURL('global.js')?>"></script>
 <?php if(!empty($error)){?>
 <script type="text/javascript">
-function formSubmitErr(form, inputErr){
-	var elems = form.elements, errctl, as, fnclk;
-	fnclk = function(inp, _err, _as){
-		var fnbind = inp['addEventListener']||inp['attachEvent'];
-		fnbind.call(inp, 'click', function(e){
-			this.style.border = "";
-			_err.style.display = "none";
-			if(_as)
-				_as.style.display = "";
-		});
-	}
-	for(var k in inputErr){
-		if(typeof elems[k] != "undefined"){
-			elems[k].style.border = "1px solid red";
-
-			as = elems[k].parentNode.getElementsByTagName("aside")[0];
-			if(as)
-				as.style.display = "none";
-			
-			errctl = document.createElement("span");
-			errctl.innerHTML = inputErr[k];
-			errctl.style.cssText = "color:red;font-size:12px;";
-			elems[k].parentNode.insertBefore(errctl, as);
-
-			fnclk(elems[k], errctl, as);
-		}
-	}
-}
 formSubmitErr(document._form, <?php echo json_encode($error)?>);
 </script>
 <?php }?>
-
 </body>
 </html>
