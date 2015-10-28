@@ -4,6 +4,24 @@ class CProductAttrControl extends CUniqRowControl {
 	
 	private static $instance   = null;
 	
+	private static $VT_MAP = array(
+		10 => 'char',
+		11 => 'varchar',
+		12 => 'text',
+			
+		20 => 'tinyint',
+		21 => 'tinyint unsigned',
+		22 => 'smallint',
+		23 => 'smallint unsigned',
+		24 => 'int',
+		25 => 'int unsigned',
+		26 => 'bigint',
+		27 => 'bigint unsigned',
+		
+		30 => 'float',
+		31 => 'double',
+	);
+	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
 	}
@@ -21,7 +39,7 @@ class CProductAttrControl extends CUniqRowControl {
 				$memconn = $mempool->getConnection();
 				self::$instance = new CProductAttrControl(
 						new CUniqRowOfTable($dbpool->getDefaultConnection(),
-								mbs_tbname('product_attr'), 'id', $primarykey),
+								mbs_tbname('product_attr_def'), 'id', $primarykey),
 						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CProductAttrControl') : null,
 						$primarykey
 				);
@@ -33,6 +51,9 @@ class CProductAttrControl extends CUniqRowControl {
 		return self::$instance;
 	}
 	
+	static function vtmap($key=null){
+		return is_null($key) ? self::$VT_MAP : self::$VT_MAP[$key];
+	}
 }
 
 ?>

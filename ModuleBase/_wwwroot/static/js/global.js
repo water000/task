@@ -60,3 +60,34 @@ function switchRow(objtb, offset, length, overclass)
 		});
 	}
 }
+
+function btnlist(list){
+	var _fnchecked = function(elem){
+		var inph;
+		elem.className += " pure-button-checked";
+		inph = document.createElement("input");
+		inph.type = "hidden";
+		inph.name = elem.name;
+		inph.value = elem.getAttribute("_value");
+		elem.parentNode.insertBefore(inph, elem);
+		elem.setAttribute("_checked", "1");
+	}
+	var _fndechecked = function(elem){
+		elem.className = elem.className.replace(" pure-button-checked", "");
+		elem.parentNode.removeChild(elem.previousSibling);
+		elem.setAttribute("_checked", "0");
+	}
+	for(var i=0; i<list.length; i++){
+		if('1' == list[i].getAttribute("_checked")){
+			_fnchecked(list[i]);
+		}
+		list[i].onclick = function(e){
+			if('1' == this.getAttribute("_checked")){
+				_fndechecked(this);
+			}else{
+				_fnchecked(this);
+			}
+		}
+	}
+}
+

@@ -18,6 +18,9 @@ if(isset($_REQUEST['id'])){
 	if(isset($_REQUEST['_timeline'])){
 		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('logo_path'));
+		if(!isset($error['en_name']) && !CStrTools::isWord($info['en_name'])){
+			$error['en_name'] = $mbs_appenv->lang('invalid_EN_word');
+		}
 		if(empty($error)){
 			if(isset($_FILES['logo_path']) && UPLOAD_ERR_OK == $_FILES['logo_path']['error']){
 				$logo_path = CProductControl::moveLogo($_FILES['logo_path']['tmp_name'], $mbs_appenv);
@@ -87,7 +90,7 @@ textarea{height:85px;}
 <body>
 <div class="warpper">
 	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title, 'product'))?>
-		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang(array('back', 'list'))?></a></div>
+		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang(array('product', 'list'))?></a></div>
 	<div class="">
 	<form class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
 		<input type="hidden" name="_timeline" value="<?php echo time()?>" />
@@ -122,7 +125,6 @@ textarea{height:85px;}
 				<input type="text" name="baike_link" value="<?php echo $info['baike_link']?>" />
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['baike_link'], $mbs_appenv)?></aside>
 			</div>
-			
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
                 <label><?php $mbs_appenv->lang(array('add', 'time'))?></label>
@@ -139,7 +141,7 @@ textarea{height:85px;}
 	<div class="footer"></div>
 </div>
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('global.js')?>"></script>
-<?php if(!empty($error)){ var_dump($error);?>
+<?php if(!empty($error)){?>
 <script type="text/javascript">
 formSubmitErr(document._form, <?php echo json_encode($error)?>);
 </script>
