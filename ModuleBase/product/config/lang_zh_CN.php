@@ -1,9 +1,7 @@
 <?php 
 
 $lang_zh_CN = array(
-	'product'    => '产品',
+	'product' => '产品',
 );
- 
- 
 
 ?>

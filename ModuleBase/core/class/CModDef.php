@@ -20,7 +20,7 @@ abstract class CModDef {
 	//an valid identifier([_a-zA-Z][_a-zA-Z0-9]*)
 	CONST G_NM = 'name';
 	CONST G_CS = 'class';
-	CONST G_TL = 'title'; // the page's title in <title></title>
+	CONST G_TL = 'title';
 	CONST G_DC = 'desc';
 	
 	CONST MOD  = 'module';
@@ -191,6 +191,17 @@ abstract class CModDef {
 				$ret[0] = $match[1];
 				$ret = array_merge($ret, explode(',', $match[2]));
 			}
+		}
+		return $ret;
+	}
+	
+	static function pargRange($def, &$s, &$e=0){
+		$ret = 1;
+		$arr = explode(',', $def[CModDef::PA_RNG]);
+		$s = intval(trim($arr[0]));
+		if(isset($arr[1])){
+			$e = intval(trim($arr[1]));
+			$ret = 2;
 		}
 		return $ret;
 	}
@@ -464,7 +475,7 @@ abstract class CModDef {
 	 			
  				if($opts[CModDef::PA_REQ]){
  					if('file' == strtolower($opts[self::PA_TYP])){
- 						if(!isset($_FILES[$name])){
+ 						if(!isset($_FILES[$name]) || empty($_FILES[$name]['name'])){
 	 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
 	 								(isset($opts[self::G_DC]) ? $opts[self::G_DC].'/-' : '').$name);
 	 						continue;
@@ -480,7 +491,7 @@ abstract class CModDef {
 				if($opts[CModDef::PA_TRI] && isset($_REQUEST[$name]) && is_string($_REQUEST[$name]))
 					$_REQUEST[$name] = trim($_REQUEST[$name]);
  					
-				if($opts[self::PA_REQ] && !$opts[CModDef::PA_EMP] && isset($_REQUEST[$name]) && empty($_REQUEST[$name])){
+				if($opts[self::PA_REQ] && !$opts[CModDef::PA_EMP] && empty($_REQUEST[$name])){
 					$error[$name] = sprintf($error_desc['arg_cannot_be_empty'], $name);
 					continue;
 				}
@@ -508,10 +519,9 @@ abstract class CModDef {
 					else{
 						trigger_error('type: '.gettype($_REQUEST[$name]).' can not be compared with integer', E_USER_ERROR);
 					}
-					
-					list($s, $e) = explode(',', $opts[CModDef::PA_RNG]);
-					$s = intval($s);
-					$e = empty($e) ? 0 : intval($e);
+	
+					$s = $e = 0;
+					$rnum = self::pargRange($opts, $s, $e);
 					
 					if($num < $s || ($e !=0 && $num > $e)){
 						$error[$name] = sprintf($error_desc['arg_length_invalid'],
