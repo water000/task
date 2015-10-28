@@ -27,7 +27,7 @@ class CPrivilegeDef extends CModDef {
 		  			id int unsigned not null auto_increment,
 					name varchar(16) not null default '',
 					type tinyint not null default 0, -- 1:allow , 2:deny
-					priv_list text not null default '',
+					priv_list text,
 					creator_id int unsigned not null default 0,
 					create_ts int unsigned not null default 0,
 					primary key(id),

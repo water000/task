@@ -9,7 +9,7 @@ class CImgCaptcha
 {	
 	static function drawPNG($w, $h, $str)
 	{
-		header('Content-Type: image/png');
+		header('Content-Type: image/jpeg');
 		$img = imagecreate($w, $h);
 		imagecolorallocate($img, 255, 255, 255);
 		$black = imagecolorallocate($img, 0, 0, mt_rand(0, 150));
@@ -26,7 +26,7 @@ class CImgCaptcha
 		$arce = ($arcs + mt_rand(30, 90)) % 360;
 		imagearc($img, mt_rand($w/4, $w/2), mt_rand($h/3, $h/2),mt_rand($w/3, $w), mt_rand($h/2, $h),$arcs, $arce, $black);
 		imagestring($img, 5, mt_rand(2, 16), 10, $str, $black);
-		imagepng($img);
+		imagejpeg($img);
 		imagedestroy($img);
 	}
 }

@@ -139,7 +139,7 @@ textarea{height:85px;}
 	<div class="footer"></div>
 </div>
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('global.js')?>"></script>
-<?php if(!empty($error)){?>
+<?php if(!empty($error)){ var_dump($error);?>
 <script type="text/javascript">
 formSubmitErr(document._form, <?php echo json_encode($error)?>);
 </script>
