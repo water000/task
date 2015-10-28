@@ -30,7 +30,7 @@ class CProductDef extends CModDef {
 					value_type tinyint unsigned not null default 0, -- char, int , ...
 					unit_or_size varchar(32) not null default "", -- unit for number(10m) , size for string()
 					value_opts varchar(128) not null default "",
-					allow_multi tinyint not null default 0,
+					allow_multi tinyint,
 					default_value varchar(64) not null default "",
 					last_edit_time int unsigned,
 					create_time int unsigned,

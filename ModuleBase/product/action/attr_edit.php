@@ -74,7 +74,7 @@ textarea{height:85px;}
 		<input type="hidden" name="_timeline" value="<?php echo time()?>" />
 		<fieldset>
 			<?php if(isset($_REQUEST['_timeline'])){ if(isset($error[0])){ ?>
-			<div class=error><?php echo $error[0]?></div>
+			<div class=error><?php echo $error[0];unset($error[0])?></div>
 			<?php }else if(empty($error)){?>
 			<div class=success><?php echo $mbs_appenv->lang('operation_success')?></div> 
 			<?php }} ?>
@@ -107,7 +107,6 @@ textarea{height:85px;}
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['unit_or_size'])?></label>
 				<input type="text" name="unit_or_size" value="<?php echo $info['unit_or_size']?>" />
-				
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['unit_or_size'], $mbs_appenv)?></aside>
 			</div>
 			<div class="pure-control-group" id="IDD_MULTI_OPTS">

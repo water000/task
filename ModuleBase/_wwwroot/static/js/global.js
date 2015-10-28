@@ -62,8 +62,15 @@ function switchRow(objtb, offset, length, overclass)
 }
 
 function btnlist(list){
+	if(!list || !list[0]) return;
+	var allow_multi_opt = list[0].name.indexOf("[]") != -1, prev_checked_btn = null;
 	var _fnchecked = function(elem){
 		var inph;
+		if(!allow_multi_opt){
+			if(prev_checked_btn != null)
+				_fndechecked(prev_checked_btn);
+			prev_checked_btn = elem;
+		}
 		elem.className += " pure-button-checked";
 		inph = document.createElement("input");
 		inph.type = "hidden";
@@ -76,6 +83,9 @@ function btnlist(list){
 		elem.className = elem.className.replace(" pure-button-checked", "");
 		elem.parentNode.removeChild(elem.previousSibling);
 		elem.setAttribute("_checked", "0");
+		if(!allow_multi_opt && prev_checked_btn == elem){
+			prev_checked_btn = null;
+		}
 	}
 	for(var i=0; i<list.length; i++){
 		if('1' == list[i].getAttribute("_checked")){
