@@ -91,13 +91,13 @@ function btnlist(list){
 		if('1' == list[i].getAttribute("_checked")){
 			_fnchecked(list[i]);
 		}
-		list[i].onclick = function(e){
+		bind(list[i], 'click', function(e){
 			if('1' == this.getAttribute("_checked")){
 				_fndechecked(this);
 			}else{
 				_fnchecked(this);
 			}
-		}
+		});
 	}
 }
 

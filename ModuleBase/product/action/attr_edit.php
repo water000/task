@@ -15,6 +15,8 @@ if(isset($_REQUEST['id'])){
 		exit(0);
 	}
 	if(isset($_REQUEST['_timeline'])){
+		if(!isset($_REQUEST['allow_multi']))
+			$_REQUEST['allow_multi'] = 0;
 		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 		if(!isset($error['en_name']) && !CStrTools::isWord($info['en_name'])){
@@ -31,6 +33,8 @@ if(isset($_REQUEST['id'])){
 }
 else if(isset($_REQUEST['_timeline'])){
 	$info_def = $info;
+	if(!isset($_REQUEST['allow_multi']))
+		$_REQUEST['allow_multi'] = 0;
 	$info = array_intersect_key($_REQUEST,$info) + $info;
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 	if(!isset($error['en_name']) && !CStrTools::isWord($info['en_name'])){
@@ -123,7 +127,7 @@ textarea{height:85px;}
 			</div>
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
-                <label><?php $mbs_appenv->lang(array('add', 'time'))?></label>
+                <label><?php echo $mbs_appenv->lang(array('add', 'time'))?></label>
                 <?php echo CStrTools::descTime($info['create_time'], $mbs_appenv)?>
             </div>
             <?php }?>

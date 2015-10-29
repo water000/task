@@ -13,10 +13,14 @@ $list  = $pdtattr_ctr->getDB()->search(array(), array('order'=>'last_edit_time D
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet"> 
 <style type="text/css">
-.logo-img{height:20px;vertical-align: middle;}
 .pure-table-horizontal{border-left:0;border-right:0;}
 .row-onmouseover{background-color:#E3EEFB;}
 .pure-button-checked{background-color: #F79F75;}
+.product-block{width:50%;margin:10px auto;padding:10px; background-color:#e0e0e0;}
+.product{height:50px; background-color:white;position:relative;padding: 5px 5px 5px 60px;}
+.product img{position:absolute;left:5px;top:5px;width:50px;height:50px;}
+.product div.title{font-weight:bold;}
+.product div.pcontent{color:#666;margin-top: 3px;}
 </style>
 </head>
 <body>
@@ -24,7 +28,24 @@ $list  = $pdtattr_ctr->getDB()->search(array(), array('order'=>'last_edit_time D
 	<div class="ptitle"><?php echo $mbs_appenv->lang(array('attr', 'list'))?>
 		<a class="pure-button button-success shortcut-a" style="float: right;" href="<?php echo $mbs_appenv->toURL('attr_edit')?>">
 			+<?php echo $mbs_appenv->lang(array('add', 'attr'))?></a></div>
-	<div style="margin:10px;">
+	<?php 
+	if(isset($_REQUEST['product_id'])){
+		$pdt_ctr = CProductControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['product_id']));
+		$pdt = $pdt_ctr->get();
+		if(empty($pdt)){
+	?>
+	<p class=error>product not exists</p>
+	<?php }else{ ?>
+	<div class=product-block>
+		<div class=product>
+			<img src="<?php echo CProductControl::logourl($pdt['logo_path'], $mbs_appenv)?>" />
+			<div class=title><a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$_REQUEST['product_id']))?>"><?php echo $pdt['name']?></a></div>
+			<div class=pcontent><?php echo CStrTools::txt2html($pdt['abstract'])?></div>
+		</div>
+	</div>
+	<?php }} ?>
+	<div style="margin:15px 10px;">
 		<table class="pure-table pure-table-horizontal">
 			<thead><tr><td>#</td><td><?php echo $mbs_appenv->lang('content')?></td>
 				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'attr_edit', CModDef::P_ARGS, 'value_type', CModDef::G_TL)?></td>

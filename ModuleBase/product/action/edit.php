@@ -127,7 +127,7 @@ textarea{height:85px;}
 			</div>
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
-                <label><?php $mbs_appenv->lang(array('add', 'time'))?></label>
+                <label><?php echo $mbs_appenv->lang(array('add', 'time'))?></label>
                 <?php echo CStrTools::descTime($info['create_time'], $mbs_appenv)?>
             </div>
             <?php }?>
