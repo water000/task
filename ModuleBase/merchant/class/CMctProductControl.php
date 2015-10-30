@@ -61,6 +61,10 @@ class CMctProductControl extends CMultiRowControl{
 		}
 		return true;
 	}
+	
+	function alterTable($field_def){
+		
+	}
 }
 
 

@@ -41,6 +41,7 @@ function submitForm(btn){
 	btn.innerHTML+='...';
 	btn.disabled=true;
 	btn.form.submit();
+	return true;
 }
 
 function switchRow(objtb, offset, length, overclass)
@@ -63,7 +64,7 @@ function switchRow(objtb, offset, length, overclass)
 
 function btnlist(list){
 	if(!list || !list[0]) return;
-	var allow_multi_opt = list[0].name.indexOf("[]") != -1, prev_checked_btn = null;
+	var allow_multi_opt = null, prev_checked_btn = null;
 	var _fnchecked = function(elem){
 		var inph;
 		if(!allow_multi_opt){
@@ -88,16 +89,19 @@ function btnlist(list){
 		}
 	}
 	for(var i=0; i<list.length; i++){
-		if('1' == list[i].getAttribute("_checked")){
-			_fnchecked(list[i]);
-		}
-		bind(list[i], 'click', function(e){
-			if('1' == this.getAttribute("_checked")){
-				_fndechecked(this);
-			}else{
-				_fnchecked(this);
+		if(list[i].getAttribute("_checked") != null){
+			allow_multi_opt = null == allow_multi_opt ? list[i].name.indexOf("[]") != -1 : allow_multi_opt;
+			if('1' == list[i].getAttribute("_checked")){
+				_fnchecked(list[i]);
 			}
-		});
+			bind(list[i], 'click', function(e){
+				if('1' == this.getAttribute("_checked")){
+					_fndechecked(this);
+				}else{
+					_fnchecked(this);
+				}
+			});
+		}
 	}
 }
 

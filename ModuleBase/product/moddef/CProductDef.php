@@ -40,7 +40,7 @@ class CProductDef extends CModDef {
 				'product_attr_map' => '(
 					pid int unsigned not null,
 					aid int unsigned not null,
-					attr_required tinyint not null default 0, -- 0/1
+					required tinyint not null default 0, -- 0/1
 					relate_time int unsigned not null,
 					primary key(pid, aid)
 				)',
