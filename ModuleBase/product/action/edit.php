@@ -41,7 +41,7 @@ if(isset($_REQUEST['id'])){
 		}
 	}
 }
-else if(isset($_REQUEST['_timeline'])){
+else if(isset($_REQUEST['_timeline'])){	
 	$info_def = $info;
 	$info = array_intersect_key($_REQUEST,$info) + $info;
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));

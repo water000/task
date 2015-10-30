@@ -1,10 +1,14 @@
 <?php 
 
 mbs_import('', 'CProductControl', 'CProductAttrControl');
+
+define('HAS_PRODUCT', isset($_REQUEST['product_id']));
 	
 $pdtattr_ctr = CProductAttrControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance());
 $list  = $pdtattr_ctr->getDB()->search(array(), array('order'=>'last_edit_time DESC'));
+
+
 ?>
 <!doctype html>
 <html>
@@ -29,7 +33,7 @@ $list  = $pdtattr_ctr->getDB()->search(array(), array('order'=>'last_edit_time D
 		<a class="pure-button button-success shortcut-a" style="float: right;" href="<?php echo $mbs_appenv->toURL('attr_edit')?>">
 			+<?php echo $mbs_appenv->lang(array('add', 'attr'))?></a></div>
 	<?php 
-	if(isset($_REQUEST['product_id'])){
+	if(HAS_PRODUCT){
 		$pdt_ctr = CProductControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['product_id']));
 		$pdt = $pdt_ctr->get();
@@ -51,16 +55,21 @@ $list  = $pdtattr_ctr->getDB()->search(array(), array('order'=>'last_edit_time D
 				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'attr_edit', CModDef::P_ARGS, 'value_type', CModDef::G_TL)?></td>
 				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'attr_edit', CModDef::P_ARGS, 'unit_or_size', CModDef::G_TL)?></td>
 				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'attr_edit', CModDef::P_ARGS, 'value_opts', CModDef::G_TL)?></td>
-				<td><?php echo $mbs_appenv->lang(array('last', 'edit', 'time'))?></td></tr></thead>
+				<td><?php echo $mbs_appenv->lang(array('edit', 'time'))?></td>
+				<?php if(HAS_PRODUCT){?><td><?php echo $mbs_appenv->lang('relate')?></td><?php } ?>
+			</tr></thead>
 			<?php $i=0; foreach($list as $row){ ?>
 			<tr><td><?php echo ++$i;?></td>
 				<td><a href="<?php echo $mbs_appenv->toURL('attr_edit', '', array('id'=>$row['id']))?>">
 					<?php echo $row['name'], '/', $row['en_name']?></a>
-					(<?php echo CStrTools::cutstr($row['abstract'], 32, $mbs_appenv->item('charset'))?>)</td>
+					<?php echo HAS_PRODUCT ? '' : '(',CStrTools::cutstr($row['abstract'], 32, $mbs_appenv->item('charset')),')'?>
+				</td>
 				<td><?php echo CProductAttrControl::vtmap($row['value_type'])?></td>
 				<td><?php echo $row['unit_or_size']?></td>
 				<td><?php echo $row['value_opts'], $row['allow_multi']?'<span class=pure-button-checked>'.$mbs_appenv->lang('allow_multi').'</span>':''?></td>
-				<td><?php echo CStrTools::descTime($row['last_edit_time'], $mbs_appenv)?></td></tr>
+				<td><?php echo CStrTools::descTime($row['last_edit_time'], $mbs_appenv)?></td>
+				<?php if(HAS_PRODUCT){?><td><a class="pure-button pure-button-check"><?php echo $mbs_appenv->lang('relate')?></a></td><?php } ?>
+			</tr>
 			<?php } ?>
 		</table>
 	</div>

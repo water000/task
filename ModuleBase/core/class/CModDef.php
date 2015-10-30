@@ -472,7 +472,10 @@ abstract class CModDef {
  						continue;
  					}
  				}
-	 			
+
+ 				if($opts[CModDef::PA_TRI] && isset($_REQUEST[$name]) && is_string($_REQUEST[$name]))
+ 					$_REQUEST[$name] = trim($_REQUEST[$name]);
+ 				
  				if($opts[CModDef::PA_REQ]){
  					if('file' == strtolower($opts[self::PA_TYP])){
  						if(!isset($_FILES[$name]) || empty($_FILES[$name]['name'])){
@@ -485,17 +488,14 @@ abstract class CModDef {
  						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
  								(isset($opts[self::G_DC]) ? $opts[self::G_DC].'/' : '').$name);
  						continue;
+ 					}else{
+ 						if(!$opts[CModDef::PA_EMP] && 0==strlen($_REQUEST[$name])){
+ 							$error[$name] = sprintf($error_desc['arg_cannot_be_empty'], $name);
+ 							continue;
+ 						}
  					}
  				}
- 				
-				if($opts[CModDef::PA_TRI] && isset($_REQUEST[$name]) && is_string($_REQUEST[$name]))
-					$_REQUEST[$name] = trim($_REQUEST[$name]);
- 					
-				if($opts[self::PA_REQ] && !$opts[CModDef::PA_EMP] && empty($_REQUEST[$name])){
-					$error[$name] = sprintf($error_desc['arg_cannot_be_empty'], $name);
-					continue;
-				}
- 				
+ 				 				
 				if(!empty($opts[CModDef::PA_TYP]) 
 					&& strtolower($opts[CModDef::PA_TYP]) != 'file'
 					&& isset($_REQUEST[$name])

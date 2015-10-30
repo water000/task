@@ -74,7 +74,6 @@ class CProductControl extends CUniqRowControl {
 		return $hash.'/'.$name;
 	}
 	
-	
 	static function logourl($path, $appenv){
 		return $appenv->uploadURL('logo/'.$path);
 	}

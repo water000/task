@@ -15,8 +15,6 @@ if(isset($_REQUEST['id'])){
 		exit(0);
 	}
 	if(isset($_REQUEST['_timeline'])){
-		if(!isset($_REQUEST['allow_multi']))
-			$_REQUEST['allow_multi'] = 0;
 		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 		if(!isset($error['en_name']) && !CStrTools::isWord($info['en_name'])){
@@ -33,8 +31,6 @@ if(isset($_REQUEST['id'])){
 }
 else if(isset($_REQUEST['_timeline'])){
 	$info_def = $info;
-	if(!isset($_REQUEST['allow_multi']))
-		$_REQUEST['allow_multi'] = 0;
 	$info = array_intersect_key($_REQUEST,$info) + $info;
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 	if(!isset($error['en_name']) && !CStrTools::isWord($info['en_name'])){
@@ -66,7 +62,6 @@ aside {display:none;color:red;font-size:12px;}
 .form-fld-img{width:30px;height:30px;}
 input,textarea,select{width:300px;}
 textarea{height:85px;}
-.pure-button-checked{background-color: #F79F75;}
 </style>
 </head>
 <body>
@@ -116,7 +111,7 @@ textarea{height:85px;}
 			<div class="pure-control-group" id="IDD_MULTI_OPTS">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['value_opts'])?></label>
 				<input type="text" name="value_opts" value="<?php echo $info['value_opts']?>" />
-				<a class="pure-button" name="allow_multi" _value="1" <?php echo '1'==$info['allow_multi']?' _checked="1"':''?>>
+				<a class="pure-button pure-button-check" name="allow_multi" _value="1" <?php echo '1'==$info['allow_multi']?' _checked="1"':''?>>
 					<?php echo $mbs_appenv->lang('allow_multi')?></a>
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['value_opts'], $mbs_appenv)?></aside>
 			</div>
@@ -127,7 +122,7 @@ textarea{height:85px;}
 			</div>
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
-                <label><?php echo $mbs_appenv->lang(array('add', 'time'))?></label>
+                <label><?php $mbs_appenv->lang(array('add', 'time'))?></label>
                 <?php echo CStrTools::descTime($info['create_time'], $mbs_appenv)?>
             </div>
             <?php }?>
