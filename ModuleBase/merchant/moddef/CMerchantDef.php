@@ -22,7 +22,7 @@ class CMerchantDef extends CModDef {
 					primary key(id),
 					key(owner_id)
 				)',
-				'merchant_attachment' => '(
+				'merchant_(product)_attachment' => '(
 					id int unsigned not null auto_increment,
 					merchant_id int unsigned not null,
 					format tiny int not null, -- image, video, ...

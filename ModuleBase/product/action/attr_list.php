@@ -29,10 +29,14 @@ if(isset($_REQUEST['product_id'])){
 	
 	if(isset($_REQUEST['aid'])){
 		function _compare($a, $b){
-			return $a['aid'] == $b ? 0 : 1;
+			if(is_array($a))
+				return $a['aid'] == $b ? 0 : 1;
+			else 
+				return $b['aid'] == $a ? 0 : 1;
 		}
 		$new = array_udiff($_REQUEST['aid'], $attrmap_list, '_compare');
 		$old = array_udiff($attrmap_list, $_REQUEST['aid'], '_compare');
+		$set = array_uintersect($attrmap_list, $_REQUEST['aid'], '_compare');
 		foreach($new as $naid){
 			$pdtattrmap_ctr->add(array(
 				'pid'         => $pid, 
@@ -45,6 +49,13 @@ if(isset($_REQUEST['product_id'])){
 			$pdtattrmap_ctr->setSecondKey(intval($oaid));
 			$pdtattrmap_ctr->destroy();
 		}
+		foreach($set as $said){
+			if(array_search($_REQUEST['req_aid'], $said) !== false){
+				$pdtattrmap_ctr->setSecondKey(intval($said));
+				$pdtattrmap_ctr->set(array('required'=>false));
+			}
+		}
+		
 	}
 }
 else{

@@ -62,8 +62,31 @@ class CMctProductControl extends CMultiRowControl{
 		return true;
 	}
 	
-	function alterTable($field_def){
-		
+	/**
+	 * 
+	 * @param array $del, array(field1, field2, ...)
+	 * @param array $modify, array('field1'=>'sql def', ...),
+	 * @param unknown $change, array('field1'=>'sql def', ...)
+	 */
+	function alterTable($del, $modify, $change){
+		try {
+			foreach($del as $key){
+				$sql = sprintf('ALTER TABLE %s delete %s', $this->oDB->tbname(), $key);
+				$this->oDB->exec($sql);
+			}
+			
+			foreach($modify as $key => $def){
+				$sql = sprintf('ALTER TABLE %s MODIFY %s %s', $this->oDB->tbname(), $key, $def);
+				$this->oDB->exec($sql);
+			}
+			
+			foreach($change as $key => $def){
+				$sql = sprintf('ALTER TABLE %s CHANGE %s %s', $this->oDB->tbname(), $key, $def);
+				$this->oDB->exec($sql);
+			}
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
 }
 
