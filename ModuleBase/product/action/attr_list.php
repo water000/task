@@ -41,7 +41,7 @@ if(isset($_REQUEST['product_id'])){
 			$pdtattrmap_ctr->add(array(
 				'pid'         => $pid, 
 				'aid'         => intval($naid), 
-				'required'    => isset($_REQUEST['req_aid']) && array_search($_REQUEST['req_aid'], $naid)===false ? 0 : 1,
+				'required'    => !isset($_REQUEST['req_aid']) || array_search($_REQUEST['req_aid'], $naid)===false ? 0 : 1,
 				'relate_time' => time(),
 			));
 		}
@@ -49,13 +49,13 @@ if(isset($_REQUEST['product_id'])){
 			$pdtattrmap_ctr->setSecondKey(intval($oaid));
 			$pdtattrmap_ctr->destroy();
 		}
-		foreach($set as $said){
-			if(array_search($_REQUEST['req_aid'], $said) !== false){
-				$pdtattrmap_ctr->setSecondKey(intval($said));
-				$pdtattrmap_ctr->set(array('required'=>false));
+		foreach($set as $s){
+			$req = !isset($_REQUEST['req_aid']) || array_search($_REQUEST['req_aid'], $s['aid'])===false ? 0 : 1;
+			if($req != $s['required']){
+				$pdtattrmap_ctr->setSecondKey(intval($s['aid']));
+				$pdtattrmap_ctr->set(array('required'=>$req));
 			}
 		}
-		
 	}
 }
 else{
