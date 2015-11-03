@@ -54,6 +54,14 @@ class CProductAttrControl extends CUniqRowControl {
 	static function vtmap($key=null){
 		return is_null($key) ? self::$VT_MAP : self::$VT_MAP[$key];
 	}
+	
+	static function def2sql($def){
+		return sprintf('%s %s%s', 
+			$def['name'], 
+			self::vtmap($def['value_type']),
+			in_array(self::vtmap($def['value_type']), array('char', 'varchar')) ? '('.$def['unit_or_size'].')' : ''
+		);
+	}
 }
 
 ?>

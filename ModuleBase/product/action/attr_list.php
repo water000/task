@@ -27,34 +27,60 @@ if(isset($_REQUEST['product_id'])){
 		$attrmap[$row['aid']] = $row;
 	}
 	
-	if(isset($_REQUEST['aid'])){
-		function _compare($a, $b){
-			if(is_array($a))
-				return $a['aid'] == $b ? 0 : 1;
-			else 
-				return $b['aid'] == $a ? 0 : 1;
+	if(isset($_REQUEST['aid']) && is_array($_REQUEST['aid']) ){
+		$listmap = array();
+		foreach($list as $lrow){
+			$listmap[$lrow['id']] = $lrow;
 		}
-		$new = array_udiff($_REQUEST['aid'], $attrmap_list, '_compare');
-		$old = array_udiff($attrmap_list, $_REQUEST['aid'], '_compare');
-		$set = array_uintersect($attrmap_list, $_REQUEST['aid'], '_compare');
-		foreach($new as $naid){
-			$pdtattrmap_ctr->add(array(
-				'pid'         => $pid, 
-				'aid'         => intval($naid), 
-				'required'    => !isset($_REQUEST['req_aid']) || array_search($_REQUEST['req_aid'], $naid)===false ? 0 : 1,
-				'relate_time' => time(),
-			));
-		}
-		foreach($old as $oaid){
-			$pdtattrmap_ctr->setSecondKey(intval($oaid));
-			$pdtattrmap_ctr->destroy();
-		}
-		foreach($set as $s){
-			$req = !isset($_REQUEST['req_aid']) || array_search($_REQUEST['req_aid'], $s['aid'])===false ? 0 : 1;
-			if($req != $s['required']){
-				$pdtattrmap_ctr->setSecondKey(intval($s['aid']));
-				$pdtattrmap_ctr->set(array('required'=>$req));
+		$_REQUEST['aid'] = array_intersect(array_keys($listmap), $_REQUEST['aid']);
+		if(!empty($_REQUEST['aid'])){
+			mbs_import('merchant', 'CMctProdcutControl', 'CMctProductAttachmentControl');
+			$mct_pdt = CMctProductControl::getInstance($mbs_appenv, CDbPool::getInstance(), 
+				CMemcachedPool::getInstance(), $pdt['name']);
+			$mct_pdt_atch = CMctProductAttachmentControl::getInstance($mbs_appenv, CDbPool::getInstance(), 
+				CMemcachedPool::getInstance(), $pdt['name']);
+			if(empty($attrmap_list)){
+				$field_def = array();
+				foreach($_REQUEST['aid'] as $aid){
+					$field_def[] = CProductAttrControl::def2sql($listmap[$aid]);
+				}
+				if(!empty($field_def)){
+					$mct_pdt->createTable($field_def);
+					$mct_pdt_atch->createTable($field_def);
+				}
 			}
+			function _compare($a, $b){
+				if(is_array($a))
+					return $a['aid'] == $b ? 0 : 1;
+				else 
+					return $b['aid'] == $a ? 0 : 1;
+			}
+			$alter_add = $alter_del = array();
+			$new = array_udiff($_REQUEST['aid'], $attrmap_list, '_compare');
+			$old = array_udiff($attrmap_list, $_REQUEST['aid'], '_compare');
+			$set = array_uintersect($attrmap_list, $_REQUEST['aid'], '_compare');
+			foreach($new as $naid){
+				$pdtattrmap_ctr->add(array(
+					'pid'         => $pid, 
+					'aid'         => intval($naid), 
+					'required'    => !isset($_REQUEST['req_aid']) || array_search($_REQUEST['req_aid'], $naid)===false ? 0 : 1,
+					'relate_time' => time(),
+				));
+				$alter_add[] = CProductAttrControl::def2sql($listmap[$naid]);
+			}
+			foreach($old as $oaid){
+				$pdtattrmap_ctr->setSecondKey(intval($oaid));
+				$pdtattrmap_ctr->destroy();
+				$alter_del[] = $listmap[$oaid]['name'];
+			}
+			foreach($set as $s){
+				$req = !isset($_REQUEST['req_aid']) || array_search($_REQUEST['req_aid'], $s['aid'])===false ? 0 : 1;
+				if($req != $s['required']){
+					$pdtattrmap_ctr->setSecondKey(intval($s['aid']));
+					$pdtattrmap_ctr->set(array('required'=>$req));
+				}
+			}
+			$mct_pdt->alterTable($alter_add, $alter_del, array(), array());
 		}
 	}
 }

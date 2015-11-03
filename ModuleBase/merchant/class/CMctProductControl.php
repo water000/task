@@ -51,7 +51,6 @@ class CMctProductControl extends CMultiRowControl{
 			primary key(id),
 			key(merchant_id)
 		)';
-		
 		$sql = sprintf($sql, $this->oDB->tbname(), 
 				empty($field_def) ? '' : implode(',', $field_def).',');
 		try {
@@ -68,18 +67,23 @@ class CMctProductControl extends CMultiRowControl{
 	 * @param array $modify, array('field1'=>'sql def', ...),
 	 * @param unknown $change, array('field1'=>'sql def', ...)
 	 */
-	function alterTable($del, $modify, $change){
+	function alterTable($add, $del, $modify, $change){
 		try {
+			foreach($add as $key => $def){
+				$sql = sprintf('ALTER TABLE %s ADD %s %s', $this->oDB->tbname(), $key, $def);
+				$this->oDB->exec($sql);
+			}
+				
 			foreach($del as $key){
 				$sql = sprintf('ALTER TABLE %s delete %s', $this->oDB->tbname(), $key);
 				$this->oDB->exec($sql);
 			}
-			
+				
 			foreach($modify as $key => $def){
 				$sql = sprintf('ALTER TABLE %s MODIFY %s %s', $this->oDB->tbname(), $key, $def);
 				$this->oDB->exec($sql);
 			}
-			
+				
 			foreach($change as $key => $def){
 				$sql = sprintf('ALTER TABLE %s CHANGE %s %s', $this->oDB->tbname(), $key, $def);
 				$this->oDB->exec($sql);
