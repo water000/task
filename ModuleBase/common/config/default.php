@@ -43,7 +43,11 @@ $default = array(
 	
 	'appkeys'    => array(
 		'1.0' => 'v1.0863c6bf0bc0d26257db4edcfdad309c1'
-	)
+	),
+	
+	'events'     => array(
+		'product.attr_list.on_map_changed' => array('merchant.CMctEventListener'),
+	),
 );
 
 ?>
