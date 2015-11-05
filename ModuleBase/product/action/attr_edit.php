@@ -9,7 +9,7 @@ if(isset($_REQUEST['id'])){
 	
 	$pdtattr_ctr = CProductAttrControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['id']));
-	$info = $pdtattr_ctr->get();
+	$info_def = $info = $pdtattr_ctr->get();
 	if(empty($info)){
 		$mbs_appenv->echoex('Invalid param', 'PRODUCT_EDIT_INVALID_PARAM');
 		exit(0);
@@ -25,6 +25,10 @@ if(isset($_REQUEST['id'])){
 			$ret = $pdtattr_ctr->set($info);
 			if(empty($ret)){
 				$error[] = $pdtattr_ctr->error();
+			}else{
+				$ev_args = array('new'=>$info, 'src_name'=>$info_def['name']);
+				mbs_import('common', 'CEvent');
+				CEvent::trigger('attr_changed', $ev_args, $mbs_appenv);
 			}
 		}
 	}
