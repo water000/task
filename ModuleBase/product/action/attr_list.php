@@ -81,6 +81,16 @@ if(isset($_REQUEST['product_id'])){
 				}
 			}
 			$mct_pdt->alterTable($alter_add, $alter_del, array(), array());
+			
+			$ev_args = array(
+				'product' => $pdt,
+				'req_aid' => $_REQUEST['aid'],
+				'attrmap' => $listmap,
+				'pdtattr' => $attrmap,
+				'new'     => $new,
+				'old'     => $old, 
+				'set'     => $set,
+			);
 		}
 	}
 }
