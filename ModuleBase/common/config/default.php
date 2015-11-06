@@ -45,10 +45,11 @@ $default = array(
 		'1.0' => 'v1.0863c6bf0bc0d26257db4edcfdad309c1'
 	),
 	
-	'event'      => array(
+	'events'     => array(
 		//'mod.action.event' => array(mod.CModEvent, ...), ...
 		
 		'product.attr_list.map_changed' => array('merchant.CMctEvent'),
+		'product.attr_edit.attr_changed' => array('merchant.CMctEvent'),
 	),
 );
 

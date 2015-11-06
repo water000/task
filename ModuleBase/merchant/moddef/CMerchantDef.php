@@ -13,12 +13,13 @@ class CMerchantDef extends CModDef {
 				'merchant_info' => '(
 					id int unsigned not null auto_increment,
 					owner_id int unsigned not null,
-					title varchar(32) not null,
+					name varchar(32) not null,
 					abstract varchar(128),
 					phone varchar(16) not null,
 					telephone varchar(16) not null,
 					address varchar(32) not null,
 					status tinyint,
+					lat_lng varchar(64), -- explode by backspace
 					primary key(id),
 					key(owner_id)
 				)',
@@ -37,6 +38,23 @@ class CMerchantDef extends CModDef {
 				
 			),
 			self::PAGES => array(
+				'list'     => array(
+					self::P_TLE  => '商家列表',
+					self::G_DC   => '商家的列表，显示商家的信息',
+					self::P_MGR  => true,
+					self::P_ARGS => array(
+					),
+				),
+				'edit'     => array(
+					self::P_TLE  => '商家编辑',
+					self::G_DC   => '商家的编辑、添加，同时关联相应的属性',
+					//self::P_MGR  => false,
+					self::P_ARGS => array(
+						'name'       => array(self::PA_REQ=>1, self::G_TL=>'中文名称', self::PA_RNG=>'2, 16'),
+						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'概要', self::PA_RNG=>'16, 64'),
+						'logo_path'  => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'logo图片'),
+					),
+				),
 			),
 		);
 	}
