@@ -46,10 +46,7 @@ $default = array(
 	),
 	
 	'events'     => array(
-		//'mod.action.event' => array(mod.CModEvent, ...), ...
-		
 		'product.attr_list.map_changed' => array('merchant.CMctEvent'),
-		'product.attr_edit.attr_changed' => array('merchant.CMctEvent'),
 	),
 );
 

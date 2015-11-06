@@ -34,6 +34,7 @@ class CMultiRowControl extends CUniqRowControl
 	{
 		parent::__construct($db, $cache, $primaryKey);
 		$this->setSecondKey($secondKey);
+		$this->setSecondKeyName($db->getSecondKeyName());
 		$this->setPageId(1);
 	}
 	

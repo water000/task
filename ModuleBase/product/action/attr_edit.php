@@ -26,7 +26,7 @@ if(isset($_REQUEST['id'])){
 			if(empty($ret)){
 				$error[] = $pdtattr_ctr->error();
 			}else{
-				$ev_args = array('new'=>$info, 'src_name'=>$info_def['name']);
+				$ev_args = array('new'=>$info, 'src_name'=>$info_def['en_name']);
 				mbs_import('common', 'CEvent');
 				CEvent::trigger('attr_changed', $ev_args, $mbs_appenv);
 			}
@@ -115,7 +115,7 @@ textarea{height:85px;}
 			<div class="pure-control-group" id="IDD_MULTI_OPTS">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['value_opts'])?></label>
 				<input type="text" name="value_opts" value="<?php echo $info['value_opts']?>" />
-				<a class="pure-button pure-button-check" name="allow_multi" _value="1" <?php echo '1'==$info['allow_multi']?' _checked="1"':''?>>
+				<a class="pure-button pure-button-check" name="allow_multi" _value="1" _checked="<?php echo '1'==$info['allow_multi']?'1':'0'?>">
 					<?php echo $mbs_appenv->lang('allow_multi')?></a>
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['value_opts'], $mbs_appenv)?></aside>
 			</div>

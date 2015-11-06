@@ -57,7 +57,7 @@ class CProductAttrControl extends CUniqRowControl {
 	
 	static function def2sql($def){
 		return sprintf('%s %s%s', 
-			$def['name'], 
+			$def['en_name'], 
 			self::vtmap($def['value_type']),
 			in_array(self::vtmap($def['value_type']), array('char', 'varchar')) ? '('.$def['unit_or_size'].')' : ''
 		);

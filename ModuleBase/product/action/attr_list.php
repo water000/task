@@ -4,7 +4,7 @@ mbs_import('', 'CProductControl', 'CProductAttrControl');
 	
 $pdtattr_ctr = CProductAttrControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance());
-$list  = $pdtattr_ctr->getDB()->search(array(), array('order'=>'last_edit_time DESC'));
+$attr_list  = $pdtattr_ctr->getDB()->search(array(), array('order'=>'last_edit_time DESC'));
 
 if(isset($_REQUEST['product_id'])){
 	$pid = intval($_REQUEST['product_id']);
@@ -21,66 +21,72 @@ if(isset($_REQUEST['product_id'])){
 	mbs_import('', 'CProductAttrMapControl');
 	$pdtattrmap_ctr = CProductAttrMapControl::getInstance($mbs_appenv,
 		CDbPool::getInstance(), CMemcachedPool::getInstance(), $pid);
-	$attrmap_list = $pdtattrmap_ctr->get();
-	$attrmap = array();
-	foreach($attrmap_list as $row){
-		$attrmap[$row['aid']] = $row;
+	$pdtattrmap_list = $pdtattrmap_ctr->get();
+	$pdtattrmap = array();
+	foreach($pdtattrmap_list as $row){
+		$pdtattrmap[$row['aid']] = $row;
 	}
 	
-	if(isset($_REQUEST['aid']) && is_array($_REQUEST['aid']) ){
-		$listmap = array();
-		foreach($list as $lrow){
-			$listmap[$lrow['id']] = $lrow;
+	if(isset($_REQUEST['submit_relate'])){
+		$_REQUEST['aid'] = isset($_REQUEST['aid']) ? $_REQUEST['aid'] : array();
+		
+		$attr_map = array();
+		foreach($attr_list as $lrow){
+			$attr_map[$lrow['id']] = $lrow;
 		}
-		$_REQUEST['aid'] = array_intersect(array_keys($listmap), $_REQUEST['aid']);
-		if(!empty($_REQUEST['aid'])){
+		$attr_list = $attr_map;
+		
+		$_REQUEST['aid'] = array_intersect(array_keys($attr_map), $_REQUEST['aid']);
 			
-			function _compare($a, $b){
-				if(is_array($a))
-					return $a['aid'] == $b ? 0 : 1;
-				else 
-					return $b['aid'] == $a ? 0 : 1;
-			}
-			$new = array_udiff($_REQUEST['aid'], $attrmap_list, '_compare');
-			$old = array_udiff($attrmap_list, $_REQUEST['aid'], '_compare');
-			$set = array_uintersect($attrmap_list, $_REQUEST['aid'], '_compare');
-			foreach($new as $naid){
-				$pdtattrmap_ctr->add(array(
-					'pid'         => $pid, 
-					'aid'         => intval($naid), 
-					'required'    => !isset($_REQUEST['req_aid']) || array_search($_REQUEST['req_aid'], $naid)===false ? 0 : 1,
-					'relate_time' => time(),
-				));
-			}
-			foreach($old as $oaid){
-				$pdtattrmap_ctr->setSecondKey(intval($oaid));
-				$pdtattrmap_ctr->destroy();
-			}
-			foreach($set as $s){
-				$req = !isset($_REQUEST['req_aid']) || array_search($_REQUEST['req_aid'], $s['aid'])===false ? 0 : 1;
-				if($req != $s['required']){
-					$pdtattrmap_ctr->setSecondKey(intval($s['aid']));
-					$pdtattrmap_ctr->set(array('required'=>$req));
-				}
-			}
-			
-			mbs_import('common', 'CEvent');
-			$ev_args = array(
-				'product' => $pdt,
-				'req_aid' => $_REQUEST['aid'],
-				'attrmap' => $listmap,
-				'pdtattr' => $attrmap,
-				'new'     => $new,
-				'old'     => $old, 
-				'set'     => $set,
+		function _compare($a, $b){
+			return $a == $b ? 0 : ( $a > $b ? 1 : -1);
+		}
+		$exists_aid = array_keys($pdtattrmap);
+		$new = array_udiff($_REQUEST['aid'], $exists_aid, '_compare');
+		$old = array_udiff($exists_aid, $_REQUEST['aid'], '_compare');
+		$set = array_uintersect($exists_aid, $_REQUEST['aid'], '_compare');
+		foreach($new as $naid){
+			$req = !isset($_REQUEST['req_aid']) || array_search($naid, $_REQUEST['req_aid'])===false ? 0 : 1;
+			$pdtattrmap[$naid] = array(
+				'pid'         => $pid, 
+				'aid'         => intval($naid), 
+				'required'    => $req,
+				'relate_time' => time(),
 			);
-			CEvent::trigger('map_changed', $ev_args, $mbs_appenv);
+			$pdtattrmap_ctr->addNode($pdtattrmap[$naid]);
 		}
+		foreach($old as $oaid){
+			$pdtattrmap_ctr->setSecondKey(intval($oaid));
+			$pdtattrmap_ctr->delNode();
+			unset($pdtattrmap[$oaid]);
+		}
+		foreach($set as $said){
+			$req = !isset($_REQUEST['req_aid']) || array_search($said, $_REQUEST['req_aid'])===false ? 0 : 1;
+			if($req != $pdtattrmap[$said]['required']){
+				$pdtattrmap_ctr->setSecondKey(intval($said));
+				$pdtattrmap_ctr->setNode(array('required'=>$req));
+				$pdtattrmap[$said]['required'] = $req;
+			}
+		}
+		
+		mbs_import('common', 'CEvent');
+		$ev_args = array(
+			'product' => $pdt,
+			'req_aid' => $_REQUEST['aid'],
+			'attrmap' => $attr_map,
+			'pdtattr' => $pdtattrmap,
+			'new'     => $new,
+			'old'     => $old, 
+			'set'     => $set,
+		);
+		CEvent::trigger('map_changed', $ev_args, $mbs_appenv);
+		
 	}
 }
 else{
 	define('HAS_PRODUCT', false);
 }
+
 ?>
 <!doctype html>
 <html>
@@ -115,6 +121,7 @@ else{
 		</div>
 	</div>
 	<form action="" method="post" name=form_relate>
+	<input type="hidden" name="submit_relate" />
 	<?php } ?>
 	<div style="margin:15px 10px;">
 		<table class="pure-table pure-table-horizontal">
@@ -125,7 +132,7 @@ else{
 				<td><?php echo $mbs_appenv->lang(array('edit', 'time'))?></td>
 				<?php if(HAS_PRODUCT){?><td><?php echo $mbs_appenv->lang('relate')?></td><?php } ?>
 			</tr></thead>
-			<?php $i=0; foreach($list as $row){ ?>
+			<?php $i=0; foreach($attr_list as $row){ ?>
 			<tr><td><?php echo ++$i;?></td>
 				<td><a href="<?php echo $mbs_appenv->toURL('attr_edit', '', array('id'=>$row['id']))?>">
 					<?php echo $row['name'], '/', $row['en_name']?></a>
@@ -137,9 +144,9 @@ else{
 				<td><?php echo CStrTools::descTime($row['last_edit_time'], $mbs_appenv)?></td>
 				<?php if(HAS_PRODUCT){?>
 				<td><a class="pure-button pure-button-check" name="aid[]" _value="<?php echo $row['id']?>" 
-						_checked="<?php echo isset($attrmap[$row['id']])?'1':'0'?>" ><?php echo $mbs_appenv->lang('relate')?></a>
+						_checked="<?php echo isset($pdtattrmap[$row['id']])?'1':'0'?>" ><?php echo $mbs_appenv->lang('relate')?></a>
 					<a class="pure-button pure-button-check" name="req_aid[]" 
-						_checked="<?php echo isset($attrmap[$row['id']]) && $attrmap[$row['id']]['required'] ?'1':'0'?>" 
+						_checked="<?php echo isset($pdtattrmap[$row['id']]) && $pdtattrmap[$row['id']]['required'] ?'1':'0'?>" 
 						_value="<?php echo $row['id']?>"><?php echo $mbs_appenv->lang('required')?></a></td>
 				<?php } ?>
 			</tr>
