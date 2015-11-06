@@ -23,9 +23,9 @@ class CMctProductAttachmentControl extends CMultiRowControl{
 		if(!isset(self::$product_ins[$product_name])){
 			try {
 				$memconn = $mempool->getConnection();
-				self::$product_ins[$product_name] = new CMctProductControl(
+				self::$product_ins[$product_name] = new CMctProductAttachmentControl(
 						new CMultiRowOfTable($dbpool->getDefaultConnection(),
-								self::formatTable($product_name), 'id', $primarykey),
+								self::formatTable($product_name), 'id', $primarykey, 'mp_id'),
 						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CMctProductAttachmentControl') : null,
 						$primarykey
 				);
@@ -41,7 +41,7 @@ class CMctProductAttachmentControl extends CMultiRowControl{
 		$sql = 'CREATE TABLE IF NOT EXISTS %s(
 					id int unsigned not null auto_increment,
 					mp_id int unsigned not null,
-					format tiny int not null, -- image, video, ...
+					format tinyint not null, -- image, video, ...
 					name varchar(16) not null,
 					path varchar(128) not null, -- only path, not include domain
 					abstract varchar(32) not null,

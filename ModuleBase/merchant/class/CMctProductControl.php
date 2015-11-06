@@ -25,7 +25,7 @@ class CMctProductControl extends CMultiRowControl{
 				$memconn = $mempool->getConnection();
 				self::$product_ins[$product_name] = new CMctProductControl(
 						new CMultiRowOfTable($dbpool->getDefaultConnection(),
-								self::formatTable($product_name), 'id', $primarykey),
+								self::formatTable($product_name), 'id', $primarykey, 'merchant_id'),
 						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CMctProductControl') : null,
 						$primarykey
 				);
@@ -71,22 +71,22 @@ class CMctProductControl extends CMultiRowControl{
 		try {
 			foreach($add as $key => $def){
 				$sql = sprintf('ALTER TABLE %s ADD %s %s', $this->oDB->tbname(), $key, $def);
-				$this->oDB->exec($sql);
+				$this->oDB->getConnection()->exec($sql);
 			}
 				
 			foreach($del as $key){
-				$sql = sprintf('ALTER TABLE %s delete %s', $this->oDB->tbname(), $key);
-				$this->oDB->exec($sql);
+				$sql = sprintf('ALTER TABLE %s DROP %s', $this->oDB->tbname(), $key);
+				$this->oDB->getConnection()->exec($sql);
 			}
 				
 			foreach($modify as $key => $def){
 				$sql = sprintf('ALTER TABLE %s MODIFY %s %s', $this->oDB->tbname(), $key, $def);
-				$this->oDB->exec($sql);
+				$this->oDB->getConnection()->exec($sql);
 			}
 				
 			foreach($change as $key => $def){
 				$sql = sprintf('ALTER TABLE %s CHANGE %s %s', $this->oDB->tbname(), $key, $def);
-				$this->oDB->exec($sql);
+				$this->oDB->getConnection()->exec($sql);
 			}
 		} catch (Exception $e) {
 			throw $e;

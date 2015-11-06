@@ -27,6 +27,10 @@ class CMultiRowOfTable extends CUniqRowOfTable
 	{
 		return $this->secondKey;
 	}
+	function getSecondKeyName()
+	{
+		return $this->skeyname;
+	}
 	function setPageId($pid=1)
 	{
 		$this->pageId = $pid;
