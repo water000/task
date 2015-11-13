@@ -131,6 +131,27 @@ class CStrTools {
 		}
 		echo isset($def[CModDef::G_DC])?$def[CModDef::G_DC]:'';
 	}
+	
+	static function bytechange($v){
+		$unit = $v[strlen($v) -1];
+		switch ($unit){
+			case 'm':
+			case 'M':
+				return intval($v) << 20;
+				break;
+			case 'g':
+			case 'G':
+				return intval($v) << 30;
+				break;
+			case 't':
+			case 'T':
+				return intval($v) << 40;
+				break;
+			default:
+				return $v;
+				break;
+		}
+	}
 }
 
 ?>

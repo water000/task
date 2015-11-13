@@ -14,8 +14,6 @@ $list  = $pdt_ctr->getDB()->search(array(), array('order'=>'last_edit_time DESC'
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet"> 
 <style type="text/css">
 .logo-img{height:20px;vertical-align: middle;}
-.pure-table-horizontal{border-left:0;border-right:0;}
-.row-onmouseover{background-color:#E3EEFB;}
 </style>
 </head>
 <body>

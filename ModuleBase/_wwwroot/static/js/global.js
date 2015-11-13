@@ -1,7 +1,7 @@
 
 function bind(obj, ev, fn){
 	if(obj.attachEvent)
-		obj.attachEvent('on'+ev, fn);
+		obj.attachEvent('on'+ev, function(){fn.call(obj)});
 	else if(obj.addEventListener)
 		obj.addEventListener(ev, fn, false);
 	else
@@ -28,7 +28,8 @@ function formSubmitErr(form, inputErr){
 			
 			errctl = document.createElement("span");
 			errctl.innerHTML = inputErr[k];
-			errctl.style.cssText = "color:red;font-size:12px;";
+			errctl.className = "pure-form-message-inline";
+			errctl.style.cssText = "color:red;";
 			elems[k].parentNode.insertBefore(errctl, as);
 
 			fnclk(elems[k], errctl, as);

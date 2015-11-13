@@ -95,10 +95,8 @@ else{
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet"> 
 <style type="text/css">
-.pure-table-horizontal{border-left:0;border-right:0;}
-.row-onmouseover{background-color:#E3EEFB;}
-.product-block{width:50%;margin:10px auto;padding:10px; background-color:#e0e0e0;}
-.product{height:50px; background-color:white;position:relative;padding: 5px 5px 5px 60px;}
+.product-block{width:50%;margin:10px auto;padding:10px;}
+.product{height:50px; background-color:white;position:relative;padding: 5px 5px 5px 60px;border:1px solid #ddd;}
 .product img{position:absolute;left:5px;top:5px;width:50px;height:50px;}
 .product div.title{font-weight:bold;}
 .product div.pcontent{color:#666;margin-top: 3px;}

@@ -40,8 +40,9 @@ ul li{list-style-type:none;}
 .ptitle{border-bottom: 1px solid #eee;padding: 20px 10px;margin-bottom:20px;font-size:20px;color:#4078c0;}
 .required{color:red;}
 .shortcut-a{text-decoration:none;font-size:12px;}
-.pure-button-check{padding:.5em .5em;}
 .pure-button-checked{background-color: #F79F75;}
+.pure-table-horizontal{border-left:0;border-right:0;}
+.row-onmouseover{background-color:#E3EEFB;}
 
 /*
  * -- PURE MENU STYLES --

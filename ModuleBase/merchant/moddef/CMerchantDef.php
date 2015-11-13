@@ -13,12 +13,16 @@ class CMerchantDef extends CModDef {
 				'merchant_info' => '(
 					id int unsigned not null auto_increment,
 					owner_id int unsigned not null,
-					title varchar(32) not null,
-					abstract varchar(128),
-					phone varchar(16) not null,
-					telephone varchar(16) not null,
-					address varchar(32) not null,
+					lng_lat varchar(32), -- split by comma,
+					area varchar(16), -- province-city-area
+					address varchar(32) not null, -- country-street-...
+					post_code varchar(9),
+					name varchar(32) not null,
+					abstract varchar(256),
+					telephone varchar(32) not null,
 					status tinyint,
+					create_time int unsigned,
+					edit_time int unsigned,
 					primary key(id),
 					key(owner_id)
 				)',
@@ -27,8 +31,9 @@ class CMerchantDef extends CModDef {
 					merchant_id int unsigned not null,
 					format tiny int not null, -- image, video, ...
 					name varchar(16) not null,
-					path varchar(128) not null, -- only path, not include domain
+					path varchar(64) not null, -- only path, not include domain
 					abstract varchar(32) not null,
+					create_time int unsigned,
 					primary key(id),
 					key(merchant_id)
 				)',
@@ -37,6 +42,18 @@ class CMerchantDef extends CModDef {
 				
 			),
 			self::PAGES => array(
+				'reg'     => array(
+					self::P_TLE  => '注册',
+					self::G_DC   => '注册商家需要填写相应信息，等待审核通过',
+					//self::P_MGR  => false,
+					self::P_ARGS => array(
+						'lng_lat'    => array(self::PA_REQ=>1, self::G_TL=>'位置'),
+						'name'       => array(self::PA_REQ=>1, self::G_TL=>'名称', self::PA_RNG=>'2, 16'),
+						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'简介', self::PA_RNG=>'16, 256'),
+						'logo_path'  => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'logo图片'),
+						'baike_link' => array(self::G_TL=>'百科链接', self::G_DC=>'百科的站外链接，例如百度百科，维基百科'),
+					),
+				),
 			),
 		);
 	}

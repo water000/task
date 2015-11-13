@@ -478,10 +478,18 @@ abstract class CModDef {
  				
  				if($opts[CModDef::PA_REQ]){
  					if('file' == strtolower($opts[self::PA_TYP])){
- 						if(!isset($_FILES[$name]) || empty($_FILES[$name]['name'])){
+ 						if(!isset($_FILES[$name]) ){
 	 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
 	 								(isset($opts[self::G_DC]) ? $opts[self::G_DC].'/-' : '').$name);
 	 						continue;
+ 						}else if(isset($_FILES[$name]['error'][0])){
+ 							if($_FILES[$name]['error'][0] != UPLOAD_ERR_OK){
+ 								$error[$name] = self::$appenv->lang($_FILES[$name]['error'][0]);
+ 							}
+ 						}else {
+ 							if($_FILES[$name]['error'] != UPLOAD_ERR_OK){
+ 								$error[$name] = self::$appenv->lang($_FILES[$name]['error']);
+ 							}
  						}
  					}
  					else if(!isset($_REQUEST[$name])){
