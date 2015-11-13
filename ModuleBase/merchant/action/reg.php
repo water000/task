@@ -104,10 +104,14 @@ textarea{height:85px;}
 			<?php }else if(empty($error)){?>
 			<div class=success><?php echo $mbs_appenv->lang('operation_success')?></div> 
 			<?php }} ?>
-						
+			
 			<div class="pure-control-group">
 				<label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['lng_lat'])?></label>
 				<div id="IDD_MAP" class="map-ctr" onmouseover="this.className += ' map-ctr-bigger'"></div>
+			</div>
+			<div class="pure-control-group">
+				<label></label>
+				<span id=IDS_ADDR></span>
 			</div>
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['name'])?></label>
@@ -147,8 +151,11 @@ formSubmitErr(document._form, <?php echo json_encode($error)?>);
 <?php }?>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S8mKcAyeY2sq2aH7SmsGSHep"></script>
 <script type="text/javascript">
-function _on_submit(pt, rs, address){
-	alert(address + pt + rs);
+function _on_submit(pt, rs, address, map){
+	var addComp = rs.addressComponents;
+	document.getElementById("IDD_MAP").className = "map-ctr";
+	document.getElementById("IDS_ADDR").innerHTML = addComp.province +  
+		addComp.city + addComp.district+address;
 }
 (function(fn_submit){
 	var map = new BMap.Map("IDD_MAP");
@@ -160,15 +167,19 @@ function _on_submit(pt, rs, address){
 	map.addEventListener("click", function(e){        
 		var pt = e.point;
 		geoc.getLocation(pt, function(rs){
+			var _win = document.createElement("div");
 			var addComp = rs.addressComponents;
-			var sContent =
+			_win.innerHTML =
 				"<div style='margin:0 0 5px 0;padding:0.2em 0;font-weight:bold;'><?php echo $mbs_appenv->lang('complete_address')?></div>" + 
-				"<p style='margin:0 0 5px 0;line-height:1.5;font-size:13px;m'>"+addComp.province + "-" + addComp.city + "-" +addComp.district+"</p>" +
+				"<p style='margin:0 0 5px 0;line-height:1.5;font-size:13px;m'>"+addComp.province +  addComp.city + addComp.district+"</p>" +
 				"<div style='margin:0 0 5px 0;'><input type=text style='width:250px;' name=address value='"+addComp.street+ addComp.streetNumber+"' />"+
-				"<a class='pure-button' style='margin:0 0 0 5px;' onclick='fn_submit(pt, rs, this.previousSibling.value)'><?php echo $mbs_appenv->lang('confirm')?></a></div>"+ 
-				"</div>";
-			var infoWindow = new BMap.InfoWindow(sContent);
+				"<a class='pure-button' style='margin:0 0 0 5px;'><?php echo $mbs_appenv->lang('confirm')?></a></div>";
+			var infoWindow = new BMap.InfoWindow(_win);
 			map.openInfoWindow(infoWindow,pt);
+			_win.getElementsByTagName("a")[0].onclick = function(e){
+				fn_submit(pt, rs, this.previousSibling.value, map);
+				infoWindow.close();
+			}
 		});
 	});
 })(_on_submit);

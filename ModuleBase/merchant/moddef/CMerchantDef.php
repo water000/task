@@ -13,7 +13,6 @@ class CMerchantDef extends CModDef {
 				'merchant_info' => '(
 					id int unsigned not null auto_increment,
 					owner_id int unsigned not null,
-<<<<<<< HEAD
 					lng_lat varchar(32), -- split by comma,
 					area varchar(16), -- province-city-area
 					address varchar(32) not null, -- country-street-...
@@ -24,15 +23,6 @@ class CMerchantDef extends CModDef {
 					status tinyint,
 					create_time int unsigned,
 					edit_time int unsigned,
-=======
-					name varchar(32) not null,
-					abstract varchar(128),
-					phone varchar(16) not null,
-					telephone varchar(16) not null,
-					address varchar(32) not null,
-					status tinyint,
-					lat_lng varchar(64), -- explode by backspace
->>>>>>> 0a69dabc27e4703d5f856a25bb3e53e61a6ed071
 					primary key(id),
 					key(owner_id)
 				)',
