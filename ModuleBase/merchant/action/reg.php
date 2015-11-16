@@ -87,7 +87,7 @@ aside {display:none;color:red;font-size:12px;}
 input,textarea{width:300px;}
 textarea{height:85px;}
 .block{background-color:white;margin:10px 12px 0;}
-.map-ctr{display:inline-block;width:300px; height:160px;}
+.map-ctr{display:inline-block;width:400px; height:220px;}
 .map-ctr-bigger{width:500px; height:300px;}
 </style>
 </head>
@@ -110,11 +110,7 @@ textarea{height:85px;}
 			
 			<div class="pure-control-group">
 				<label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['lng_lat'])?></label>
-				<div id="IDD_MAP" class="map-ctr" onmouseover="this.className += ' map-ctr-bigger'" onmouseout="this.className='map-ctr'"></div>
-			</div>
-			<div class="pure-control-group">
-				<label></label>
-				<span id=IDS_ADDR></span>
+				<div id="IDD_MAP" class="map-ctr"></div>
 			</div>
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['name'])?></label>
@@ -154,49 +150,71 @@ formSubmitErr(document._form, <?php echo json_encode($error)?>);
 <?php }?>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S8mKcAyeY2sq2aH7SmsGSHep"></script>
 <script type="text/javascript">
-function _on_submit(pt, rs, address, map){
-	var addComp = rs.addressComponents;
-	document.getElementById("IDD_MAP").className = "map-ctr";
-	document._form.elements["area"] = document.getElementById("IDS_ADDR").innerHTML = addComp.province + '/'
-		addComp.city + '/' + addComp.district+address;
-	document._form.elements["address"] = address;
-	document._form.elements["lng_lat"] = pt.lng + '-' + pt.lat;
+function _on_submit(pt, area, address, map){
+	//document.getElementById("IDD_MAP").className = "map-ctr";
+	document._form.elements["address"].value = address;
+	document._form.elements["area"].value = area;
+	document._form.elements["lng_lat"].value = pt.lng + '-' + pt.lat;
 }
-(function(fn_submit, pt, area, address){
+(function(fn_submit, init_pt, area, address){
 	var map = new BMap.Map("IDD_MAP");
-	var point = null == pt ? new BMap.Point() : pt;
-	map.centerAndZoom(point,12);
-	if(null = pt){
+	var point;
+	if("" == init_pt){
+		point = new BMap.Point();
 		var myCity = new BMap.LocalCity();
 		myCity.get(function(result){map.setCenter(result.name)});
+	}else{
+		var coor = init_pt.split('-');
+		point = new BMap.Point(coor[0], coor[1]);
 	}
-	var _draw = function(_pt){
+	map.centerAndZoom(point,12);
+	
+	var _format_addr = function(addComp){
+		return addComp.province + '/' + addComp.city + '/' + addComp.district+address;
+	}
+	var _draw = function(_pt, _area, _addr, _need_win){
 		//marker
-		//window
-	}
-	var geoc = new BMap.Geocoder();
-	var _fn_loc_point = function(pt){
-		geoc.getLocation(pt, function(rs){
+		var marker = new BMap.Marker(_pt);
+		map.addOverlay(marker);
+		if(_need_win){
+			//window
 			var _win = document.createElement("div");
-			var addComp = rs.addressComponents;
 			_win.innerHTML =
 				"<div style='margin:0 0 5px 0;padding:0.2em 0;font-weight:bold;'><?php echo $mbs_appenv->lang('complete_address')?></div>" + 
-				"<p style='margin:0 0 5px 0;line-height:1.5;font-size:13px;m'>"+addComp.province +  addComp.city + addComp.district+"</p>" +
-				"<div style='margin:0 0 5px 0;'><input type=text style='width:250px;' name=address value='"+addComp.street+ addComp.streetNumber+"' />"+
+				"<p style='margin:0 0 5px 0;line-height:1.5;font-size:13px;'>"+_area+"</p>" +
+				"<div style='margin:0 0 5px 0;'><input type=text style='width:180px;' name=address value='"+_addr+"' />"+
 				"<a class='pure-button' style='margin:0 0 0 5px;'><?php echo $mbs_appenv->lang('confirm')?></a></div>";
 			var infoWindow = new BMap.InfoWindow(_win);
-			map.openInfoWindow(infoWindow,pt);
+			map.openInfoWindow(infoWindow, _pt);
 			_win.getElementsByTagName("a")[0].onclick = function(e){
-				fn_submit(pt, rs, this.previousSibling.value, map);
+				fn_submit(_pt, _area, this.previousSibling.value, map);
 				infoWindow.close();
+				var label = new BMap.Label(_addr, {offset:new BMap.Size(20,-10)});
+				label.setStyle({width:"initial"});
+				marker.setLabel(label);
 			}
-		});
+		}else{
+			var label = new BMap.Label(_addr,{offset:new BMap.Size(20,-10)});
+			label.setStyle({width:"initial"});
+			marker.setLabel(label);
+		}
 	}
-	map.addEventListener("click", function(e){        
-		var pt = e.point;
-		
+	var _clear = function(){
+		map.clearOverlays();
+		map.closeInfoWindow();
+	}
+	var geoc = new BMap.Geocoder();
+	map.addEventListener("click", function(e){
+		_clear();
+		geoc.getLocation(e.point, function(rs){
+			_draw(e.point, _format_addr(rs.addressComponents), 
+					rs.addressComponents.street+rs.addressComponents.streetNumber, true);
+		});
 	});
-})(_on_submit);
+	if(init_pt != ""){
+		_draw(init_pt, area, address, false);
+	}
+})(_on_submit<?php echo sprintf(', "%s", "%s", "%s"', $info['lng_lat'], $info['area'], $info['address'])?>);
 
 </script>
 </body>

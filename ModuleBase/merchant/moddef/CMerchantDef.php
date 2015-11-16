@@ -50,8 +50,9 @@ class CMerchantDef extends CModDef {
 						'lng_lat'    => array(self::PA_REQ=>1, self::G_TL=>'位置'),
 						'name'       => array(self::PA_REQ=>1, self::G_TL=>'名称', self::PA_RNG=>'2, 16'),
 						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'简介', self::PA_RNG=>'16, 256'),
-						'logo_path'  => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'logo图片'),
-						'baike_link' => array(self::G_TL=>'百科链接', self::G_DC=>'百科的站外链接，例如百度百科，维基百科'),
+						'area'       => array(self::PA_REQ=>1, self::G_TL=>'省市区'),
+						'address'    => array(self::PA_REQ=>1, self::G_DC=>'详细地址'),
+						'logo_path'  => array( self::PA_TYP=>'file', self::G_TL=>'图片'),
 					)
 				),
 				'list'     => array(
