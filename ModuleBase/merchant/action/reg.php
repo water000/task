@@ -96,8 +96,11 @@ textarea{height:85px;}
 	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title, 'product'))?>
 		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang(array('product', 'list'))?></a></div>
 	<div class="">
-	<form action="<?php echo $_SERVER['REQUEST_URI'], strpos($_SERVER['REQUEST_URI'], '?') ? '&':'?'?>dosubmit=1" class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
+	<form name=_form action="<?php echo $_SERVER['REQUEST_URI'], strpos($_SERVER['REQUEST_URI'], '?') ? '&':'?'?>dosubmit=1" class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
 		<input type="hidden" name="_timeline" value="<?php echo time()?>" />
+		<input type="hidden" name="lng_lat" value="" />
+		<input type="hidden" name="address" value="" />
+		<input type="hidden" name="area" value="" />
 		<fieldset>
 			<?php if(isset($_REQUEST['_timeline'])){ if(isset($error[0])){ ?>
 			<div class=error>&times;<?php echo $error[0]?></div>
@@ -107,7 +110,7 @@ textarea{height:85px;}
 			
 			<div class="pure-control-group">
 				<label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['lng_lat'])?></label>
-				<div id="IDD_MAP" class="map-ctr" onmouseover="this.className += ' map-ctr-bigger'"></div>
+				<div id="IDD_MAP" class="map-ctr" onmouseover="this.className += ' map-ctr-bigger'" onmouseout="this.className='map-ctr'"></div>
 			</div>
 			<div class="pure-control-group">
 				<label></label>
@@ -154,18 +157,25 @@ formSubmitErr(document._form, <?php echo json_encode($error)?>);
 function _on_submit(pt, rs, address, map){
 	var addComp = rs.addressComponents;
 	document.getElementById("IDD_MAP").className = "map-ctr";
-	document.getElementById("IDS_ADDR").innerHTML = addComp.province +  
-		addComp.city + addComp.district+address;
+	document._form.elements["area"] = document.getElementById("IDS_ADDR").innerHTML = addComp.province + '/'
+		addComp.city + '/' + addComp.district+address;
+	document._form.elements["address"] = address;
+	document._form.elements["lng_lat"] = pt.lng + '-' + pt.lat;
 }
-(function(fn_submit){
+(function(fn_submit, pt, area, address){
 	var map = new BMap.Map("IDD_MAP");
-	var point = new BMap.Point();
+	var point = null == pt ? new BMap.Point() : pt;
 	map.centerAndZoom(point,12);
-	var myCity = new BMap.LocalCity();
-	myCity.get(function(result){map.setCenter(result.name)});
-	var geoc = new BMap.Geocoder();    
-	map.addEventListener("click", function(e){        
-		var pt = e.point;
+	if(null = pt){
+		var myCity = new BMap.LocalCity();
+		myCity.get(function(result){map.setCenter(result.name)});
+	}
+	var _draw = function(_pt){
+		//marker
+		//window
+	}
+	var geoc = new BMap.Geocoder();
+	var _fn_loc_point = function(pt){
 		geoc.getLocation(pt, function(rs){
 			var _win = document.createElement("div");
 			var addComp = rs.addressComponents;
@@ -181,6 +191,10 @@ function _on_submit(pt, rs, address, map){
 				infoWindow.close();
 			}
 		});
+	}
+	map.addEventListener("click", function(e){        
+		var pt = e.point;
+		
 	});
 })(_on_submit);
 
