@@ -96,10 +96,10 @@ textarea{height:85px;}
 .map-ctr{display:inline-block;width:400px; height:220px;}
 .map-ctr-bigger{width:500px; height:300px;}
 
-#img-lab{width:86px ;height:86px ;position:relative;display:inline-block;}
-#img-lab-add{position:absolute;top:0;left:0;line-height:80px; z-index:100;width:85px;height:85px ;
+#img-lab{width:86px ;height:86px ;position:relative;display:inline-block;overflow: hidden;}
+#img-lab-add{position:absolute;top:0;left:0;line-height:80px; z-index:100;width:84px;height:84px ;
 	color:#aaa;font-size:65px;border:1px dashed #ccc;background-color:#fff;overflow:hidden;text-align:center;}
-#img-lab input{width:10px;margin:2px;}
+#img-lab input{width:10px;margin:2px;float:right;}
 </style>
 </head>
 <body>
