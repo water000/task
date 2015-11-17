@@ -13,16 +13,16 @@ class CMerchantDef extends CModDef {
 				'merchant_info' => '(
 					id int unsigned not null auto_increment,
 					owner_id int unsigned not null,
-					lng_lat varchar(32), -- split by comma,
-					area varchar(16), -- province-city-area
+					lng_lat varchar(32) not null, -- split by comma,
+					area varchar(16) not null, -- province-city-area
 					address varchar(32) not null, -- country-street-...
-					post_code varchar(9),
+					post_code varchar(9) not null,
 					name varchar(32) not null,
-					abstract varchar(256),
+					abstract varchar(256) not null,
 					telephone varchar(32) not null,
-					status tinyint,
-					create_time int unsigned,
-					edit_time int unsigned,
+					status tinyint not null,
+					create_time int unsigned not null,
+					edit_time int unsigned not null,
 					primary key(id),
 					key(owner_id)
 				)',
@@ -33,7 +33,7 @@ class CMerchantDef extends CModDef {
 					name varchar(16) not null,
 					path varchar(64) not null, -- only path, not include domain
 					abstract varchar(32) not null,
-					create_time int unsigned,
+					create_time int unsigned not null,
 					primary key(id),
 					key(merchant_id)
 				)',
@@ -42,7 +42,7 @@ class CMerchantDef extends CModDef {
 				
 			),
 			self::PAGES => array(
-				'reg'     => array(
+				'edit'     => array(
 					self::P_TLE  => '注册',
 					self::G_DC   => '注册商家需要填写相应信息，等待审核通过',
 					//self::P_MGR  => false,
@@ -52,7 +52,7 @@ class CMerchantDef extends CModDef {
 						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'简介', self::PA_RNG=>'16, 256'),
 						'area'       => array(self::PA_REQ=>1, self::G_TL=>'省市区'),
 						'address'    => array(self::PA_REQ=>1, self::G_DC=>'详细地址'),
-						'logo_path'  => array( self::PA_TYP=>'file', self::G_TL=>'图片'),
+						'image'      => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'图片'),
 					)
 				),
 				'list'     => array(

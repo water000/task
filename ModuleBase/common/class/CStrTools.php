@@ -152,6 +152,7 @@ class CStrTools {
 				break;
 		}
 	}
+
 }
 
 ?>

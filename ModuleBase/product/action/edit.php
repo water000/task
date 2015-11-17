@@ -95,7 +95,7 @@ textarea{height:85px;}
 	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title, 'product'))?>
 		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang(array('product', 'list'))?></a></div>
 	<div class="">
-	<form action="<?php echo $_SERVER['REQUEST_URI'], strpos($_SERVER['REQUEST_URI'], '?') ? '&':'?'?>dosubmit=1" class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
+	<form action="<?php echo $mbs_appenv->newURI(array('dosubmit'=>1)) ?>" class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
 		<input type="hidden" name="_timeline" value="<?php echo time()?>" />
 		<fieldset>
 			<?php if(isset($_REQUEST['_timeline'])){ if(isset($error[0])){ ?>

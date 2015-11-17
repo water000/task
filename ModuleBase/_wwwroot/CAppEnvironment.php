@@ -324,6 +324,11 @@ class CAppEnvironment{
 			echo sprintf($this->lang('notice_page', 'common'), $meta, $style, $msg);
 		}
 	}
+	
+	function newURI($new_args){
+		return $this->toURL($this->item('cur_action'), 
+				$this->item('cur_mod'), array_merge($_GET, $new_args));
+	}
 }
 
 ?>
