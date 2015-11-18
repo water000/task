@@ -24,7 +24,7 @@ if(isset($_REQUEST['id'])){
 	$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['id']));
 	$images = $mct_atch_ctr->get();
-	$max_upload_images -= count($images);
+	//$max_upload_images -= count($images);
 	
 	if(isset($_REQUEST['_timeline'])){
 		$info = array_intersect_key($_REQUEST, $info) + $info;
@@ -96,11 +96,12 @@ textarea{height:85px;}
 .map-ctr{display:inline-block;width:400px; height:220px;}
 .map-ctr-bigger{width:500px; height:300px;}
 
-#img-lab{width:86px ;height:86px ;position:relative;display:inline-block;overflow: hidden;}
-#img-lab-add{position:absolute;top:0;left:0;line-height:80px; width:84px;height:84px ;
-	color:#aaa;font-size:65px;border:1px dashed #ccc;background-color:#fff;overflow:hidden;text-align:center;}
-.img-name{position:absolute;bottom:0;left:0;margin:2px;font-size:12px;width: 80px;overflow: hidden;}
-#img-lab input{width:10px;margin:2px;float:right;}
+#img-lab-bg{width:66px ;height:66px ;position:relative;display:inline-block;overflow: hidden;margin:0 .5em 0 0;}
+#img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:45px;text-align:center; width:64px;height:64px; border-radius:5px;}
+.img-lab-add{color:#7DB8EC;border:1px dashed #ccc;background-color:#fff;overflow:hidden;}
+.img-lab-del{color:red;border:1px dashed red;overflow:hidden;visibility:hidden;}
+.img-name{position:absolute;bottom:0;left:0;margin:2px;font-size:12px;width: 60px;overflow: hidden;text-align:center;}
+#img-lab-bg input{width:10px;margin:2px;float:right;border:0;}
 </style>
 </head>
 <body>
@@ -122,7 +123,7 @@ textarea{height:85px;}
 			
 			<div class="pure-control-group">
 				<label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['lng_lat'])?></label>
-				<div id="IDD_MAP" class="map-ctr"></div>
+				<span class="map-ctr"><div id="IDD_MAP" style="width:100%;height: 100%;"></div></span>
 			</div>
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['name'])?></label>
@@ -135,31 +136,14 @@ textarea{height:85px;}
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['abstract'], $mbs_appenv)?></aside>
 			</div>
 			<div class="pure-control-group">
-                <label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
-                <span style="width:315px;display:inline-block;">
-                	<div id=img-lab>
-	                	<input id=IDI_IMG type="file" name="image[]" />
-	                	<label for="IDI_IMG" id="img-lab-add">+</label>
-	                	<div class=img-name>12312312.png</div>
-	                </div>
+                <label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
+                <span id=IDS_CONTAINER style="display:inline-block;">
+                <?php if(isset($images)){foreach ($images as $img){ ?>
+                <img src="<?php echo $mbs_appenv->uploadURL($img['path'])?>" _data-id="<?php echo $img['id']?>" />
+                <?php }}?>
                 </span>
-                
                 <aside class="pure-form-message-inline"><?php echo $mbs_appenv->lang('upload_max_filesize')?></aside>
             </div>
-			<?php for($i=0; $i<$max_upload_images; ++$i){?>
-			<div class="pure-control-group">
-                <label><?php if(0 == $i) CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
-                <input type="file" name="image[]" /><aside class="pure-form-message-inline"><?php echo $mbs_appenv->lang('upload_max_filesize')?></aside>
-            </div>
-			<?php }?>
-			<?php if(isset($images)){ ?>
-			<div class="pure-control-group">
-                <label></label>
-				<?php foreach ($images as $img){?>
-				<img src="<?php echo $mbs_appenv->uploadURL($img['path'])?>" />
-				<?php }?>
-			</div>
-			<?php }?>
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
                 <label><?php echo $mbs_appenv->lang(array('add', 'time'))?></label>
@@ -183,6 +167,12 @@ formSubmitErr(document._form, <?php echo json_encode($error)?>);
 <?php }?>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S8mKcAyeY2sq2aH7SmsGSHep"></script>
 <script type="text/javascript">
+fileUpload({
+	max_files:<?php echo $max_upload_images?>, 
+	container:"IDS_CONTAINER", 
+	file_name:"image[]", 
+	onFileDel:function(file){}
+});
 function _on_submit(pt, area, address, map){
 	//document.getElementById("IDD_MAP").className = "map-ctr";
 	document._form.elements["address"].value = address;
@@ -213,7 +203,7 @@ function _on_submit(pt, area, address, map){
 			//window
 			var _win = document.createElement("div");
 			_win.innerHTML =
-				"<div style='margin:0 0 5px 0;padding:0.2em 0;font-weight:bold;'><?php echo $mbs_appenv->lang('complete_address')?>("+_area+")</div>" + 
+				"<div style='margin:0 0 5px 0;padding:0.2em 0;font-weight:bold;width:230px;overflow:hidden;'><?php echo $mbs_appenv->lang('complete_address')?>("+_area+")</div>" + 
 				//"<p style='margin:0 0 5px 0;line-height:1.5;font-size:13px;'>"+_area+"</p>" +
 				"<div style='margin:0 0 5px 0;'><input type=text style='width:170px;' name=address value='"+_addr+"' />"+
 				"<a class='pure-button' style='margin:0 0 0 5px;'><?php echo $mbs_appenv->lang('confirm')?></a></div>";

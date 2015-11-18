@@ -500,7 +500,7 @@ class CTools
 		return iconv_substr($str, $offset, $len, $charset.'//TRANSLIT');
 	}
 	
-	function binsearch($needle, $heystack){
+	static function binsearch($needle, $heystack){
 	    $offset = 0;
 	    $count = count($heystack);
 	    for(; $count > 0; ){
@@ -526,5 +526,6 @@ class CTools
 	    
 	    return -1;
 	}
+	
 }
 ?>

@@ -5,6 +5,12 @@ mbs_import('common', 'CMultiRowControl');
 class CMctAttachmentControl extends CMultiRowControl{
 	
 	private static $instance   = null;
+	
+	private static $thumb = array(
+		'small'  => array(65,  65,  's'), // width, height, desc
+		'medium' => array(180, 100, 'm'),
+		'big'    => array(400, 220, 'b'),
+	);
 
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
@@ -35,6 +41,27 @@ class CMctAttachmentControl extends CMultiRowControl{
 		}
 		self::$instance->setPrimaryKey($primarykey);
 		return self::$instance;
+	}
+	
+	function moveAttachment($filename){
+		$name = md5(uniqid('mct_', true));
+		$hash = substr($name, 0, 2);
+		$subdir = 'mct/'.$hash.'/';
+		$dest_dir = $appenv->mkdirUpload($subdir);
+		if(false === $dest_dir){
+			trigger_error('mkdirUpload error: '.$subdir, E_USER_WARNING);
+			return false;
+		}
+		
+		mbs_import('common', 'CImage');
+		$dest_path = $dest_dir.$name;
+		try {
+			CImage::thumbnail($_FILES[$filename], $dest);
+		} catch (Exception $e) {
+			trigger_error('thumbnail error: '.$e->getMessage());
+			return false;
+		}
+		return $hash.'/'.$name.'.'.CImage::THUMB_FORMAT;
 	}
 
 }

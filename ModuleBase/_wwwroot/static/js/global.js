@@ -106,25 +106,52 @@ function btnlist(list){
 	}
 }
 
-//opt:{max_files:5, file_name:"", files:[], onFileDel:fn(imgobj){}, container:string/obj }
+//opt:{max_files:5, file_name:"", onFileDel:fn(imgobj){}, container:string/obj }
 function fileUpload(opt){
 	var cntr = typeof opt.container == "Object" ? opt.container : document.getElementById(opt.container);
 	if(!cntr){
-		alert("container: " + opt.container + " invalid!");
+		alert("container: '" + opt.container + "' invalid!");
 		return false;
 	}
-	var _add = function(){
-		var _win = document.createElement("div");
-		_win.innerHTML = "<input id=IDI_IMG type='file' name='"+opt.file_name+"' />" +
-				"<label for='IDI_IMG' id='img-lab-add'>+</label><div class=img-name></div>";
-		_win.id = "img-lab";
-		cntr.appendChild(_win);
-		_win.firstChild.onchange = function(e){
-			_win.lastChild.innerHTML = this.value;
+	var idx_counter = 0;
+	var _add = function(before){
+		var _win = document.createElement("span");
+		_win.id = "img-lab-bg";
+		_win.innerHTML = "<input id=IDI_IMG"+ idx_counter +" type='file' name='"+opt.file_name+"' />" +
+				"<label title='添加' for=IDI_IMG"+ idx_counter +" class='img-lab-add' id='img-lab'>+</label><div class=img-name></div>";
+		idx_counter++;
+		cntr.insertBefore(_win, before||null);
+		_win.childNodes[0].onchange = function(e){
+			for(var c,n=this.value.length-1; n>=0; n--){
+				c = this.value.charAt(n);
+				if(c == '/' || c == '\\') break;
+			}
+			_win.childNodes[2].innerHTML = n>=0? this.value.substr(n+1) : this.value;
 		}
 	}
-	for(var i=0; i<opt.max_files; i++){
-		
+	var _show = function(file){
+		var _win = document.createElement("span");
+		_win.id = "img-lab-bg";
+		cntr.insertBefore(_win, file);
+		_win.appendChild(file);
+		var lab = document.createElement("label");
+		lab.innerHTML = '-';
+		lab.className = 'img-lab-del';
+		lab.id = 'img-lab';
+		lab.title = "删除";
+		_win.appendChild(lab);
+		bind(_win, 'mouseover', function(e){lab.style.visibility="visible";});
+		bind(_win, 'mouseout', function(e){lab.style.visibility="hidden";});
+		bind(_win, 'click', function(e){opt.onFileDel(file);_add(_win);_win.parentNode.removeChild(_win);});
+	}
+	for(var i=0, j=0; j<cntr.childNodes.length; j++){
+		if( cntr.childNodes[j].tagName){
+			_show(cntr.childNodes[j]);
+			i++;
+		}
+	}
+	for(; i<opt.max_files; i++){
+		_add();
 	}
 }
 
