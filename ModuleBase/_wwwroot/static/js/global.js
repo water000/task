@@ -106,3 +106,25 @@ function btnlist(list){
 	}
 }
 
+//opt:{max_files:5, file_name:"", files:[], onFileDel:fn(imgobj){}, container:string/obj }
+function fileUpload(opt){
+	var cntr = typeof opt.container == "Object" ? opt.container : document.getElementById(opt.container);
+	if(!cntr){
+		alert("container: " + opt.container + " invalid!");
+		return false;
+	}
+	var _add = function(){
+		var _win = document.createElement("div");
+		_win.innerHTML = "<input id=IDI_IMG type='file' name='"+opt.file_name+"' />" +
+				"<label for='IDI_IMG' id='img-lab-add'>+</label><div class=img-name></div>";
+		_win.id = "img-lab";
+		cntr.appendChild(_win);
+		_win.firstChild.onchange = function(e){
+			_win.lastChild.innerHTML = this.value;
+		}
+	}
+	for(var i=0; i<opt.max_files; i++){
+		
+	}
+}
+

@@ -97,8 +97,9 @@ textarea{height:85px;}
 .map-ctr-bigger{width:500px; height:300px;}
 
 #img-lab{width:86px ;height:86px ;position:relative;display:inline-block;overflow: hidden;}
-#img-lab-add{position:absolute;top:0;left:0;line-height:80px; z-index:100;width:84px;height:84px ;
+#img-lab-add{position:absolute;top:0;left:0;line-height:80px; width:84px;height:84px ;
 	color:#aaa;font-size:65px;border:1px dashed #ccc;background-color:#fff;overflow:hidden;text-align:center;}
+.img-name{position:absolute;bottom:0;left:0;margin:2px;font-size:12px;width: 80px;overflow: hidden;}
 #img-lab input{width:10px;margin:2px;float:right;}
 </style>
 </head>
@@ -139,6 +140,7 @@ textarea{height:85px;}
                 	<div id=img-lab>
 	                	<input id=IDI_IMG type="file" name="image[]" />
 	                	<label for="IDI_IMG" id="img-lab-add">+</label>
+	                	<div class=img-name>12312312.png</div>
 	                </div>
                 </span>
                 
@@ -211,9 +213,9 @@ function _on_submit(pt, area, address, map){
 			//window
 			var _win = document.createElement("div");
 			_win.innerHTML =
-				"<div style='margin:0 0 5px 0;padding:0.2em 0;font-weight:bold;'><?php echo $mbs_appenv->lang('complete_address')?></div>" + 
-				"<p style='margin:0 0 5px 0;line-height:1.5;font-size:13px;'>"+_area+"</p>" +
-				"<div style='margin:0 0 5px 0;'><input type=text style='width:180px;' name=address value='"+_addr+"' />"+
+				"<div style='margin:0 0 5px 0;padding:0.2em 0;font-weight:bold;'><?php echo $mbs_appenv->lang('complete_address')?>("+_area+")</div>" + 
+				//"<p style='margin:0 0 5px 0;line-height:1.5;font-size:13px;'>"+_area+"</p>" +
+				"<div style='margin:0 0 5px 0;'><input type=text style='width:170px;' name=address value='"+_addr+"' />"+
 				"<a class='pure-button' style='margin:0 0 0 5px;'><?php echo $mbs_appenv->lang('confirm')?></a></div>";
 			var infoWindow = new BMap.InfoWindow(_win);
 			map.openInfoWindow(infoWindow, _pt);
