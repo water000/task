@@ -11,6 +11,8 @@ class CMctAttachmentControl extends CMultiRowControl{
 		'medium' => array(180, 100, 'm'),
 		'big'    => array(400, 220, 'b'),
 	);
+	
+	private static $mbs_appenv = null;
 
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
@@ -25,6 +27,7 @@ class CMctAttachmentControl extends CMultiRowControl{
 	 * @param string $primarykey
 	 */
 	static function getInstance($mbs_appenv, $dbpool, $mempool, $primarykey = null){
+		self::$mbs_appenv = $mbs_appenv;
 		
 		if(empty(self::$instance)){
 			try {
@@ -43,25 +46,40 @@ class CMctAttachmentControl extends CMultiRowControl{
 		return self::$instance;
 	}
 	
-	function moveAttachment($filename){
+	function add($src, $name){
 		$name = md5(uniqid('mct_', true));
 		$hash = substr($name, 0, 2);
 		$subdir = 'mct/'.$hash.'/';
-		$dest_dir = $appenv->mkdirUpload($subdir);
+		$dest_dir = self::$mbs_appenv->mkdirUpload($subdir);
 		if(false === $dest_dir){
 			trigger_error('mkdirUpload error: '.$subdir, E_USER_WARNING);
 			return false;
 		}
+		$ret = $hash.'/'.$name;
 		
 		mbs_import('common', 'CImage');
-		$dest_path = $dest_dir.$name;
+		$dest = array_values(self::$thumb);
+		$dest[0][2] = $dest_dir.$ret.$dest[0][2].'.'.CImage::THUMB_FORMAT;
+		$dest[1][2] = $dest_dir.$ret.$dest[1][2].'.'.CImage::THUMB_FORMAT;
+		$dest[2][2] = $dest_dir.$ret.$dest[2][2].'.'.CImage::THUMB_FORMAT;
 		try {
-			CImage::thumbnail($_FILES[$filename], $dest);
+			CImage::thumbnail($src, $dest);
+			parent::add(array(
+				'merchant_id'  => $this->primaryKey,
+				'path'         => $ret,
+				'name'         => $name,
+				'create_time'  => time(),
+				'format'       => 1,
+			));
 		} catch (Exception $e) {
 			trigger_error('thumbnail error: '.$e->getMessage());
 			return false;
 		}
-		return $hash.'/'.$name.'.'.CImage::THUMB_FORMAT;
+		return $ret;
+	}
+	
+	static function completePath($path, $type='small'){
+		return $path.self::$thumb[$type][2].'.'.CImage::THUMB_FORMAT;
 	}
 
 }

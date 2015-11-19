@@ -50,6 +50,7 @@ class CMerchantDef extends CModDef {
 						'lng_lat'    => array(self::PA_REQ=>1, self::G_TL=>'位置'),
 						'name'       => array(self::PA_REQ=>1, self::G_TL=>'名称', self::PA_RNG=>'2, 16'),
 						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'简介', self::PA_RNG=>'16, 256'),
+						'telephone'  => array(self::PA_REQ=>0, self::G_TL=>'电话', self::PA_RNG=>'11,', self::G_DC=>'电话号码，可以不填'),
 						'area'       => array(self::PA_REQ=>1, self::G_TL=>'省市区'),
 						'address'    => array(self::PA_REQ=>1, self::G_DC=>'详细地址'),
 						'image'      => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'图片'),

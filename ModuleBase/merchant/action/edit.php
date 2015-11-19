@@ -53,15 +53,16 @@ else if(isset($_REQUEST['_timeline'])){
 	$info_def = $info;
 	$info = array_intersect_key($_REQUEST,$info) + $info;
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
-	if(!isset($error['en_name']) && !CStrTools::isWord($info['en_name'])){
-		$error['en_name'] = $mbs_appenv->lang('invalid_EN_word');
-	}
+	
 	if(empty($error)){
-		$logo_path = CProductControl::moveLogo($_FILES['logo_path']['tmp_name'], $mbs_appenv);
-		if($logo_path){
-			$info['logo_path'] = $logo_path;
-		}else{
-			$error['logo_path'] = 'failed to thumbnail logo';
+		$mct_ctr = CMctControl::getInstance($mbs_appenv,
+					CDbPool::getInstance(), CMemcachedPool::getInstance());
+		unset($info['image']);
+		$mct_ctr->add($info);
+		for($i=0; $i<count($_FILES['image']); ++$i){
+			if(UPLOAD_ERR_OK == $_FILES['image'][$i]['error']){
+				
+			}
 		}
 		
 		if(empty($error)){
@@ -134,6 +135,11 @@ textarea{height:85px;}
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['abstract'])?></label>
 				<textarea name="abstract"><?php echo $info['abstract']?></textarea>
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['abstract'], $mbs_appenv)?></aside>
+			</div>
+			<div class="pure-control-group">
+				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['telephone'])?></label>
+				<input type="text" name="name" value="<?php echo $info['telephone']?>" />
+				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['telephone'], $mbs_appenv)?></aside>
 			</div>
 			<div class="pure-control-group">
                 <label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
