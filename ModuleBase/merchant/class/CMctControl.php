@@ -4,6 +4,11 @@ class CMctControl extends CUniqRowControl {
 	
 	private static $instance   = null;
 	
+	const ST_VERIRY = 0;
+	const ST_REFUSE = 1;
+	const ST_PASS   = 2;
+	const ST_BAN    = 3;
+	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
 	}

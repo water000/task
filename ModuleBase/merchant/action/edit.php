@@ -40,7 +40,7 @@ if(isset($_REQUEST['id'])){
 				}
 			}
 			if(empty($error)){
-				$info['last_edit_time'] = time();
+				$info['edit_time'] = time();
 				$ret = $mct_ctr->set($info);
 				if(empty($ret)){
 					$error[] = $mct_ctr->error();
@@ -58,28 +58,25 @@ else if(isset($_REQUEST['_timeline'])){
 		$mct_ctr = CMctControl::getInstance($mbs_appenv,
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
 		unset($info['image']);
-		$mct_ctr->add($info);
-		for($i=0; $i<count($_FILES['image']); ++$i){
-			if(UPLOAD_ERR_OK == $_FILES['image'][$i]['error']){
-				
-			}
-		}
-		
-		if(empty($error)){
-			$mct_ctr = CMctControl::getInstance($mbs_appenv,
-					CDbPool::getInstance(), CMemcachedPool::getInstance());
-			$info['last_edit_time'] = $info['create_time'] = time();
-			$ret = $info_id = $mct_ctr->add($info);
-			if(empty($ret)){
-				$error[] = $mbs_appenv->lang('error_on_field_exists').'('.$mct_ctr->error().')';
-			}else{
-				$info = $info_def;
+		$info['status'] = CMctControl::ST_VERIRY;
+		$merchant_id = $mct_ctr->add($info);
+		if(empty($merchant_id)){
+			$error[] = '('.$mct_ctr->error().')';
+		}else{
+			$info = $info_def;
+			$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
+				CDbPool::getInstance(), CMemcachedPool::getInstance(), $merchant_id);
+			for($i=0; $i<count($_FILES['image']['error']); ++$i){
+				if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
+					try {
+						$mct_atch_ctr->add($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
+					} catch (Exception $e) {
+						$error[] = $e->getMessage();
+					}
+				}
 			}
 		}
 	}
-}
-if(!empty($info['logo_path'])){
-	$info['logo_path'] = CProductControl::logourl($info['logo_path'], $mbs_appenv);
 }
 ?>
 <!doctype html>
@@ -107,8 +104,8 @@ textarea{height:85px;}
 </head>
 <body>
 <div class="warpper">
-	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title, 'product'))?>
-		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang(array('product', 'list'))?></a></div>
+	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title))?>
+		<a class=back href="<?php echo $mbs_appenv->toURL('list')?>">&lt;<?php echo $mbs_appenv->lang(array( 'list'))?></a></div>
 	<div class="">
 	<form name=_form action="<?php echo $mbs_appenv->newURI(array('dosubmit'=>1)) ?>" class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
 		<input type="hidden" name="_timeline" value="<?php echo time()?>" />

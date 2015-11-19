@@ -19,7 +19,7 @@ class CImage{
 			foreach($dest as $arr){
 				list($width, $height, $rename) = $arr;
 				$nim->thumbnailImage($width, $height);
-				$nim->writeImage($rename.'.'.self::THUMB_FORMAT);
+				$nim->writeImage($rename);
 			}
 	
 			if($nim != $im){
