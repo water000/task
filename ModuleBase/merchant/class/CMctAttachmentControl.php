@@ -46,7 +46,8 @@ class CMctAttachmentControl extends CMultiRowControl{
 		return self::$instance;
 	}
 	
-	function add($src, $name){
+	function add($arr){
+		list($src, $name) = $arr;
 		$name = md5(uniqid('mct_', true));
 		$hash = substr($name, 0, 2);
 		$subdir = 'mct/'.$hash.'/';
@@ -55,18 +56,18 @@ class CMctAttachmentControl extends CMultiRowControl{
 			trigger_error('mkdirUpload error: '.$subdir, E_USER_WARNING);
 			return false;
 		}
-		$ret = $hash.'/'.$name;
+		$path = $hash.'/'.$name;
 		
 		mbs_import('common', 'CImage');
 		$dest = array_values(self::$thumb);
-		$dest[0][2] = $dest_dir.$ret.$dest[0][2].'.'.CImage::THUMB_FORMAT;
-		$dest[1][2] = $dest_dir.$ret.$dest[1][2].'.'.CImage::THUMB_FORMAT;
-		$dest[2][2] = $dest_dir.$ret.$dest[2][2].'.'.CImage::THUMB_FORMAT;
+		$dest[0][2] = $dest_dir.$path.$dest[0][2].'.'.CImage::THUMB_FORMAT;
+		$dest[1][2] = $dest_dir.$path.$dest[1][2].'.'.CImage::THUMB_FORMAT;
+		$dest[2][2] = $dest_dir.$path.$dest[2][2].'.'.CImage::THUMB_FORMAT;
 		try {
 			CImage::thumbnail($src, $dest);
-			parent::add(array(
+			$id = parent::add(array(
 				'merchant_id'  => $this->primaryKey,
-				'path'         => $ret,
+				'path'         => $path,
 				'name'         => $name,
 				'create_time'  => time(),
 				'format'       => 1,
@@ -75,7 +76,7 @@ class CMctAttachmentControl extends CMultiRowControl{
 			trigger_error('thumbnail error: '.$e->getMessage());
 			return false;
 		}
-		return $ret;
+		return $id;
 	}
 	
 	static function completePath($path, $type='small'){

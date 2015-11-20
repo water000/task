@@ -21,33 +21,34 @@ if(isset($_REQUEST['id'])){
 		exit(0);
 	}
 	
-	$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
-			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['id']));
-	$images = $mct_atch_ctr->get();
-	//$max_upload_images -= count($images);
-	
 	if(isset($_REQUEST['_timeline'])){
 		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
 		if(empty($error)){
-			if(isset($_FILES['logo_path']) && UPLOAD_ERR_OK == $_FILES['logo_path']['error']){
-				$logo_path = CProductControl::moveLogo($_FILES['logo_path']['tmp_name'], $mbs_appenv);
-				if($logo_path){
-					CProductControl::unlinklogo($info['logo_path'], $mbs_appenv);
-					$info['logo_path'] = $logo_path;
-				}else{
-					$error['logo_path'] = 'failed to thumbnail logo';
-				}
-			}
-			if(empty($error)){
-				$info['edit_time'] = time();
-				$ret = $mct_ctr->set($info);
-				if(empty($ret)){
-					$error[] = $mct_ctr->error();
+			unset($info['image']);
+			$info['edit_time'] = time();
+			$ret = $mct_ctr->set($info);
+			if(empty($ret)){
+				$error[] = $mct_ctr->error();
+			}else{
+				for($i=0; $i<count($_FILES['image']['error']); ++$i){
+					if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
+						try {
+							$mct_atch_ctr->add(array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]));
+						} catch (Exception $e) {
+							$error[] = $e->getMessage();
+						}
+					}else{
+						$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
+					}
 				}
 			}
 		}
 	}
+	
+	$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['id']));
+	$images = $mct_atch_ctr->get();
 }
 else if(isset($_REQUEST['_timeline'])){	
 	$info_def = $info;
@@ -69,10 +70,12 @@ else if(isset($_REQUEST['_timeline'])){
 			for($i=0; $i<count($_FILES['image']['error']); ++$i){
 				if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 					try {
-						$mct_atch_ctr->add($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
+						$mct_atch_ctr->add(array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]));
 					} catch (Exception $e) {
 						$error[] = $e->getMessage();
 					}
+				}else{
+					$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 				}
 			}
 		}
@@ -142,7 +145,7 @@ textarea{height:85px;}
                 <label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
                 <span id=IDS_CONTAINER style="display:inline-block;">
                 <?php if(isset($images)){foreach ($images as $img){ ?>
-                <img src="<?php echo $mbs_appenv->uploadURL($img['path'])?>" _data-id="<?php echo $img['id']?>" />
+                <img src="<?php echo $mbs_appenv->uploadURL(CMctAttachmentControl::completePath($img['path']))?>" _data-id="<?php echo $img['id']?>" />
                 <?php }}?>
                 </span>
                 <aside class="pure-form-message-inline"><?php echo $mbs_appenv->lang('upload_max_filesize')?></aside>
