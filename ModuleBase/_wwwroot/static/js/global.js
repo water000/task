@@ -122,11 +122,9 @@ function fileUpload(opt){
 		idx_counter++;
 		cntr.insertBefore(_win, before||null);
 		_win.childNodes[0].onchange = function(e){
-			for(var c,n=this.value.length-1; n>=0; n--){
-				c = this.value.charAt(n);
-				if(c == '/' || c == '\\') break;
-			}
-			_win.childNodes[2].innerHTML = n>=0? this.value.substr(n+1) : this.value;
+			_edit(this);
+			_win.innerHTML = "<input id=IDI_IMG"+ idx_counter +" type='file' name='"+opt.file_name+"' />" + _win.innerHTML;
+			idx_counter++;
 		}
 	}
 	var _show = function(file){
@@ -143,6 +141,22 @@ function fileUpload(opt){
 		bind(_win, 'mouseover', function(e){lab.style.visibility="visible";});
 		bind(_win, 'mouseout', function(e){lab.style.visibility="hidden";});
 		bind(_win, 'click', function(e){opt.onFileDel(file);_add(_win);_win.parentNode.removeChild(_win);});
+	}
+	var _edit = function(inputFile){
+		var _win = document.createElement("span");
+		_win.id = "img-lab-bg";
+		_win.appendChild(inputFile);
+		cntr.insertBefore(_win, cntr.childNodes[0]);
+		_win.innerHTML += "<label title='删除' class='img-lab-del' id='img-lab'>-</label><div class=img-name></div>";
+		for(var c,n=inputFile.value.length-1; n>=0; n--){
+			c = inputFile.value.charAt(n);
+			if(c == '/' || c == '\\') break;
+		}
+		_win.childNodes[2].innerHTML = n>=0? inputFile.value.substr(n+1) : inputFile.value;
+		var lab = _win.childNodes[1];
+		bind(_win, 'mouseover', function(e){lab.style.visibility="visible";});
+		bind(_win, 'mouseout', function(e){lab.style.visibility="hidden";});
+		bind(_win, 'click', function(e){_win.parentNode.removeChild(_win);});
 	}
 	for(var i=0, j=0; j<cntr.childNodes.length; j++){
 		if( cntr.childNodes[j].tagName){

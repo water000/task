@@ -21,6 +21,9 @@ if(isset($_REQUEST['id'])){
 		exit(0);
 	}
 	
+	$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['id']));
+	
 	if(isset($_REQUEST['_timeline'])){
 		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
@@ -46,8 +49,6 @@ if(isset($_REQUEST['id'])){
 		}
 	}
 	
-	$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
-			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['id']));
 	$images = $mct_atch_ctr->get();
 }
 else if(isset($_REQUEST['_timeline'])){	
