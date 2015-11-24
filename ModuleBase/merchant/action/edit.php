@@ -92,17 +92,17 @@ else if(isset($_REQUEST['_timeline'])){
 <style type="text/css">
 aside {display:none;color:red;font-size:12px;}
 .form-fld-img{width:30px;height:30px;}
-input,textarea{width:300px;}
+#IDS_CONTAINER, input,textarea{width:400px;}
 textarea{height:85px;}
 .block{background-color:white;margin:10px 12px 0;}
 .map-ctr{display:inline-block;width:400px; height:220px;}
 .map-ctr-bigger{width:500px; height:300px;}
 
-#img-lab-bg{width:66px ;height:66px ;position:relative;display:inline-block;overflow: hidden;margin:0 .5em 0 0;}
-#img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:45px;text-align:center; width:64px;height:64px; border-radius:5px;}
+#img-lab-bg{width:67px ;height:67px ;position:relative;display:inline-block;overflow: hidden;margin:0 10px 0 0;}
+#img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:45px;text-align:center; width:65px;height:65px; border-radius:5px;}
 .img-lab-add{color:#7DB8EC;border:1px dashed #ccc;background-color:#fff;overflow:hidden;}
 .img-lab-del{color:red;border:1px dashed red;overflow:hidden;visibility:hidden;}
-.img-name{position:absolute;bottom:0;left:0;margin:2px;font-size:12px;width: 60px;overflow: hidden;text-align:center;}
+.img-name{position:absolute;bottom:0;left:0;margin:1px;font-size:12px;width: 63px;overflow: hidden;text-align:center;}
 #img-lab-bg input{width:10px;margin:2px;float:right;border:0;}
 </style>
 </head>
@@ -149,7 +149,8 @@ textarea{height:85px;}
                 <img src="<?php echo $mbs_appenv->uploadURL(CMctAttachmentControl::completePath($img['path']))?>" _data-id="<?php echo $img['id']?>" />
                 <?php }}?>
                 </span>
-                <aside class="pure-form-message-inline"><?php echo $mbs_appenv->lang('upload_max_filesize')?></aside>
+                <aside class="pure-form-message-inline"><?php echo $mbs_appenv->lang('upload_max_filesize'), 
+					',', sprintf($mbs_appenv->lang('upload_max_filenum'), $max_upload_images)?></aside>
             </div>
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
