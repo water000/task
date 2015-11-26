@@ -1,9 +1,7 @@
-<?php 
-
-
+<?php
 $default = array(
-	'mct_max_upload_images'   => 5,
+	'verify.color'    => 'yellow',
+	'pass.color'      => 'green',
+	'refused.color'   => 'red',
+	'banned.color'    => 'gray',
 );
-
-
-?>

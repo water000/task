@@ -7,7 +7,12 @@ if(isset($_GET['dosubmit']) && empty($_POST)){
 }
 
 mbs_import('', 'CMctControl', 'CMctAttachmentControl');
+mbs_import('user', 'CUserSession');
+
 $max_upload_images = $mbs_appenv->config('mct_max_upload_images');
+$allow_edit = true;
+$usess = new CUserSession();
+list($sess_uid,) = $usess->get();
 
 $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 if(isset($_REQUEST['id'])){
@@ -21,10 +26,13 @@ if(isset($_REQUEST['id'])){
 		exit(0);
 	}
 	
+	if($info['owner_id'] != $sess_uid)
+		$allow_edit = false;
+	
 	$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['id']));
 	
-	if(isset($_REQUEST['_timeline'])){
+	if(isset($_REQUEST['_timeline']) && $allow_edit){
 		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
 		if(empty($error)){
@@ -60,7 +68,8 @@ else if(isset($_REQUEST['_timeline'])){
 		$mct_ctr = CMctControl::getInstance($mbs_appenv,
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
 		unset($info['image']);
-		$info['status'] = CMctControl::ST_VERIRY;
+		$info['status'] = CMctControl::convStatus('verify');
+		$info['owner_id'] = $sess_uid;
 		$merchant_id = $mct_ctr->add($info);
 		if(empty($merchant_id)){
 			$error[] = '('.$mct_ctr->error().')';
@@ -158,10 +167,12 @@ textarea{height:85px;}
                 <?php echo CStrTools::descTime($info['create_time'], $mbs_appenv)?>
             </div>
             <?php }?>
+            <?php if($allow_edit){ ?>
             <div class="pure-control-group">
                 <label></label>
                 <button type="submit" class="pure-button pure-button-primary" onclick="submitForm(this)"><?php echo $mbs_appenv->lang('submit')?></button>
             </div>
+            <?php } ?>
 		</fieldset>
 	</form>
 	</div>
