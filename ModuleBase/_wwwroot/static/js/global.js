@@ -10,7 +10,7 @@ function bind(obj, ev, fn){
 
 //@form, a <form> dom object or an objects maps like form.elements
 function formSubmitErr(form, inputErr){
-	var elems = form.tagName && "FORM" == form.tagName ? form.elements : form, errctl, as, fnclk;
+	var elems = form.tagName && "FORM" == form.tagName ? form.elements : form, errctl, as, fnclk, elem;
 	fnclk = function(inp, _err, _as){
 		bind(inp, 'click', function(e){
 			this.style.border = "";
@@ -20,20 +20,22 @@ function formSubmitErr(form, inputErr){
 		});
 	}
 	for(var k in inputErr){
-		if(typeof elems[k] != "undefined"){
-			elems[k].style.border = "1px solid red";
+		elem =  elems.item ? elems.item(k) : elems[k];
+		if(typeof elem != "undefined"){
+			elem.style.border = "1px solid red";
 
-			as = elems[k].parentNode.getElementsByTagName("aside")[0];
-			if(as)
-				as.style.display = "none";
+			as = elem.parentNode.getElementsByTagName("aside")[0];
 			
 			errctl = document.createElement("span");
 			errctl.innerHTML = inputErr[k];
 			errctl.className = "pure-form-message-inline";
 			errctl.style.cssText = "color:red;";
-			elems[k].parentNode.insertBefore(errctl, as);
+			elem.parentNode.insertBefore(errctl, as||null);
+			
+			if(as)
+				as.style.display = "none";
 
-			fnclk(elems[k], errctl, as);
+			fnclk(elem, errctl, as);
 		}
 	}
 }
@@ -148,7 +150,7 @@ function fileUpload(opt){
 		var _win = document.createElement("span");
 		_win.id = "img-lab-bg";
 		_win.appendChild(inputFile);
-		inputFile.style.display = "none";
+		//inputFile.style.display = "none";
 		cntr.insertBefore(_win, cntr.childNodes[0]);
 		_win.innerHTML += "<label title='删除' class='img-lab-del' id='img-lab'>-</label><div class=img-name></div>";
 		for(var c,n=inputFile.value.length-1; n>=0; n--){

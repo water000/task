@@ -195,7 +195,7 @@ if(!empty($error)){
 	if(!empty($uerr)){
 ?>
 formSubmitErr({image:document.getElementById("IDS_CONTAINER"), address:document.getElementById("IDD_MAP")}, 
-	<?php echo json_encode($imgerr)?>);
+	<?php echo json_encode($uerr)?>);
 <?php
 	}
 ?>
