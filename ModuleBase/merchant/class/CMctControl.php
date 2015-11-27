@@ -4,7 +4,7 @@ class CMctControl extends CUniqRowControl {
 	
 	private static $instance   = null;
 	
-	private static final $status = array(
+	private static $status = array(
 		'verify',
 		'refused',
 		'pass',

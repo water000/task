@@ -8,8 +8,9 @@ function bind(obj, ev, fn){
 		obj['on'+ev] = fn;
 }
 
+//@form, a <form> dom object or an objects maps like form.elements
 function formSubmitErr(form, inputErr){
-	var elems = form.elements, errctl, as, fnclk;
+	var elems = form.tagName && "FORM" == form.tagName ? form.elements : form, errctl, as, fnclk;
 	fnclk = function(inp, _err, _as){
 		bind(inp, 'click', function(e){
 			this.style.border = "";

@@ -3,7 +3,7 @@ $page_title = 'add';
 $error = array();
 
 if(isset($_GET['dosubmit']) && empty($_POST)){
-	$error['image'] = $mbs_appenv->lang('upload_max_filesize');
+	$error[] = $mbs_appenv->lang('upload_max_filesize');
 }
 
 mbs_import('', 'CMctControl', 'CMctAttachmentControl');
@@ -108,7 +108,7 @@ textarea{height:85px;}
 .map-ctr-bigger{width:500px; height:300px;}
 
 #img-lab-bg{width:67px ;height:67px ;position:relative;display:inline-block;overflow: hidden;margin:0 10px 0 0;}
-#img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:45px;text-align:center; width:65px;height:65px; border-radius:5px;}
+#img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:50px;text-align:center; width:65px;height:65px; border-radius:5px;}
 .img-lab-add{color:#7DB8EC;border:1px dashed #ccc;background-color:#fff;overflow:hidden;}
 .img-lab-del{color:red;border:1px dashed red;overflow:hidden;visibility:hidden;}
 .img-name{position:absolute;bottom:0;left:0;margin:1px;font-size:12px;width: 63px;overflow: hidden;text-align:center;}
@@ -179,13 +179,28 @@ textarea{height:85px;}
 	<div class="footer"></div>
 </div>
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('global.js')?>"></script>
-<?php if(!empty($error)){?>
-<script type="text/javascript">
-formSubmitErr(document._form, <?php echo json_encode($error)?>);
-</script>
-<?php }?>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S8mKcAyeY2sq2aH7SmsGSHep"></script>
 <script type="text/javascript">
+<?php 
+if(!empty($error)){ 
+	$uerr = array();
+	if(isset($error['image'])){
+		$uerr['image'] = $error['image']; 
+		unset($error['image']);
+	}
+	if(isset($error['address'])){
+		$uerr['address'] = $error['address'];
+		unset($error['address'], $error['area'], $error['lng_lat']);
+	}
+	if(!empty($uerr)){
+?>
+formSubmitErr({image:document.getElementById("IDS_CONTAINER"), address:document.getElementById("IDD_MAP")}, 
+	<?php echo json_encode($imgerr)?>);
+<?php
+	}
+?>
+formSubmitErr(document._form, <?php echo json_encode($error)?>);
+<?php }?>
 fileUpload({
 	max_files:<?php echo $max_upload_images?>, 
 	container:"IDS_CONTAINER", 
@@ -231,7 +246,7 @@ function _on_submit(pt, area, address, map){
 			_win.getElementsByTagName("a")[0].onclick = function(e){
 				fn_submit(_pt, _area, this.previousSibling.value, map);
 				infoWindow.close();
-				var label = new BMap.Label(_addr, {offset:new BMap.Size(20,-10)});
+				var label = new BMap.Label(this.previousSibling.value, {offset:new BMap.Size(20,-10)});
 				label.setStyle({width:"initial"});
 				marker.setLabel(label);
 			}
@@ -257,7 +272,7 @@ function _on_submit(pt, area, address, map){
 		_draw(init_pt, area, address, false);
 	}
 })(_on_submit<?php echo sprintf(', "%s", "%s", "%s"', $info['lng_lat'], $info['area'], $info['address'])?>);
-
+//三王苗圃是一家经营雪松、广玉兰、桂花、香樟等等苗木的个人农场。
 </script>
 </body>
 </html>
