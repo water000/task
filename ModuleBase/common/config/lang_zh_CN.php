@@ -93,7 +93,8 @@ $lang_zh_CN = array(
 	'invalid_EN_word'       => '无效的英文单词.',
 	'choose_please'         => '-请选择-',
 	'required'              => '必须',
-	'upload_max_filesize'   => '最大'.ini_get('upload_max_filesize'),
+	'upload_max_filesize'   => '单个文件最大'.ini_get('upload_max_filesize'),
+	'upload_max_filenum'    => '最多%d个',
 	'complete_address'      => '完善地址',
 		
 	UPLOAD_ERR_INI_SIZE      => '上传的文件大小超过了系统的限制',

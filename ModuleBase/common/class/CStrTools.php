@@ -120,7 +120,7 @@ class CStrTools {
 	
 	static function fldTitle($def){
 		echo $def[CModDef::G_TL],
-			isset($def[CModDef::PA_REQ]) ? '<span class=required>*</span>':'';
+			isset($def[CModDef::PA_REQ]) && $def[CModDef::PA_REQ] ? '<span class=required>*</span>':'';
 	}
 	
 	static function fldDesc($def, $mbs_appenv){

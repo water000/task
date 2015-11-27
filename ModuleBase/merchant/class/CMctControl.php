@@ -4,10 +4,19 @@ class CMctControl extends CUniqRowControl {
 	
 	private static $instance   = null;
 	
-	const ST_VERIRY = 0;
-	const ST_REFUSE = 1;
-	const ST_PASS   = 2;
-	const ST_BAN    = 3;
+	private static final $status = array(
+		'verify',
+		'refused',
+		'pass',
+		'baned'
+	);
+	
+	static function convStatus($param){
+		if(is_numeric($param))
+			return isset(self::$status[$param]) ? self::$status[$param] : false;
+		else 
+			return array_search($param, self::$status);
+	}
 	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);

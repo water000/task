@@ -7,7 +7,12 @@ if(isset($_GET['dosubmit']) && empty($_POST)){
 }
 
 mbs_import('', 'CMctControl', 'CMctAttachmentControl');
+mbs_import('user', 'CUserSession');
+
 $max_upload_images = $mbs_appenv->config('mct_max_upload_images');
+$allow_edit = true;
+$usess = new CUserSession();
+list($sess_uid,) = $usess->get();
 
 $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 if(isset($_REQUEST['id'])){
@@ -21,33 +26,38 @@ if(isset($_REQUEST['id'])){
 		exit(0);
 	}
 	
+	if($info['owner_id'] != $sess_uid)
+		$allow_edit = false;
+	
 	$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['id']));
-	$images = $mct_atch_ctr->get();
-	//$max_upload_images -= count($images);
 	
-	if(isset($_REQUEST['_timeline'])){
+	if(isset($_REQUEST['_timeline']) && $allow_edit){
 		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
 		if(empty($error)){
-			if(isset($_FILES['logo_path']) && UPLOAD_ERR_OK == $_FILES['logo_path']['error']){
-				$logo_path = CProductControl::moveLogo($_FILES['logo_path']['tmp_name'], $mbs_appenv);
-				if($logo_path){
-					CProductControl::unlinklogo($info['logo_path'], $mbs_appenv);
-					$info['logo_path'] = $logo_path;
-				}else{
-					$error['logo_path'] = 'failed to thumbnail logo';
-				}
-			}
-			if(empty($error)){
-				$info['edit_time'] = time();
-				$ret = $mct_ctr->set($info);
-				if(empty($ret)){
-					$error[] = $mct_ctr->error();
+			unset($info['image']);
+			$info['edit_time'] = time();
+			$ret = $mct_ctr->set($info);
+			if(empty($ret)){
+				$error[] = $mct_ctr->error();
+			}else{
+				for($i=0; $i<count($_FILES['image']['error']); ++$i){
+					if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
+						try {
+							$mct_atch_ctr->add(array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]));
+						} catch (Exception $e) {
+							$error[] = $e->getMessage();
+						}
+					}else{
+						$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
+					}
 				}
 			}
 		}
 	}
+	
+	$images = $mct_atch_ctr->get();
 }
 else if(isset($_REQUEST['_timeline'])){	
 	$info_def = $info;
@@ -58,7 +68,8 @@ else if(isset($_REQUEST['_timeline'])){
 		$mct_ctr = CMctControl::getInstance($mbs_appenv,
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
 		unset($info['image']);
-		$info['status'] = CMctControl::ST_VERIRY;
+		$info['status'] = CMctControl::convStatus('verify');
+		$info['owner_id'] = $sess_uid;
 		$merchant_id = $mct_ctr->add($info);
 		if(empty($merchant_id)){
 			$error[] = '('.$mct_ctr->error().')';
@@ -69,10 +80,12 @@ else if(isset($_REQUEST['_timeline'])){
 			for($i=0; $i<count($_FILES['image']['error']); ++$i){
 				if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 					try {
-						$mct_atch_ctr->add($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
+						$mct_atch_ctr->add(array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]));
 					} catch (Exception $e) {
 						$error[] = $e->getMessage();
 					}
+				}else{
+					$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 				}
 			}
 		}
@@ -88,17 +101,17 @@ else if(isset($_REQUEST['_timeline'])){
 <style type="text/css">
 aside {display:none;color:red;font-size:12px;}
 .form-fld-img{width:30px;height:30px;}
-input,textarea{width:300px;}
+#IDS_CONTAINER, input,textarea{width:400px;}
 textarea{height:85px;}
 .block{background-color:white;margin:10px 12px 0;}
 .map-ctr{display:inline-block;width:400px; height:220px;}
 .map-ctr-bigger{width:500px; height:300px;}
 
-#img-lab-bg{width:66px ;height:66px ;position:relative;display:inline-block;overflow: hidden;margin:0 .5em 0 0;}
-#img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:45px;text-align:center; width:64px;height:64px; border-radius:5px;}
+#img-lab-bg{width:67px ;height:67px ;position:relative;display:inline-block;overflow: hidden;margin:0 10px 0 0;}
+#img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:45px;text-align:center; width:65px;height:65px; border-radius:5px;}
 .img-lab-add{color:#7DB8EC;border:1px dashed #ccc;background-color:#fff;overflow:hidden;}
 .img-lab-del{color:red;border:1px dashed red;overflow:hidden;visibility:hidden;}
-.img-name{position:absolute;bottom:0;left:0;margin:2px;font-size:12px;width: 60px;overflow: hidden;text-align:center;}
+.img-name{position:absolute;bottom:0;left:0;margin:1px;font-size:12px;width: 63px;overflow: hidden;text-align:center;}
 #img-lab-bg input{width:10px;margin:2px;float:right;border:0;}
 </style>
 </head>
@@ -142,10 +155,11 @@ textarea{height:85px;}
                 <label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
                 <span id=IDS_CONTAINER style="display:inline-block;">
                 <?php if(isset($images)){foreach ($images as $img){ ?>
-                <img src="<?php echo $mbs_appenv->uploadURL($img['path'])?>" _data-id="<?php echo $img['id']?>" />
+                <img src="<?php echo $mbs_appenv->uploadURL(CMctAttachmentControl::completePath($img['path']))?>" _data-id="<?php echo $img['id']?>" />
                 <?php }}?>
                 </span>
-                <aside class="pure-form-message-inline"><?php echo $mbs_appenv->lang('upload_max_filesize')?></aside>
+                <aside class="pure-form-message-inline"><?php echo $mbs_appenv->lang('upload_max_filesize'), 
+					',', sprintf($mbs_appenv->lang('upload_max_filenum'), $max_upload_images)?></aside>
             </div>
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
@@ -153,10 +167,12 @@ textarea{height:85px;}
                 <?php echo CStrTools::descTime($info['create_time'], $mbs_appenv)?>
             </div>
             <?php }?>
+            <?php if($allow_edit){ ?>
             <div class="pure-control-group">
                 <label></label>
                 <button type="submit" class="pure-button pure-button-primary" onclick="submitForm(this)"><?php echo $mbs_appenv->lang('submit')?></button>
             </div>
+            <?php } ?>
 		</fieldset>
 	</form>
 	</div>
