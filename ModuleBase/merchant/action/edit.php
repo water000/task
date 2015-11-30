@@ -148,7 +148,7 @@ textarea{height:85px;}
 			</div>
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['telephone'])?></label>
-				<input type="text" name="name" value="<?php echo $info['telephone']?>" />
+				<input type="text" name="telephone" value="<?php echo $info['telephone']?>" />
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['telephone'], $mbs_appenv)?></aside>
 			</div>
 			<div class="pure-control-group">

@@ -20,17 +20,16 @@ function formSubmitErr(form, inputErr){
 		});
 	}
 	for(var k in inputErr){
-		elem =  elems.item ? elems.item(k) : elems[k];
+		elem =  elems[k]; // some field's name is euqal to attribute like "name"
 		if(typeof elem != "undefined"){
 			elem.style.border = "1px solid red";
 
 			as = elem.parentNode.getElementsByTagName("aside")[0];
-			
 			errctl = document.createElement("span");
 			errctl.innerHTML = inputErr[k];
 			errctl.className = "pure-form-message-inline";
 			errctl.style.cssText = "color:red;";
-			elem.parentNode.insertBefore(errctl, as||null);
+			elem.parentNode.insertBefore(errctl, as);
 			
 			if(as)
 				as.style.display = "none";
