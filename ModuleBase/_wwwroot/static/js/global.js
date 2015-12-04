@@ -149,7 +149,7 @@ function fileUpload(opt){
 		var _win = document.createElement("span");
 		_win.id = "img-lab-bg";
 		_win.appendChild(inputFile);
-		//inputFile.style.display = "none";
+		inputFile.style.display = "none";
 		cntr.insertBefore(_win, cntr.childNodes[0]);
 		_win.innerHTML += "<label title='删除' class='img-lab-del' id='img-lab'>-</label><div class=img-name></div>";
 		for(var c,n=inputFile.value.length-1; n>=0; n--){

@@ -29,7 +29,7 @@ class CMerchantDef extends CModDef {
 				'merchant_attachment' => '(
 					id int unsigned not null auto_increment,
 					merchant_id int unsigned not null,
-					format tiny int not null, -- image, video, ...
+					format tinyint not null, -- image, video, ...
 					name varchar(16) not null,
 					path varchar(64) not null, -- only path, not include domain
 					abstract varchar(32) not null,
