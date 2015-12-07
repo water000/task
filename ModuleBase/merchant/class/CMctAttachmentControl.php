@@ -48,7 +48,7 @@ class CMctAttachmentControl extends CMultiRowControl{
 		return self::$instance;
 	}
 	
-	function add($arr){
+	function addEx(&$arr){
 		list($src, $filename) = $arr;
 		$name = md5(uniqid('mct_', true));
 		$hash = substr($name, 0, 2);
@@ -67,13 +67,15 @@ class CMctAttachmentControl extends CMultiRowControl{
 		$dest[2][2] = $dest_dir.$name.$dest[2][2].'.'.CImage::THUMB_FORMAT;
 		try {
 			CImage::thumbnail($src, $dest);
-			$id = parent::add(array(
+			$arr = array(
 				'merchant_id'  => $this->primaryKey,
 				'path'         => $hash.'/'.$name,
 				'name'         => $filename,
 				'create_time'  => time(),
 				'format'       => 1,
-			));
+			);
+			$id = parent::add($arr);
+			$arr['id'] = $id;
 		} catch (Exception $e) {
 			trigger_error('thumbnail error: '.$e->getMessage());
 			return false;

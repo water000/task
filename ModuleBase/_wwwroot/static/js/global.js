@@ -150,7 +150,7 @@ function fileUpload(opt){
 		_win.id = "img-lab-bg";
 		_win.appendChild(inputFile);
 		inputFile.style.display = "none";
-		cntr.insertBefore(_win, cntr.childNodes[0]);
+		cntr.insertBefore(_win, cntr.childNodes.length>0 ? cntr.childNodes[cntr.childNodes.length-1] : null);
 		_win.innerHTML = "<label title='删除' class='img-lab-del' id='img-lab'>-</label><div class=img-name></div>";
 		inputFile.style.display = "none";
 		_win.insertBefore(inputFile, _win.childNodes[0]);
@@ -168,7 +168,6 @@ function fileUpload(opt){
 	for(var j=0; j<cntr.childNodes.length; j++){
 		if( cntr.childNodes[j].tagName){
 			_show(cntr.childNodes[j]);
-			num_of_files++;
 		}
 	}
 	if(num_of_files < opt.max_files) _add();

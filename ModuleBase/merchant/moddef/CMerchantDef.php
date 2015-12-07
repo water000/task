@@ -27,7 +27,9 @@ class CMerchantDef extends CModDef {
 					create_time int unsigned not null,
 					edit_time int unsigned not null,
 					primary key(id),
-					key(owner_id)
+					key(owner_id),
+					unique key(name),
+					unique key(lng_lat)
 				)',
 				'merchant_attachment' => '(
 					id int unsigned not null auto_increment,

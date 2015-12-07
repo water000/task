@@ -31,6 +31,8 @@ if(isset($_REQUEST['id'])){
 	
 	$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), intval($_REQUEST['id']));
+	$images = $mct_atch_ctr->get();
+	$images = empty($images) ? array() : $images;
 	
 	if(isset($_REQUEST['_timeline']) && $allow_edit){
 		$info = array_intersect_key($_REQUEST, $info) + $info;
@@ -45,11 +47,13 @@ if(isset($_REQUEST['id'])){
 				for($i=0; $i<count($_FILES['image']['error']); ++$i){
 					if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 						try {
-							$mct_atch_ctr->add(array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]));
+							$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
+							$id = $mct_atch_ctr->addEx($img);
+							$images[] = $img;
 						} catch (Exception $e) {
 							$error[] = $e->getMessage();
 						}
-					}else{
+					}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
 						$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 					}
 				}
@@ -57,7 +61,6 @@ if(isset($_REQUEST['id'])){
 		}
 	}
 	
-	$images = $mct_atch_ctr->get();
 }
 else if(isset($_REQUEST['_timeline'])){	
 	$info_def = $info;
@@ -70,18 +73,18 @@ else if(isset($_REQUEST['_timeline'])){
 		unset($info['image']);
 		$info['status'] = CMctControl::convStatus('verify');
 		$info['owner_id'] = $sess_uid;
-		$info['create_time'] = time();
+		$info['edit_time'] = $info['create_time'] = time();
 		$merchant_id = $mct_ctr->add($info);
 		if(empty($merchant_id)){
 			$error[] = '('.$mct_ctr->error().')';
 		}else{
-			$info = $info_def;
 			$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance(), $merchant_id);
 			for($i=0; $i<count($_FILES['image']['error']); ++$i){
 				if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 					try {
-						$mct_atch_ctr->add(array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]));
+						$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
+						$id = $mct_atch_ctr->addEx($img);
 					} catch (Exception $e) {
 						$error[] = $e->getMessage();
 					}
@@ -89,6 +92,8 @@ else if(isset($_REQUEST['_timeline'])){
 					$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 				}
 			}
+			
+			$info = $info_def;
 		}
 	}
 }
@@ -102,13 +107,13 @@ else if(isset($_REQUEST['_timeline'])){
 <style type="text/css">
 aside {display:none;color:red;font-size:12px;}
 .form-fld-img{width:30px;height:30px;}
-#IDS_CONTAINER, input,textarea{width:400px;}
+#IDS_CONTAINER, input,textarea{width:380px;}
 textarea{height:85px;}
 .block{background-color:white;margin:10px 12px 0;}
-.map-ctr{display:inline-block;width:400px; height:220px;}
+.map-ctr{display:inline-block;width:380px; height:220px;}
 .map-ctr-bigger{width:500px; height:300px;}
 
-#img-lab-bg{width:67px ;height:67px ;position:relative;display:inline-block;overflow: hidden;margin:0 10px 0 0;}
+#img-lab-bg{width:67px ;height:67px ;position:relative;display:inline-block;overflow: hidden;margin:0 6px 0 0;}
 #img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:50px;text-align:center; width:65px;height:65px; border-radius:5px;}
 .img-lab-add{color:#7DB8EC;border:1px dashed #ccc;background-color:#fff;overflow:hidden;}
 .img-lab-del{color:red;border:1px dashed red;overflow:hidden;visibility:hidden;}
@@ -128,7 +133,7 @@ textarea{height:85px;}
 		<input type="hidden" name="area" value="" />
 		<fieldset>
 			<?php if(isset($_REQUEST['_timeline'])){ if(isset($error[0])){ ?>
-			<div class=error>&times;<?php echo $error[0]?></div>
+			<div class=error><?php echo $error[0]?></div>
 			<?php unset($error[0]);}else if(empty($error)){?>
 			<div class=success><?php echo $mbs_appenv->lang('operation_success')?></div> 
 			<?php }} ?>
@@ -270,7 +275,8 @@ function _on_submit(pt, area, address, map){
 		});
 	});
 	if(init_pt != ""){
-		_draw(init_pt, area, address, false);
+		_draw(point, area, address, false);
+		fn_submit(point, area, address, map);
 	}
 })(_on_submit<?php echo sprintf(', "%s", "%s", "%s"', $info['lng_lat'], $info['area'], $info['address'])?>);
 //三王苗圃是一家经营雪松、广玉兰、桂花、香樟等等苗木的个人农场。
