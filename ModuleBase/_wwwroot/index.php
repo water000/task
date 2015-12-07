@@ -88,6 +88,20 @@ function mbs_title($action='', $mod='', $system=''){
 	}
 }
 
+//exception, database error, ...
+function mbs_error_log($msg, $file, $lineno){
+	global $mbs_appenv;
+	//U: marking as user level
+	error_log(sprintf("[%s](%s.%s)%s(%s:%d)U\n",
+			date('Y/m/d H:i:s'), 
+			$mbs_appenv->item('cur_mod'),
+			$mbs_appenv->item('cur_action'),
+			$msg,
+			$file, 
+			$lineno
+	), 0);
+}
+
 function _main($mbs_appenv){
 	global $mbs_cur_moddef, $mbs_cur_actiondef;
 	

@@ -28,7 +28,7 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 	<div style="margin:10px;">
 		<table class="pure-table pure-table-horizontal">
 			<thead><tr><td>#</td><td><?php echo $mbs_appenv->lang('content')?></td>
-				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'edit', CModDef::P_ARGS, 'address', CModDef::G_TL)?></td>
+				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'edit', CModDef::P_ARGS, 'address', CModDef::G_DC)?></td>
 				<td><?php echo $mbs_appenv->lang('owner')?></td>
 				<td><?php echo $mbs_appenv->lang(array('edit', 'time'))?></td>
 				<td><?php echo $mbs_appenv->lang('status')?></td></tr></thead>

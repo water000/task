@@ -23,6 +23,7 @@ $default = array(
 		'localhost_3306_module_base' => array('username'=>'root', 'pwd'=>''),
 		//... more
 	),
+	'PDO_ER_DUP_ENTRY'     => '23000', 
 	
 	'memcache'             => array(
 		//array('localhost', '11211'),
@@ -49,6 +50,8 @@ $default = array(
 		'product.attr_list.map_changed' => array('merchant.CMctEvent'),
 		'product.attr_edit.attr_changed' => array('merchant.CMctEvent'),
 	),
+	
+	
 );
 
 ?>
