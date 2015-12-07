@@ -47,6 +47,10 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 			<?php } ?>
 		</table>
 	</div>
+	<div style="margin:10px;">
+		<button class="pure-button pure-button-primary">?&nbsp;<?php echo $mbs_appenv->lang('verify')?></button>
+		<button class="pure-button button-error" style="margin-left: 10px;">-&nbsp;<?php echo $mbs_appenv->lang('delete')?></button>
+	</div>
 	<div class="footer"></div>
 </div>
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('global.js')?>"></script>
