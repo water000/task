@@ -7,7 +7,10 @@ class CMerchantDef extends CModDef {
 				self::G_NM=>'merchant',
 				self::M_CS=>'utf-8',
 				self::G_TL=>'商家系统',
-				self::G_DC=>''
+				self::G_DC=>'',
+			),
+			self::LD_FTR => array(
+				array('user', 'checkLogin', true)
 			),
 			self::TBDEF => array(
 				'merchant_info' => '(
@@ -50,7 +53,7 @@ class CMerchantDef extends CModDef {
 						'lng_lat'    => array(self::PA_REQ=>1, self::G_TL=>'位置'),
 						'name'       => array(self::PA_REQ=>1, self::G_TL=>'名称', self::PA_RNG=>'2, 16'),
 						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'简介', self::PA_RNG=>'16, 256'),
-						'telephone'  => array(self::PA_REQ=>0, self::G_TL=>'电话', self::PA_RNG=>'11,', self::G_DC=>'电话号码，可以不填'),
+						'telephone'  => array(self::PA_REQ=>0, self::G_TL=>'电话', self::PA_RNG=>'11,32', self::G_DC=>'电话号码,多个用封号;分隔'),
 						'area'       => array(self::PA_REQ=>1, self::G_TL=>'省市区'),
 						'address'    => array(self::PA_REQ=>1, self::G_DC=>'详细地址'),
 						'image'      => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'图片'),

@@ -70,6 +70,7 @@ else if(isset($_REQUEST['_timeline'])){
 		unset($info['image']);
 		$info['status'] = CMctControl::convStatus('verify');
 		$info['owner_id'] = $sess_uid;
+		$info['create_time'] = time();
 		$merchant_id = $mct_ctr->add($info);
 		if(empty($merchant_id)){
 			$error[] = '('.$mct_ctr->error().')';
@@ -128,7 +129,7 @@ textarea{height:85px;}
 		<fieldset>
 			<?php if(isset($_REQUEST['_timeline'])){ if(isset($error[0])){ ?>
 			<div class=error>&times;<?php echo $error[0]?></div>
-			<?php }else if(empty($error)){?>
+			<?php unset($error[0]);}else if(empty($error)){?>
 			<div class=success><?php echo $mbs_appenv->lang('operation_success')?></div> 
 			<?php }} ?>
 			
@@ -239,7 +240,7 @@ function _on_submit(pt, area, address, map){
 			_win.innerHTML =
 				"<div style='margin:0 0 5px 0;padding:0.2em 0;font-weight:bold;width:230px;overflow:hidden;'><?php echo $mbs_appenv->lang('complete_address')?>("+_area+")</div>" + 
 				//"<p style='margin:0 0 5px 0;line-height:1.5;font-size:13px;'>"+_area+"</p>" +
-				"<div style='margin:0 0 5px 0;'><input type=text style='width:170px;' name=address value='"+_addr+"' />"+
+				"<div style='margin:0 0 5px 0;'><input type=text style='width:170px;' value='"+_addr+"' />"+
 				"<a class='pure-button' style='margin:0 0 0 5px;'><?php echo $mbs_appenv->lang('confirm')?></a></div>";
 			var infoWindow = new BMap.InfoWindow(_win);
 			map.openInfoWindow(infoWindow, _pt);

@@ -151,7 +151,9 @@ function fileUpload(opt){
 		_win.appendChild(inputFile);
 		inputFile.style.display = "none";
 		cntr.insertBefore(_win, cntr.childNodes[0]);
-		_win.innerHTML += "<label title='删除' class='img-lab-del' id='img-lab'>-</label><div class=img-name></div>";
+		_win.innerHTML = "<label title='删除' class='img-lab-del' id='img-lab'>-</label><div class=img-name></div>";
+		inputFile.style.display = "none";
+		_win.insertBefore(inputFile, _win.childNodes[0]);
 		for(var c,n=inputFile.value.length-1; n>=0; n--){
 			c = inputFile.value.charAt(n);
 			if(c == '/' || c == '\\') break;

@@ -24,16 +24,6 @@ if(isset($_REQUEST['delete']) && isset($_REQUEST['id'])){
 	$mbs_appenv->echoex($mbs_appenv->lang('operation_success'), '', $mbs_appenv->toURL('list'));
 	exit(0);
 }
-
-if(isset($_FILES['imgFile']) && $_FILES['imgFile']['size'] > 0){
-	mbs_import('', 'CInfoControl');
-	
-	$path = CInfoControl::moveEditorImg('imgFile', $mbs_appenv);
-	if(false === $path)
-		echo json_encode(array('error'=>1, 'message'=>'error'));
-	else 
-		echo json_encode(array('error'=>0, 'url'=>'http://'.$mbs_appenv->uploadURL($path,'', $_SERVER['HTTP_HOST'])));
-}
 	
 if(isset($_REQUEST['dir'])){
 	if(empty($_FILES)){
