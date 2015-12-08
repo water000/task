@@ -86,6 +86,9 @@ else if(isset($_REQUEST['_timeline'])){
 						$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
 						$id = $mct_atch_ctr->addEx($img);
 					} catch (Exception $e) {
+						if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
+							
+						}
 						$error[] = $e->getMessage();
 					}
 				}else{
