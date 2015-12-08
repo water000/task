@@ -16,7 +16,7 @@ class CMerchantDef extends CModDef {
 				'merchant_info' => '(
 					id int unsigned not null auto_increment,
 					owner_id int unsigned not null,
-					lng_lat varchar(32) not null, -- split by comma,
+					lng_lat varchar(32) not null, -- split by -,
 					area varchar(16) not null, -- province-city-area
 					address varchar(32) not null, -- country-street-...
 					post_code varchar(9) not null,
@@ -28,8 +28,7 @@ class CMerchantDef extends CModDef {
 					edit_time int unsigned not null,
 					primary key(id),
 					key(owner_id),
-					unique key(name),
-					unique key(lng_lat)
+					unique key(name)
 				)',
 				'merchant_attachment' => '(
 					id int unsigned not null auto_increment,

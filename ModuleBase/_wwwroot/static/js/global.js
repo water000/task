@@ -148,6 +148,8 @@ function fileUpload(opt){
 	var _edit = function(inputFile){
 		var _win = document.createElement("span");
 		_win.id = "img-lab-bg";
+		_win.appendChild(inputFile);
+		inputFile.style.display = "none";
 		cntr.insertBefore(_win, cntr.childNodes.length>0 ? cntr.childNodes[cntr.childNodes.length-1] : null);
 		_win.innerHTML = "<label title='删除' class='img-lab-del' id='img-lab'>-</label><div class=img-name></div>";
 		inputFile.style.display = "none";

@@ -33,7 +33,7 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 				<td><?php echo $mbs_appenv->lang(array('edit', 'time'))?></td>
 				<td><?php echo $mbs_appenv->lang('status')?></td></tr></thead>
 			<?php $i=0; foreach($list as $row){ $user_ctr->setPrimaryKey($row['owner_id']);$uinfo=$user_ctr->get(); ?>
-			<tr><td><?php echo ++$i;?></td>
+			<tr><td><input type="checkbox" name="mid" value="<?php echo $row['id']?>" /><?php echo ++$i;?></td>
 				<td><a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$row['id']))?>">
 					<?php echo CStrTools::txt2html($row['name'])?></a><br />
 					<?php echo CStrTools::txt2html(CStrTools::cutstr($row['abstract'], 32, $mbs_appenv->item('charset')))?>
@@ -46,6 +46,10 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 					<?php echo $mbs_appenv->lang(CMctControl::convStatus($row['status']))?></td></tr>
 			<?php } ?>
 		</table>
+	</div>
+	<div style="margin:10px;">
+		<button class="pure-button pure-button-primary">?&nbsp;<?php echo $mbs_appenv->lang('verify')?></button>
+		<button class="pure-button button-error" style="margin-left: 10px;">-&nbsp;<?php echo $mbs_appenv->lang('delete')?></button>
 	</div>
 	<div class="footer"></div>
 </div>

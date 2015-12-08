@@ -5,9 +5,9 @@ class CMctControl extends CUniqRowControl {
 	private static $instance   = null;
 	
 	private static $status = array(
-		'verify',
+		'wait_verify',
 		'refused',
-		'pass',
+		'passed',
 		'baned'
 	);
 	
