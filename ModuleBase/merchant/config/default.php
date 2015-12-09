@@ -1,7 +1,7 @@
 <?php
 $default = array(
-	'verify.color'          => 'orange',
-	'pass.color'            => 'green',
+	'wait_verify.color'     => 'orange',
+	'passed.color'          => 'green',
 	'refused.color'         => 'red',
 	'banned.color'          => 'gray',
 		
