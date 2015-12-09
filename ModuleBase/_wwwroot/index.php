@@ -92,14 +92,18 @@ function mbs_title($action='', $mod='', $system=''){
 function mbs_error_log($msg, $file, $lineno){
 	global $mbs_appenv;
 	//U: marking as user level
-	error_log(sprintf("U[%s](%s.%s)%s(%s:%d)\n",
+	$error = sprintf("U[%s](%s.%s)%s(%s:%d)\n",
 			date('Y/m/d H:i:s'), 
 			$mbs_appenv->item('cur_mod'),
 			$mbs_appenv->item('cur_action'),
 			$msg,
 			$file, 
 			$lineno
-	), 0);
+	);
+	if(RTM_DEBUG)
+		echo $error;
+	else
+		error_log($error, 0);
 }
 
 function _main($mbs_appenv){

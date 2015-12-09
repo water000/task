@@ -34,6 +34,23 @@ if(isset($_REQUEST['id'])){
 	$images = $mct_atch_ctr->get();
 	$images = empty($images) ? array() : $images;
 	
+	if($allow_edit && isset($_REQUEST['delete']) && isset($_REQUEST['aid'])){
+		foreach($images as $k => $img){
+			if($img['id'] == $_REQUEST['aid']){
+				$path = $mbs_appenv->uploadPath(CMctAttachmentControl::completePath($img['path']));
+				if(file_exists($path)){
+					unlink($path);
+				}
+				$mct_atch_ctr->setSecondKey($img['id']);
+				$mct_atch_ctr->delNode();
+				unset($images[$k]);
+				break;
+			}
+		}
+		//$mbs_appenv->echoex($mbs_appenv->lang('operation_success'));
+		//exit(0);
+	}
+	
 	if(isset($_REQUEST['_timeline']) && $allow_edit){
 		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
@@ -46,13 +63,9 @@ if(isset($_REQUEST['id'])){
 			}else{
 				for($i=0; $i<count($_FILES['image']['error']); ++$i){
 					if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
-						try {
-							$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
-							$id = $mct_atch_ctr->addEx($img);
-							$images[] = $img;
-						} catch (Exception $e) {
-							$error[] = $e->getMessage();
-						}
+						$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
+						$id = $mct_atch_ctr->addEx($img);
+						$images[] = $img;
 					}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
 						$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 					}
@@ -74,25 +87,23 @@ else if(isset($_REQUEST['_timeline'])){
 		$info['status'] = CMctControl::convStatus('verify');
 		$info['owner_id'] = $sess_uid;
 		$info['edit_time'] = $info['create_time'] = time();
-		$merchant_id = $mct_ctr->add($info);
-		if(empty($merchant_id)){
-			$error[] = '('.$mct_ctr->error().')';
-		}else{
+		try {
+			$merchant_id = $mct_ctr->add($info);
+		} catch (Exception $e) {
+			if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
+				$error['name'] = sprintf('"%s" %s', $info['name'], $mbs_appenv->lang('existed'));
+			}
+			mbs_error_log($e->getMessage(), __FILE__, __LINE__);
+		}
+		if($merchant_id){
 			$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance(), $merchant_id);
 			for($i=0; $i<count($_FILES['image']['error']); ++$i){
 				if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
-					try {
-						$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
-						$id = $mct_atch_ctr->addEx($img);
-					} catch (Exception $e) {
-						if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
-							
-						}
-						$error[] = $e->getMessage();
-					}
+					$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
+					$id = $mct_atch_ctr->addEx($img);
 				}else{
-					$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
+					$error['image'] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 				}
 			}
 			
@@ -116,7 +127,7 @@ textarea{height:85px;}
 .map-ctr{display:inline-block;width:380px; height:220px;}
 .map-ctr-bigger{width:500px; height:300px;}
 
-#img-lab-bg{width:67px ;height:67px ;position:relative;display:inline-block;overflow: hidden;margin:0 6px 0 0;}
+#img-lab-bg{width:67px ;height:67px ;position:relative;display:inline-block;overflow: hidden;margin:0 3px 0 0;}
 #img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:50px;text-align:center; width:65px;height:65px; border-radius:5px;}
 .img-lab-add{color:#7DB8EC;border:1px dashed #ccc;background-color:#fff;overflow:hidden;}
 .img-lab-del{color:red;border:1px dashed red;overflow:hidden;visibility:hidden;}
@@ -138,7 +149,8 @@ textarea{height:85px;}
 			<?php if(isset($_REQUEST['_timeline'])){ if(isset($error[0])){ ?>
 			<div class=error><?php echo $error[0]?></div>
 			<?php unset($error[0]);}else if(empty($error)){?>
-			<div class=success><?php echo $mbs_appenv->lang('operation_success')?></div> 
+			<div class=success id=IDD_SUCC_BOX><?php echo $mbs_appenv->lang('operation_success')?></div> 
+			<script type="text/javascript">setTimeout(function(){var box=document.getElementById("IDD_SUCC_BOX");box.parentNode.removeChild(box);}, 4500);</script>
 			<?php }} ?>
 			
 			<div class="pure-control-group">
@@ -214,7 +226,17 @@ fileUpload({
 	max_files:<?php echo $max_upload_images?>, 
 	container:"IDS_CONTAINER", 
 	file_name:"image[]", 
-	onFileDel:function(file){}
+	onFileDel:function(file){
+		var id = <?php echo isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;?>;
+		if(0 == id) return;
+		var f = document.createElement("form");
+		f.method = "post";
+		f.innerHTML = "<input type='hidden' name='id' value='"+id+"' />"+
+			"<input type='hidden' name='delete' value='' />"+
+			"<input type='hidden' name='aid' value='"+file.getAttribute("_data-id")+"' />";
+		document.body.appendChild(f);
+		f.submit();
+	}
 });
 function _on_submit(pt, area, address, map){
 	//document.getElementById("IDD_MAP").className = "map-ctr";
