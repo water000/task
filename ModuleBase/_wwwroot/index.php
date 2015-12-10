@@ -106,6 +106,13 @@ function mbs_error_log($msg, $file, $lineno){
 		error_log($error, 0);
 }
 
+function mbs_runtime_close_debug(){ // call the function before the echoex invoked if json request coming
+	global $mbs_cur_moddef, $mbs_appenv;
+	
+	$mbs_cur_actiondef[CModDef::P_DOF] = ''; // set the key to close the output when app terminated
+	$mbs_appenv->setLogAPI(null);  // do NOT record log
+}
+
 function _main($mbs_appenv){
 	global $mbs_cur_moddef, $mbs_cur_actiondef;
 	
@@ -181,17 +188,19 @@ function _main($mbs_appenv){
 		CDbPool::getInstance()->setClass(CDbPool::CLASS_PDODEBUG);
 		CMemcachedPool::getInstance()->setClass(CMemcachedPool::CLASS_MEMCACHEDDEBUG);
 	
-		register_shutdown_function(function($mbs_appenv){
-			if(false !== strpos(PHP_SAPI, 'cli')){
-				CDbPool::getInstance()->cli();
-				CMemcachedPool::getInstance()->cli();
-			}else if('html' == $mbs_appenv->item('client_accept')){
-				echo '<div><a href="javascript:;" style="font-size:12px;color:#888;display:block;text-align:right;" onclick="open(null, null, \'width=800,height=600\').document.write(this.parentNode.nextSibling.innerHTML)">debug-info</a></div><div style="display:none">';
-				CDbPool::getInstance()->html();
-				CMemcachedPool::getInstance()->html();
-				echo '</div>';
+		register_shutdown_function(function($mbs_appenv, $mbs_cur_actiondef){
+			if(!isset($mbs_cur_actiondef[CModDef::P_DOF])){
+				if(false !== strpos(PHP_SAPI, 'cli')){
+					CDbPool::getInstance()->cli();
+					CMemcachedPool::getInstance()->cli();
+				}else if('html' == $mbs_appenv->item('client_accept')){
+					echo '<div><a href="javascript:;" style="font-size:12px;color:#888;display:block;text-align:right;" onclick="open(null, null, \'width=800,height=600\').document.write(this.parentNode.nextSibling.innerHTML)">debug-info</a></div><div style="display:none">';
+					CDbPool::getInstance()->html();
+					CMemcachedPool::getInstance()->html();
+					echo '</div>';
+				}
 			}
-		}, $mbs_appenv);
+		}, $mbs_appenv, $mbs_cur_actiondef);
 	
 		mbs_import('core', 'CLogAPI');
 		$mbs_appenv->setLogAPI(new CDBLogAPI(CDbPool::getInstance()->getDefaultConnection()));
@@ -202,7 +211,8 @@ function _main($mbs_appenv){
 		try {
 			$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
 		} catch (Exception $e) {
-			echo $mbs_appenv->lang('db_exception', 'common');
+			//echo $mbs_appenv->lang('db_exception', 'common');
+			echo $e->getMessage();
 		}
 		echo empty($err)? 'install complete, successed' : "error: \n". implode("\n<br/>", $err);
 	}else{

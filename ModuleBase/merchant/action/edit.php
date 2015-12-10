@@ -34,46 +34,45 @@ if(isset($_REQUEST['id'])){
 	$images = $mct_atch_ctr->get();
 	$images = empty($images) ? array() : $images;
 	
-	if($allow_edit && isset($_REQUEST['delete']) && isset($_REQUEST['aid'])){
-		foreach($images as $k => $img){
-			if($img['id'] == $_REQUEST['aid']){
-				$path = $mbs_appenv->uploadPath(CMctAttachmentControl::completePath($img['path']));
-				if(file_exists($path)){
-					unlink($path);
-				}
-				$mct_atch_ctr->setSecondKey($img['id']);
-				$mct_atch_ctr->delNode();
-				unset($images[$k]);
-				break;
-			}
-		}
-		//$mbs_appenv->echoex($mbs_appenv->lang('operation_success'));
-		//exit(0);
-	}
-	
 	if(isset($_REQUEST['_timeline']) && $allow_edit){
-		$info = array_intersect_key($_REQUEST, $info) + $info;
-		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
-		if(empty($error)){
-			unset($info['image']);
-			$info['edit_time'] = time();
-			$ret = $mct_ctr->set($info);
-			if(empty($ret)){
-				$error[] = $mct_ctr->error();
-			}else{
-				for($i=0; $i<count($_FILES['image']['error']); ++$i){
-					if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
-						$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
-						$id = $mct_atch_ctr->addEx($img);
-						$images[] = $img;
-					}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
-						$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
+		if(isset($_REQUEST['delete']) && isset($_REQUEST['aid'])){
+			foreach($images as $k => $img){
+				if($img['id'] == $_REQUEST['aid']){
+					$path = $mbs_appenv->uploadPath(CMctAttachmentControl::completePath($img['path']));
+					if(file_exists($path)){
+						unlink($path);
+					}
+					$mct_atch_ctr->setSecondKey($img['id']);
+					$mct_atch_ctr->delNode();
+					unset($images[$k]);
+					break;
+				}
+			}
+			//$mbs_appenv->echoex($mbs_appenv->lang('operation_success'));
+			//exit(0);
+		}else{
+			$info = array_intersect_key($_REQUEST, $info) + $info;
+			$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
+			if(empty($error)){
+				unset($info['image']);
+				$info['edit_time'] = time();
+				$ret = $mct_ctr->set($info);
+				if(empty($ret)){
+					$error[] = $mct_ctr->error();
+				}else{
+					for($i=0; $i<count($_FILES['image']['error']); ++$i){
+						if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
+							$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
+							$id = $mct_atch_ctr->addEx($img);
+							$images[] = $img;
+						}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
+							$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
+						}
 					}
 				}
 			}
 		}
 	}
-	
 }
 else if(isset($_REQUEST['_timeline'])){	
 	$info_def = $info;
