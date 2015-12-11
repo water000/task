@@ -9,19 +9,19 @@ require_once dirname(__FILE__).'/CPDODebug.php';
 class CDbPool implements IDebugOutput
 {
 	/**
-	 * @desc HOSTÓëPORTÖ®¼äµÄ·Ö¸ô·û
+	 * @desc HOSTï¿½ï¿½PORTÖ®ï¿½ï¿½Ä·Ö¸ï¿½ï¿½ï¿½
 	 * @var string
 	 */
 	const SEP_HOST_PORT = '_';
 	
 	/**
-	 * @desc PDO µÄÀàÃû
+	 * @desc PDO ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @var string
 	 */
 	CONST CLASS_PDO = 'PDO';
 	
 	/**
-	 * @desc PDODebug µÄÀàÃû
+	 * @desc PDODebug ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @var string
 	 */
 	CONST CLASS_PDODEBUG = 'CPDODebug';
@@ -149,7 +149,7 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc »ñÈ¡CDbPoolµÄÊµÀý
+	 * @desc ï¿½ï¿½È¡CDbPoolï¿½ï¿½Êµï¿½ï¿½
 	 * @return instance of CDbPool
 	 */
 	public static function getInstance()
@@ -162,7 +162,7 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc ÉèÖÃµ±Ç°µÄPDOÀàÃû£¬Ä¬ÈÏÎª'pdo'
+	 * @desc ï¿½ï¿½ï¿½Ãµï¿½Ç°ï¿½ï¿½PDOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½Îª'pdo'
 	 * @param string $sClassName
 	 * @return null
 	 */
@@ -178,7 +178,7 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc ÅÐ¶ÏÖ¸¶¨µÄhost, prot, dbnameÊÇ·ñ´æÔÚÁÐ±íÖÐ
+	 * @desc ï¿½Ð¶ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½host, prot, dbnameï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½
 	 * @param string $host
 	 * @param string $port
 	 * @param string $dbname
@@ -190,7 +190,7 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc »ñÈ¡Êý¾Ý¿âÅäÖÃÁÐ±í
+	 * @desc ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½
 	 * @return array
 	 */
 	public static function getHostList()
@@ -199,7 +199,7 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc »ñÈ¡Ä¬ÈÏµÄÊý¾Ý¿âÅäÖÃ
+	 * @desc ï¿½ï¿½È¡Ä¬ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @return a string that like 'host_port_dbname'
 	 */
 	public function getDefaultConf()
@@ -208,7 +208,7 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc »ñÈ¡Ä¬ÈÏµÄÊý¾Ý¿âÁ¬½Ó¶ÔÏó¡£×¢£º´Ë·½·¨»áÅ×³öPDOExceptionÒì³£
+	 * @desc ï¿½ï¿½È¡Ä¬ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½Ë·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×³ï¿½PDOExceptionï¿½ì³£
 	 * @exception PDOException
 	 * @return a instance of pdo
 	 */
@@ -230,11 +230,11 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc »ñÈ¡Ö¸¶¨²ÎÊýµÄÊý¾Ý¿âÁ¬½Ó¶ÔÏó¡£×¢£º´Ë·½·¨»áÅ×³öPDOExceptionÒì³£
-	 * @param string $sHost Ö÷»úÃû, Ä¬ÈÏÎªlocalhost
-	 * @param string $port ¶Ë¿ÚºÅ£¬ Ä¬ÈÏÎª3306
-	 * @param string $sDbName Êý¾Ý¿âÃû³Æ, Ä¬ÈÏÎªself::DEF_DB_NAME
-	 * @return Èç¹û´æÔÚ´ËÅäÖÃ£¬Ôò·µ»ØÏàÓ¦Á¬½Ó£¬·ñÔò·µ»ØFALSE
+	 * @desc ï¿½ï¿½È¡Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½Ë·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×³ï¿½PDOExceptionï¿½ì³£
+	 * @param string $sHost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Ä¬ï¿½ï¿½Îªlocalhost
+	 * @param string $port ï¿½Ë¿ÚºÅ£ï¿½ Ä¬ï¿½ï¿½Îª3306
+	 * @param string $sDbName ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½, Ä¬ï¿½ï¿½Îªself::DEF_DB_NAME
+	 * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ò·µ»ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½ò·µ»ï¿½FALSE
 	 */
 	public function getConnection($sHost, $port, $sDbName)
 	{
@@ -259,9 +259,9 @@ class CDbPool implements IDebugOutput
 		{
 			if($this->sClassName == self::CLASS_PDODEBUG)
 				$this->arrConnDebug[$sKey] = $obj =
-					 new CPDODebug($sDSN, $conf['username'], $conf['pwd']);
+					 new CPDODebug($sDSN, $conf['username'], $conf['pwd'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 			else
-				$obj = new PDO($sDSN, $conf['username'], $conf['pwd']);
+				$obj = new PDO($sDSN, $conf['username'], $conf['pwd'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 				
 			if(!empty(self::$charset))
 				$obj->query('set names '.str_replace('-', '',self::$charset));

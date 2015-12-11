@@ -15,6 +15,7 @@ $usess = new CUserSession();
 list($sess_uid,) = $usess->get();
 
 $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
+$images = array();
 if(isset($_REQUEST['id'])){
 	$page_title = 'edit';
 	
@@ -48,18 +49,15 @@ if(isset($_REQUEST['id'])){
 					break;
 				}
 			}
-			//$mbs_appenv->echoex($mbs_appenv->lang('operation_success'));
-			//exit(0);
 		}else{
 			$info = array_intersect_key($_REQUEST, $info) + $info;
 			$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
 			if(empty($error)){
 				unset($info['image']);
 				$info['edit_time'] = time();
-				$ret = $mct_ctr->set($info);
-				if(empty($ret)){
-					$error[] = $mct_ctr->error();
-				}else{
+				try {
+					$ret = $mct_ctr->set($info);
+					
 					for($i=0; $i<count($_FILES['image']['error']); ++$i){
 						if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 							$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
@@ -68,6 +66,13 @@ if(isset($_REQUEST['id'])){
 						}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
 							$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 						}
+					}
+				} catch (Exception $e) {
+					if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
+						$error['name'] = sprintf('"%s" %s', $info['name'], $mbs_appenv->lang('existed'));
+					}else{
+						$error[] = $mbs_appenv->lang('db_exception');
+						mbs_error_log($e.getMessage()."\n".$e->getTraceAsString(), __FILE__, __LINE__);
 					}
 				}
 			}
@@ -86,29 +91,41 @@ else if(isset($_REQUEST['_timeline'])){
 		$info['status'] = CMctControl::convStatus('verify');
 		$info['owner_id'] = $sess_uid;
 		$info['edit_time'] = $info['create_time'] = time();
+		$merchant_id = 0;
 		try {
 			$merchant_id = $mct_ctr->add($info);
-		} catch (Exception $e) {
-			if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
-				$error['name'] = sprintf('"%s" %s', $info['name'], $mbs_appenv->lang('existed'));
-			}
-			mbs_error_log($e->getMessage(), __FILE__, __LINE__);
-		}
-		if($merchant_id){
+			
 			$mct_atch_ctr = CMctAttachmentControl::getInstance($mbs_appenv,
-				CDbPool::getInstance(), CMemcachedPool::getInstance(), $merchant_id);
+					CDbPool::getInstance(), CMemcachedPool::getInstance(), $merchant_id);
 			for($i=0; $i<count($_FILES['image']['error']); ++$i){
 				if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 					$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
 					$id = $mct_atch_ctr->addEx($img);
-				}else{
+				}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
 					$error['image'] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 				}
 			}
-			
+				
 			$info = $info_def;
+		} catch (Exception $e) {
+			if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
+				$error['name'] = sprintf('"%s" %s', $info['name'], $mbs_appenv->lang('existed'));
+			}else{
+				$error[] = $mbs_appenv->lang('db_exception');
+				mbs_error_log($e->getMessage()."\n".$e->getTraceAsString(), __FILE__, __LINE__);
+			}
 		}
 	}
+}
+
+if($mbs_appenv->item('client_accept') != 'html'){
+	if(count($error) > 0)
+		$mbs_appenv->echoex($error, 'MCT_EDIT_ERROR');
+	else {
+		$info['images'] = $images;
+		$mbs_appenv->echoex($info);
+	}
+	exit(0);
 }
 ?>
 <!doctype html>

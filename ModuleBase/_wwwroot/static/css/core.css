@@ -23,7 +23,7 @@ ul li{list-style-type:none;}
 .success a.close:hover, .error a.close:hover{color:#000;}
 .success {  background-color: #F0EED8; color:green;}
 .success a.link{font-size:80%;margin-left:10px;}
-.error { background-color: #f2dede;}
+.error {background-color: #f2dede;}
 
 .no-data{text-align:center;color:#bbb;font-size:80%;padding:10px 0;}
 .back{font-size:65%;color:rgb(92, 92, 245);float:right;display:inline-block;vertical-align:bottom;text-decoration:none;}

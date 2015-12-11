@@ -4,17 +4,46 @@ date_default_timezone_set('Asia/Shanghai');
 
 
 define('RTM_DEBUG', 1);
-error_reporting(RTM_DEBUG ? E_ALL : 0);
-	
+error_reporting(RTM_DEBUG ? E_ALL : 0);	
 define('IN_INDEX', 1); //ref file: CAppEnvironment.php
 
 //env and conf init;there are two kinds of const in the system.
 //one start with 'RTM_' what means 'run-time' defined;the other start
 //with 'CFG_' what means 'configuration(installing)' defined
-
 require 'CAppEnvironment.php';
 $mbs_appenv     = CAppEnvironment::getInstance();
 $mbs_cur_moddef = $mbs_cur_actiondef = null;
+
+//exception, database error, ...
+//mbs_error_log('some errors', __FILE__, __LINE__);
+function mbs_error_log($msg, $file, $lineno){
+	global $mbs_appenv;
+	//U: marking as user level
+	$error = sprintf("U[%s]%s.%s(%s:%d)\n%s\n",
+			date('Y/m/d H:i:s'),
+			$mbs_appenv->item('cur_mod'),
+			$mbs_appenv->item('cur_action'),
+			$file,
+			$lineno,
+			$msg
+	);
+	if(RTM_DEBUG)
+		$mbs_appenv->echoex($error, 'SYS_EXCEPTION');
+	error_log($error, 0);
+}
+
+set_exception_handler(function($e){// handle some exceptions that do not catch
+	mbs_error_log($e->getMessage()."\n".$e->getTraceAsString(), 'UNCATACH', 0);
+	if(!RTM_DEBUG)
+		$mbs_appenv->echoex($mbs_appenv->lang('db_exception'), 'SYS_EXCEPTION');
+});
+
+/* php.ini (log_errors=ture, error_log=path)
+ * if(!RTM_DEBUG){
+	set_error_handler(function($eno, $err, $file, $line){
+		mbs_error_log($err.'('.$eno.')', $file, $line);
+	});
+}*/
 
 // import class only
 function mbs_import($mod, $class){
@@ -32,11 +61,9 @@ function mbs_import($mod, $class){
 }
 
 mbs_import('core', 'CModDef', 'CModTag');
-
 mbs_import('common', 'CDbPool', 'CMemcachedPool', 'CUniqRowControl', 'CStrTools');
 if(!class_exists('Memcached', false))
 	mbs_import('common', 'Memcached');
-
 
 function mbs_moddef($mod){
 	global $mbs_appenv;
@@ -86,24 +113,6 @@ function mbs_title($action='', $mod='', $system=''){
 	}else{
 		echo $action , '-', $mod, '-', $system;
 	}
-}
-
-//exception, database error, ...
-function mbs_error_log($msg, $file, $lineno){
-	global $mbs_appenv;
-	//U: marking as user level
-	$error = sprintf("U[%s](%s.%s)%s(%s:%d)\n",
-			date('Y/m/d H:i:s'), 
-			$mbs_appenv->item('cur_mod'),
-			$mbs_appenv->item('cur_action'),
-			$msg,
-			$file, 
-			$lineno
-	);
-	if(RTM_DEBUG)
-		echo $error;
-	else
-		error_log($error, 0);
 }
 
 function mbs_runtime_close_debug(){ // call the function before the echoex invoked if json request coming
@@ -156,8 +165,6 @@ function _main($mbs_appenv){
 			$mbs_appenv->config('default_module', 'common'),
 			$mbs_appenv->config('default_action', 'common')
 		);
-		
-		header('Content-Type: text/html; charset='.$mbs_appenv->item('charset'));
 	}
 	
 	if(!CStrTools::isModifier($mod) || !CStrTools::isModifier($action)){
@@ -212,7 +219,7 @@ function _main($mbs_appenv){
 			$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
 		} catch (Exception $e) {
 			//echo $mbs_appenv->lang('db_exception', 'common');
-			echo $e->getMessage();
+			echo $e->getMessage(), "\n<br/>", $e->getTraceAsString();
 		}
 		echo empty($err)? 'install complete, successed' : "error: \n". implode("\n<br/>", $err);
 	}else{
@@ -242,17 +249,7 @@ function _main($mbs_appenv){
 		}
 		require $path;
 	}
-	
-	/*if(RTM_DEBUG){ // place before "fastcgi_finish_request" calling
-		if(false !== strpos(PHP_SAPI, 'cli')){
-			CDbPool::getInstance()->cli();
-			CMemcachedPool::getInstance()->cli();
-		}else if('html' == $mbs_appenv->item('client_accept')){
-			CDbPool::getInstance()->html();
-			CMemcachedPool::getInstance()->html();
-		}
-	}*/
-	
+
 	if(!RTM_DEBUG && function_exists('fastcgi_finish_request'))
 		call_user_func('fastcgi_finish_request');	
 }

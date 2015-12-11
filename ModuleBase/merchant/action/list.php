@@ -25,6 +25,7 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 	<div class="ptitle"><?php echo $mbs_appenv->lang(array('merchant', 'list'))?>
 		<a class="pure-button button-success shortcut-a" style="float: right;" href="<?php echo $mbs_appenv->toURL('edit')?>">
 			+<?php echo $mbs_appenv->lang(array('add', 'product'))?></a></div>
+	<form action="">
 	<div style="margin:10px;">
 		<table class="pure-table pure-table-horizontal">
 			<thead><tr><td>#</td><td><?php echo $mbs_appenv->lang('content')?></td>
@@ -33,7 +34,7 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 				<td><?php echo $mbs_appenv->lang(array('edit', 'time'))?></td>
 				<td><?php echo $mbs_appenv->lang('status')?></td></tr></thead>
 			<?php $i=0; foreach($list as $row){ $user_ctr->setPrimaryKey($row['owner_id']);$uinfo=$user_ctr->get(); ?>
-			<tr><td><input type="checkbox" name="mid" value="<?php echo $row['id']?>" /><?php echo ++$i;?></td>
+			<tr><td><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /><?php echo ++$i;?></td>
 				<td><a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$row['id']))?>">
 					<?php echo CStrTools::txt2html($row['name'])?></a><br />
 					<?php echo CStrTools::txt2html(CStrTools::cutstr($row['abstract'], 32, $mbs_appenv->item('charset')))?>
@@ -49,8 +50,9 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 	</div>
 	<div style="margin:10px;">
 		<button class="pure-button pure-button-primary">?&nbsp;<?php echo $mbs_appenv->lang('verify')?></button>
-		<button class="pure-button button-error" style="margin-left: 10px;">-&nbsp;<?php echo $mbs_appenv->lang('delete')?></button>
+		<button class="pure-button button-error" style="margin-left: 10px;" onclick="this.form.action='<?php echo $mbs_appenv->toURL('del')?>'">-&nbsp;<?php echo $mbs_appenv->lang('delete')?></button>
 	</div>
+	</form>
 	<div class="footer"></div>
 </div>
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('global.js')?>"></script>

@@ -67,6 +67,14 @@ class CMerchantDef extends CModDef {
 					self::P_ARGS => array(
 					),
 				),
+				'del'     => array(
+					self::P_TLE  => '删除商家',
+					self::G_DC   => '删除指定商家，包括图片',
+					self::P_MGR  => true,
+					self::P_NCD  => true,
+					self::P_ARGS => array(
+					),
+				),
 			),
 		);
 	}

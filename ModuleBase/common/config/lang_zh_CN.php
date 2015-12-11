@@ -33,7 +33,7 @@ $_notice_frame = <<<EOT
 %s
 </head>
 <body>
-<h2 class=%s>%s<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></h2>
+<div class=%s>%s<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a></div>
 </body>
 </html>
 EOT;
