@@ -92,7 +92,7 @@ function btnlist(list){
 		}
 	}
 	for(var i=0; i<list.length; i++){
-		if(list[i].getAttribute("_checked") != null){
+		if(list[i].getAttribute("_value") != null){
 			allow_multi_opt = null == allow_multi_opt ? list[i].name.indexOf("[]") != -1 : allow_multi_opt;
 			if('1' == list[i].getAttribute("_checked")){
 				_fnchecked(list[i]);

@@ -65,7 +65,7 @@ class CProductControl extends CUniqRowControl {
 			return false;
 		}
 		$dest_path = $dest_dir.$name;
-		try {z
+		try {
 			self::_thumbnaim_logo($src, $dest_path);
 		} catch (Exception $e) {
 			trigger_error('thumbnail error: '.$e->getMessage());

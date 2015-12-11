@@ -166,7 +166,7 @@ textarea{height:85px;}
 			<div class=error><?php echo $error[0]?></div>
 			<?php unset($error[0]);}else if(empty($error)){?>
 			<div class=success id=IDD_SUCC_BOX><?php echo $mbs_appenv->lang('operation_success')?></div> 
-			<script type="text/javascript">setTimeout(function(){var box=document.getElementById("IDD_SUCC_BOX");box.parentNode.removeChild(box);}, 4500);</script>
+			<script type="text/javascript">setTimeout(function(){var box=document.getElementById("IDD_SUCC_BOX");box.parentNode.removeChild(box);}, 3500);</script>
 			<?php }} ?>
 			
 			<div class="pure-control-group">
@@ -248,6 +248,7 @@ fileUpload({
 		var f = document.createElement("form");
 		f.method = "post";
 		f.innerHTML = "<input type='hidden' name='id' value='"+id+"' />"+
+			"<input type='hidden' name='_timeline' value='' />"+
 			"<input type='hidden' name='delete' value='' />"+
 			"<input type='hidden' name='aid' value='"+file.getAttribute("_data-id")+"' />";
 		document.body.appendChild(f);

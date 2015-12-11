@@ -25,7 +25,7 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 	<div class="ptitle"><?php echo $mbs_appenv->lang(array('merchant', 'list'))?>
 		<a class="pure-button button-success shortcut-a" style="float: right;" href="<?php echo $mbs_appenv->toURL('edit')?>">
 			+<?php echo $mbs_appenv->lang(array('add', 'product'))?></a></div>
-	<form action="">
+	<form action="" method="post">
 	<div style="margin:10px;">
 		<table class="pure-table pure-table-horizontal">
 			<thead><tr><td>#</td><td><?php echo $mbs_appenv->lang('content')?></td>
@@ -49,7 +49,7 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 		</table>
 	</div>
 	<div style="margin:10px;">
-		<button class="pure-button pure-button-primary">?&nbsp;<?php echo $mbs_appenv->lang('verify')?></button>
+		<button class="pure-button pure-button-primary" onclick="this.form.action='<?php echo $mbs_appenv->toURL('status', '', array('action'=>'verify'))?>'">?&nbsp;<?php echo $mbs_appenv->lang('verify')?></button>
 		<button class="pure-button button-error" style="margin-left: 10px;" onclick="this.form.action='<?php echo $mbs_appenv->toURL('del')?>'">-&nbsp;<?php echo $mbs_appenv->lang('delete')?></button>
 	</div>
 	</form>

@@ -100,7 +100,6 @@ else{
 .product img{position:absolute;left:5px;top:5px;width:50px;height:50px;}
 .product div.title{font-weight:bold;}
 .product div.pcontent{color:#666;margin-top: 3px;}
-.pure-button-check{padding:.3em;}
 </style>
 </head>
 <body>
@@ -111,6 +110,7 @@ else{
 	
 	<?php if(HAS_PRODUCT){ ?>
 	<div class=product-block>
+		<b><?php echo $mbs_appenv->lang(array('selected', 'product'))?>:</b>
 		<div class=product>
 			<img src="<?php echo CProductControl::logourl($pdt['logo_path'], $mbs_appenv)?>" />
 			<div class=title><a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$_REQUEST['product_id']))?>">

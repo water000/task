@@ -54,7 +54,7 @@ $lang_zh_CN = array(
 	'back'                   => '返回',
 	'close'                  => '关闭',
 	'no_data'                => '暂无数据',
-	'operation_success'      => '^_^操作成功！',
+	'operation_success'      => '操作成功！',
 	'existed'                => '已存在',
 	'selected'               => '已选择',
 	'confirmed'              => '确认吗？操作完成后数据将无法恢复！',
@@ -70,6 +70,7 @@ $lang_zh_CN = array(
 	'or'                     => '或',
 	'remove'                 => '移除',
 	'error_on_field_exists'  => '提交的数据可能已经存在',
+	'not_found'              => '没有找到或被删除',
 		
 	'prev_page'              => '上一页',
 	'next_page'              => '下一页',

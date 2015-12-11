@@ -28,12 +28,12 @@ function mbs_error_log($msg, $file, $lineno){
 			$msg
 	);
 	if(RTM_DEBUG)
-		$mbs_appenv->echoex($error, 'SYS_EXCEPTION');
+		$mbs_appenv->echoex($error, 'SYS_ERROR');
 	error_log($error, 0);
 }
 
 set_exception_handler(function($e){// handle some exceptions that do not catch
-	mbs_error_log($e->getMessage()."\n".$e->getTraceAsString(), 'UNCATACH', 0);
+	mbs_error_log($e->getMessage()."\n".$e->getTraceAsString(), 'UNCAUGHT', 0);
 	if(!RTM_DEBUG)
 		$mbs_appenv->echoex($mbs_appenv->lang('db_exception'), 'SYS_EXCEPTION');
 });
