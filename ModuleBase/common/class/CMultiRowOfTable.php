@@ -8,6 +8,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 	protected $secondKey  = null;
 	protected $pageId     = 1;
 	protected $numPerPage = 20;
+	protected $orderSecondKey = true;
 	
 	
 	/*protected */function __construct($oPdoConn, $tbname, 
@@ -47,10 +48,14 @@ class CMultiRowOfTable extends CUniqRowOfTable
 	{
 		return $this->numPerPage;
 	}
+	function disableOrderSecondKey(){
+		$this->orderSecondKey = false;
+	}
 	
 	function get(){
-		$sql = sprintf('SELECT * FROM %s WHERE %s=%d Limit %d, %d', 
+		$sql = sprintf('SELECT * FROM %s WHERE %s=%d %s Limit %d, %d', 
 			$this->tbname, $this->keyname, $this->primaryKey, 
+			$this->orderSecondKey ? 'ORDER BY '.$this->skeyname.' DESC ': '',
 			($this->pageId-1)*$this->numPerPage, $this->numPerPage);
 		try {
 			$pdos = $this->oPdoConn->query($sql);
