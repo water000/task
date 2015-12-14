@@ -47,7 +47,7 @@ class CMerchantDef extends CModDef {
 					edit_time int unsigned not null,
 					edit_uid int unsigned not null,
 					type tinyint not null,
-					desc varchar(128) not null,
+					reason varchar(128) not null,
 					primary key(id),
 					key(merchant_id)
 				)',

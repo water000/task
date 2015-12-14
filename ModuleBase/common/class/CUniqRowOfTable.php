@@ -7,7 +7,7 @@ class CUniqRowOfTable
 	protected        $oPdoConn   = null;
 	protected        $keyname    = null;
 	protected        $tbname     = null;
-	protected static $pdos       = null;
+	protected        $pdos       = null;
 	protected        $error      = '';
 	protected        $fetch_type = PDO::FETCH_ASSOC;
 
@@ -118,12 +118,14 @@ class CUniqRowOfTable
 			$this->tbname, 
 			implode('=?,', $keys).'=?',
 			$this->keyname, $this->primaryKey);
-		
+		$ret = false;
 		try {
 			$pdos = $this->oPdoConn->prepare($sql);
 			$ret = $pdos->execute(array_values($param));
 			if($ret === false){
 				$this->_seterror($pdos);
+			}else{
+				$ret = $pdos->rowCount();
 			}
 		} catch (Exception $e) {
 			throw $e;

@@ -108,12 +108,14 @@ class CMultiRowOfTable extends CUniqRowOfTable
 			substr($sql, 0, -1), 
 			$this->keyname, $this->primaryKey,
 			$this->skeyname, $this->secondKey);
-		
+		$ret = false;
 		try {
 			$pre = $this->oPdoConn->prepare($sql);
 			$ret = $pre->execute(array_values($param));
 			if($ret === false){
 				$this->_seterror($pre);
+			}else{
+				$ret = $pre->rowCount();
 			}
 		} catch (Exception $e) {
 			throw $e;

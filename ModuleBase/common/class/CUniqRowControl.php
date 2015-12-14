@@ -160,9 +160,9 @@ class CUniqRowControl
 		$ret = false;
 		try
 		{
-			if($this->oCache)
-				$this->oCache->set($newcache);
 			$ret = $this->oDB->set($newcache);
+			if($this->oCache && $ret > 0)
+				$this->oCache->set($newcache);
 		}
 		catch(Exception $e)
 		{
@@ -177,7 +177,7 @@ class CUniqRowControl
 		try
 		{
 			$ret = $this->oDB->del($condtions);
-			if($ret && $this->oCache)
+			if($this->oCache && $ret>0)
 				$this->oCache->destroy();
 		}
 		catch(Exception $e)

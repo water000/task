@@ -72,8 +72,8 @@ $lang_zh_CN = array(
 	'error_on_field_exists'  => '提交的数据可能已经存在',
 	'not_found'              => '没有找到或被删除',
 		
-	'prev_page'              => '上一页',
-	'next_page'              => '下一页',
+	'prev_page'              => '&lt;上一页',
+	'next_page'              => '下一页&gt;',
 	'submit'                 => '提交',
 	'to_be'                  => '待',
 	'new'                    => '新',
@@ -97,6 +97,8 @@ $lang_zh_CN = array(
 	'upload_max_filesize'   => '单个文件最大'.ini_get('upload_max_filesize'),
 	'upload_max_filenum'    => '最多%d个',
 	'complete_address'      => '完善地址',
+	'log'                   => '日志',
+	'operator'              => '操作员',
 		
 	UPLOAD_ERR_INI_SIZE      => '上传的文件大小超过了系统的限制',
 	UPLOAD_ERR_FORM_SIZE     => '上传文件的大小超过了 HTML 表单中 MAX_FILE_SIZE 选项指定的值',

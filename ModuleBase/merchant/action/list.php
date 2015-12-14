@@ -43,8 +43,9 @@ $user_ctr = CUserControl::getInstance($mbs_appenv,
 				<td><?php echo CStrTools::txt2html($row['area']),'<br/>',CStrTools::txt2html($row['address'])?></td>
 				<td><?php echo empty($uinfo) ? 'DELETED' : '<a href="">'.$uinfo['name'].'</a>'?></td>
 				<td><?php echo CStrTools::descTime($row['edit_time'], $mbs_appenv)?></td>
-				<td style="color: <?php echo $mbs_appenv->config(CMctControl::convStatus($row['status']).'.color')?>">
-					<?php echo $mbs_appenv->lang(CMctControl::convStatus($row['status']))?></td></tr>
+				<td><a href="#" style="color: <?php echo $mbs_appenv->config(CMctControl::convStatus($row['status']).'.color')?>" 
+					onclick="open('<?php echo $mbs_appenv->toURL('status', '', array('id'=>$row['id']))?>', '', 'width=800,height=600')">
+					<?php echo $mbs_appenv->lang(CMctControl::convStatus($row['status']))?></a></td></tr>
 			<?php } ?>
 		</table>
 	</div>

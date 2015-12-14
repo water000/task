@@ -36,7 +36,7 @@ class CMctStatusLogControl extends CMultiRowControl{
 			}
 		}
 		self::$instance->setPrimaryKey($primarykey);
-		self::$instance->getDB()->setNumPerPage(5);
+		self::$instance->getDB()->setNumPerPage(10);
 		return self::$instance;
 	}
 	
