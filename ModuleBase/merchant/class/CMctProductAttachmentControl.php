@@ -45,6 +45,7 @@ class CMctProductAttachmentControl extends CMultiRowControl{
 					name varchar(16) not null,
 					path varchar(128) not null, -- only path, not include domain
 					abstract varchar(32) not null,
+					create_time int unsigned not null,
 					primary key(id),
 					key(mp_id)
 				)';

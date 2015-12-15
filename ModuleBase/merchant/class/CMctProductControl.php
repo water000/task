@@ -40,9 +40,9 @@ class CMctProductControl extends CMultiRowControl{
 		$sql = 'CREATE TABLE IF NOT EXISTS %s(
 			id int unsigned not null auto_increment,
 			merchant_id int unsigned not null,
-			last_edit_time int unsigned not null,
-			size_start int unsigned not null,
-			size_end int unsigned not null,
+			edit_time int unsigned not null,
+			exterior tinyint not null, -- shirt:color(black,gray,white,..), tree: level(normal, speicail, worse)
+			size int unsigned not null,
 			inventory int unsigned not null,
 			sale_num int unsigned not null,
 			discount_price int unsigned not null, -- penny start

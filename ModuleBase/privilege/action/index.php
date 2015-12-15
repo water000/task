@@ -73,8 +73,6 @@ function _fn_icon($mod, $ac){
 			document.createElement("nav");
 	</script>
 	<![endif]-->
-	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" type="text/css"/>
-	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('global.css')?>">
 	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('zebra-dialog/zebra_dialog.css')?>" />
 	<style type="text/css">
 	iframe{width:100%;border:0;}
@@ -232,24 +230,17 @@ function _init_dialog(){
 	    'modal': false,
 	    'type':     'question',
 	    'position': ['right - 20', 'bottom - 20'],
-<<<<<<< HEAD
-=======
 	    'onClose' : function(){_zbdlg = null;item_map={};}
->>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 	});
 	_body = document.getElementById("IDT_ZDDLG");
 }
 var _click = function(url, obj, id){
 	frame.src = url;
 	obj.parentNode.parentNode.parentNode.removeChild(obj.parentNode.parentNode);
-<<<<<<< HEAD
-	item_map[id]  = null;
-=======
 	delete item_map[id];
 	if(0 == _body.rows.length){
 		_zbdlg.close();
 	}
->>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 }
 function _handle(data){
 	if('SUCCESS' == data.retcode && data.data.length > 0){
