@@ -21,7 +21,7 @@ if(isset($_REQUEST['id'])){
 			$error['en_name'] = $mbs_appenv->lang('invalid_EN_word');
 		}
 		if(empty($error)){
-			$info['last_edit_time'] = time();
+			$info['edit_time'] = time();
 			$ret = $pdtattr_ctr->set($info);
 			if(empty($ret)){
 				$error[] = $pdtattr_ctr->error();
@@ -43,7 +43,7 @@ else if(isset($_REQUEST['_timeline'])){
 	if(empty($error)){
 		$pdtattr_ctr = CProductAttrControl::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance());
-		$info['last_edit_time'] = $info['create_time'] = time();
+		$info['edit_time'] = $info['create_time'] = time();
 		$ret = $info_id = $pdtattr_ctr->add($info);
 		if(empty($ret)){
 			$error[] = $mbs_appenv->lang('error_on_field_exists').'('.$pdtattr_ctr->error().')';

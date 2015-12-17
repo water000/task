@@ -4,7 +4,7 @@ mbs_import('', 'CProductControl');
 	
 $pdt_ctr = CProductControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance());
-$list  = $pdt_ctr->getDB()->search(array(), array('order'=>'last_edit_time DESC'));
+$list  = $pdt_ctr->getDB()->search(array(), array('order'=>'edit_time DESC'));
 ?>
 <!doctype html>
 <html>
@@ -31,7 +31,7 @@ $list  = $pdt_ctr->getDB()->search(array(), array('order'=>'last_edit_time DESC'
 					<a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$row['id']))?>">
 					<?php echo $row['name'], '/', $row['en_name']?></a>
 					(<?php echo CStrTools::cutstr($row['abstract'], 32, $mbs_appenv->item('charset'))?>)</td>
-				<td><?php echo CStrTools::descTime($row['last_edit_time'], $mbs_appenv)?></td></tr>
+				<td><?php echo CStrTools::descTime($row['edit_time'], $mbs_appenv)?></td></tr>
 			<?php } ?>
 		</table>
 	</div>

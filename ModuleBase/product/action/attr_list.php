@@ -4,7 +4,7 @@ mbs_import('', 'CProductControl', 'CProductAttrControl');
 	
 $pdtattr_ctr = CProductAttrControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance());
-$attr_list  = $pdtattr_ctr->getDB()->search(array(), array('order'=>'last_edit_time DESC'));
+$attr_list  = $pdtattr_ctr->getDB()->search(array(), array('order'=>'edit_time DESC'));
 
 if(isset($_REQUEST['product_id'])){
 	$pid = intval($_REQUEST['product_id']);
@@ -139,7 +139,7 @@ else{
 				<td><?php echo CProductAttrControl::vtmap($row['value_type'])?></td>
 				<td><?php echo $row['unit_or_size']?></td>
 				<td><?php echo $row['value_opts'], $row['allow_multi']?'<span class=pure-button-checked>'.$mbs_appenv->lang('allow_multi').'</span>':''?></td>
-				<td><?php echo CStrTools::descTime($row['last_edit_time'], $mbs_appenv)?></td>
+				<td><?php echo CStrTools::descTime($row['edit_time'], $mbs_appenv)?></td>
 				<?php if(HAS_PRODUCT){?>
 				<td><a class="pure-button pure-button-check" name="aid[]" _value="<?php echo $row['id']?>" 
 						_checked="<?php echo isset($pdtattrmap[$row['id']])?'1':'0'?>" ><?php echo $mbs_appenv->lang('relate')?></a>
