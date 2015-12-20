@@ -105,7 +105,6 @@ else if(isset($_REQUEST['_timeline'])){
 					$error['image'] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 				}
 			}
-				
 			$info = $info_def;
 		} catch (Exception $e) {
 			if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){

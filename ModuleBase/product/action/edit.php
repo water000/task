@@ -35,7 +35,7 @@ if(isset($_REQUEST['id'])){
 				}
 			}
 			if(empty($error)){
-				$info['last_edit_time'] = time();
+				$info['edit_time'] = time();
 				$ret = $pdt_ctr->set($info);
 				if(empty($ret)){
 					$error[] = $pdt_ctr->error();
@@ -62,7 +62,7 @@ else if(isset($_REQUEST['_timeline'])){
 		if(empty($error)){
 			$pdt_ctr = CProductControl::getInstance($mbs_appenv,
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
-			$info['last_edit_time'] = $info['create_time'] = time();
+			$info['edit_time'] = $info['create_time'] = time();
 			$ret = $info_id = $pdt_ctr->add($info);
 			if(empty($ret)){
 				$error[] = $mbs_appenv->lang('error_on_field_exists').'('.$pdt_ctr->error().')';
