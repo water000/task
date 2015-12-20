@@ -19,6 +19,7 @@ class CProductDef extends CModDef {
 					baike_link varchar(512) not null,
 					create_time int unsigned,
 					last_edit_time int unsigned,
+					
 					primary key(id),
 					unique key(en_name)
 				)',
