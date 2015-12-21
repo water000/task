@@ -71,7 +71,8 @@ class CMctProductControl extends CMultiRowControl{
 	function alterTable($add, $del, $modify, $change){
 		try {
 			foreach($add as $key => $def){
-				$sql = sprintf('ALTER TABLE %s ADD %s %s', $this->oDB->tbname(), $key, $def);
+				$sql = sprintf('ALTER TABLE %s ADD %s %s', $this->oDB->tbname(), 
+						is_numeric($key) ? '' : $key, $def);
 				$this->oDB->getConnection()->exec($sql);
 			}
 				

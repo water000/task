@@ -110,7 +110,7 @@ else{
 	
 	<?php if(HAS_PRODUCT){ ?>
 	<div class=product-block>
-		<b><?php echo $mbs_appenv->lang(array('selected', 'product'))?>:</b>
+		<b><?php echo $mbs_appenv->lang(array('selected', 'product'))?></b>
 		<div class=product>
 			<img src="<?php echo CProductControl::logourl($pdt['logo_path'], $mbs_appenv)?>" />
 			<div class=title><a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$_REQUEST['product_id']))?>">

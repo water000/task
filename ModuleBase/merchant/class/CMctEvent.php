@@ -9,7 +9,7 @@ class CMctEvent{
 		$mct_pdt = CMctProductControl::getInstance($mbs_appenv, CDbPool::getInstance(),
 				CMemcachedPool::getInstance(), $args['product']['en_name']);
 		
-		var_dump($args);
+		
 		if(count($args['pdtattr']) == count($args['new']) && empty($args['old'])){
 			$mct_pdt_atch = CMctProductAttachmentControl::getInstance($mbs_appenv, CDbPool::getInstance(),
 					CMemcachedPool::getInstance(), $args['product']['en_name']);
@@ -25,7 +25,7 @@ class CMctEvent{
 		}else {
 			$alter_add = $alter_del = array();
 			foreach($args['new'] as $naid){
-				$alter_add[''] = CProductAttrControl::def2sql($args['attrmap'][$naid]);
+				$alter_add[] = CProductAttrControl::def2sql($args['attrmap'][$naid]);
 			}
 			foreach($args['old'] as $oaid){
 				$alter_del[] = $args['attrmap'][$oaid]['en_name'];

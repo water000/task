@@ -24,13 +24,16 @@ $list  = $pdt_ctr->getDB()->search(array(), array('order'=>'edit_time DESC'));
 	<div style="margin:10px;">
 		<table class="pure-table pure-table-horizontal">
 			<thead><tr><td>#</td><td><?php echo $mbs_appenv->lang('content')?></td>
-				<td><?php echo $mbs_appenv->lang(array('last', 'edit', 'time'))?></td></tr></thead>
+				<td><?php echo $mbs_appenv->lang(array('attr', 'relate'))?></td>
+				<td><?php echo $mbs_appenv->lang(array('edit', 'time'))?></td></tr></thead>
 			<?php $i=0; foreach($list as $row){ ?>
 			<tr><td><?php echo ++$i;?></td>
 				<td><img class=logo-img onclick="this.className=''" src="<?php echo CProductControl::logourl($row['logo_path'], $mbs_appenv)?>" />
 					<a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$row['id']))?>">
 					<?php echo $row['name'], '/', $row['en_name']?></a>
 					(<?php echo CStrTools::cutstr($row['abstract'], 32, $mbs_appenv->item('charset'))?>)</td>
+				<td><a href="<?php echo $mbs_appenv->toURL('attr_list', '', array('product_id'=>$row['id']))?>">
+					<?php echo $mbs_appenv->lang('relate')?></a></td>
 				<td><?php echo CStrTools::descTime($row['edit_time'], $mbs_appenv)?></td></tr>
 			<?php } ?>
 		</table>

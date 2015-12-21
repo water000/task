@@ -14,15 +14,12 @@ class CProductDef extends CModDef {
 					id int unsigned not null auto_increment,
 					en_name varchar(16) not null, -- for table name
 					name varchar(16) not null, 
-					abstract varchar(64),
+					abstract varchar(64) not null,
 					logo_path varchar(255) not null,
 					baike_link varchar(512) not null,
-					create_time int unsigned,
-					edit_time int unsigned,
-					exterior_name varchar(32) not null,
-					exterior_value varchar(512) not null,
-					size_name varchar(32) not null,
-					size_value varchar(512) not null,
+					create_time int unsigned not null,
+					edit_time int unsigned not null,
+					category_id int unsigned not null, -- exterior and size
 					primary key(id),
 					unique key(en_name)
 				)',
@@ -34,17 +31,15 @@ class CProductDef extends CModDef {
 					value_type tinyint unsigned not null default 0, -- char, int , ...
 					unit_or_size varchar(32) not null default "", -- unit for number(10m) , size for string()
 					value_opts varchar(128) not null default "",
-					allow_multi tinyint,
+					allow_multi tinyint not null,
 					default_value varchar(64) not null default "",
-					edit_time int unsigned,
-					create_time int unsigned,
-					primary key(id),
-					unique key(en_name)
+					edit_time int unsigned not null,
+					create_time int unsigned not null,
+					primary key(id)
 				)',
 				'product_attr_map' => '(
 					pid int unsigned not null,
 					aid int unsigned not null,
-					attr_rename varchar(16) not null,
 					required tinyint not null default 0, -- 0/1
 					primary key(pid, aid)
 				)',
