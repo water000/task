@@ -90,4 +90,8 @@ class CMerchantDef extends CModDef {
 	}
 }
 
+/*
+ * 
+ */
+
 ?>

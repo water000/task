@@ -18,16 +18,11 @@ class CProductDef extends CModDef {
 					logo_path varchar(255) not null,
 					baike_link varchar(512) not null,
 					create_time int unsigned,
-<<<<<<< HEAD
-					last_edit_time int unsigned,
-					
-=======
 					edit_time int unsigned,
 					exterior_name varchar(32) not null,
 					exterior_value varchar(512) not null,
 					size_name varchar(32) not null,
 					size_value varchar(512) not null,
->>>>>>> 2bf7720d933f37542e17937f89bef4d00538db38
 					primary key(id),
 					unique key(en_name)
 				)',
