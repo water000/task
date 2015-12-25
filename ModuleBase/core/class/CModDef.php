@@ -54,6 +54,7 @@ abstract class CModDef {
 	
 	protected static $appenv = null;
 	private $desc = null;
+	private static $reserve_actions = array('install', 'upgrade', 'uninstall');
 	
 	/**
 	 * @return array(
@@ -622,6 +623,10 @@ abstract class CModDef {
 		return $error;
 	}
 	
+	static function isReservedAction($action){
+		return array_search($action, self::$reserve_actions) !== false;
+	}
+	
 	function install($dbpool, $mempool=null){
 		$modinfo = $this->desc;
 		
@@ -647,10 +652,10 @@ abstract class CModDef {
 		return array();
 	}
 	
-	function uninstall(){
+	function uninstall($dbpool, $mempool=null){
 	}
 	
-	function update(){
+	function upgrade($dbpool, $mempool=null){
 	}
 }
 

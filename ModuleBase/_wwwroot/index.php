@@ -213,7 +213,7 @@ function _main($mbs_appenv){
 		$mbs_appenv->setLogAPI(new CDBLogAPI(CDbPool::getInstance()->getDefaultConnection()));
 	}
 	
-	if('install' == $action){
+	if(CModDef::isReservedAction($action)){
 		$err = '';
 		try {
 			$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
