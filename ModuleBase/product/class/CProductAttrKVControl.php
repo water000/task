@@ -5,7 +5,7 @@ mbs_import('common', 'CMultiRowControl');
 class CProductAttrKVControl extends CMultiRowControl {
 	private static $instance = null;
 	
-	const KEY_PID = 0; // the pid of keys is 0
+	const KEY_PID = 0;
 	
 	protected function __construct($db, $cache, $primarykey = null, $secondKey = null){
 		parent::__construct($db, $cache, $primarykey, $secondKey);
@@ -34,6 +34,17 @@ class CProductAttrKVControl extends CMultiRowControl {
 		self::$instance->setPrimaryKey($primarykey);
 		
 		return self::$instance;
+	}
+	
+	function key($id){
+		$this->setPrimaryKey(self::KEY_PID);
+		$this->setSecondKey($id);
+		
+		try {
+			return $this->getNode();
+		} catch (Exception $e) {
+			throw $e;
+		}
 	}
 	
 	function keys(){
