@@ -127,7 +127,11 @@ class CStrTools {
 		if(isset($def[CModDef::PA_RNG])){
 			$s = $e = 0;
 			$rnum = CModDef::pargRange($def, $s, $e);
-			echo $s, 2==$rnum?'~'.$e:'', $mbs_appenv->lang('num_of_char', 'common');
+			echo $s, 2==$rnum && $e>0?'~'.$e:'', 
+				$mbs_appenv->lang('num_of_char', 'common'), 
+				2==$rnum && 0 == $e ? $mbs_appenv->lang('above') : '', 
+				'.'
+			;
 		}
 		echo isset($def[CModDef::G_DC])?$def[CModDef::G_DC]:'';
 	}

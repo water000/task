@@ -23,13 +23,12 @@ $keys = $attr_kv_ctr->keys();
 			+<?php echo $mbs_appenv->lang(array('add', 'kv'))?></a></div>
 	<div style="margin:10px;">
 		<table class="pure-table pure-table-horizontal">
-			<thead><tr><td>#</td><td><?php echo $mbs_appenv->lang('key')?></td>
-				<td><?php echo $mbs_appenv->lang('content')?></td>
+			<thead><tr><td>#</td><td><?php echo $mbs_appenv->lang('kv')?></td>
 				<td><?php echo $mbs_appenv->lang('operate')?></td></tr></thead>
 			<?php $i=0; foreach($keys as $row){ $attr_kv_ctr->setPrimaryKey($row['id']); $vs = $attr_kv_ctr->get(); ?>
 			<tr><td><?php echo ++$i;?></td>
-				<td><?php echo CStrTools::txt2html($row['value'])?></td>
-				<td><?php foreach($vs as $v){ echo CStrTools::txt2html($v), ';'; }?></td>
+				<td><?php echo CStrTools::txt2html($row['value'])?>
+				(<?php foreach($vs as $v){ echo CStrTools::txt2html($v['value']), ';'; }?>)</td>
 				<td><a href="<?php echo $mbs_appenv->toURL('attr_kv_edit', '', array('kid'=>$row['id']))?>">
 					<?php echo $mbs_appenv->lang('operate')?></a></td></tr>
 			<?php } ?>

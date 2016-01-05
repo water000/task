@@ -87,7 +87,8 @@ $lang_zh_CN = array(
 	'slash'                 => '、',
 	'mgr_msg_notify'        => '管理消息提醒',
 		
-	'num_of_char'           => '个字符.',
+	'num_of_char'           => '个字符',
+	'above'                 => '以上',
 	'last'                  => '最后',
 	'yesterday'             => '昨天',
 	'before_yesterday'      => '前天',

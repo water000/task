@@ -108,7 +108,7 @@ class CProductDef extends CModDef {
 					self::P_ARGS => array(
 						'kid'    => array(self::G_TL=>'键ID', self::PA_TYP=>'integer'),
 						'key'    => array(self::G_TL=>'键名', self::G_DC=>'', self::PA_RNG=>'2, 16'),
-						'value'  => array(self::G_TL=>'键值,多个请回车', self::PA_RNG=>'2, '),
+						'value'  => array(self::G_TL=>'键值', self::G_DC=>'多个请回车', self::PA_RNG=>'1, '),
 					),
 				),
 			),
