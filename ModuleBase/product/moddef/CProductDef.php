@@ -50,6 +50,7 @@ class CProductDef extends CModDef {
 					id int unsigned not null auto_increment,
 					kid int unsigned not null, -- key id
 					value varchar(32) not null,
+					first_char char(1) not null, -- the first char of value. use pinyin for chinese
 					primary key(id),
 					key(kid)
 				)'
@@ -107,8 +108,8 @@ class CProductDef extends CModDef {
 					self::P_MGR  => true,
 					self::P_ARGS => array(
 						'kid'    => array(self::G_TL=>'键ID', self::PA_TYP=>'integer'),
-						'key'    => array(self::G_TL=>'键名', self::G_DC=>'', self::PA_RNG=>'2, 16'),
-						'value'  => array(self::G_TL=>'键值', self::G_DC=>'多个请回车', self::PA_RNG=>'1, '),
+						'key'    => array(self::G_TL=>'键名', self::G_DC=>'用空格分隔首字符，例(颜色 Y)', self::PA_RNG=>'2, 16'),
+						'value'  => array(self::G_TL=>'键值', self::G_DC=>'多个请回车，单个长度在32以下.<br/>用空格分隔首字符，例(颜色 Y)', self::PA_RNG=>'1, '),
 					),
 				),
 			),

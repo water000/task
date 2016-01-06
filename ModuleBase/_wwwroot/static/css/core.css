@@ -38,11 +38,12 @@ ul li{list-style-type:none;}
 .oper-bar-pop{position:fixed;bottom:0;background-color:white;width:850px;}
 
 .ptitle{border-bottom: 1px solid #eee;padding: 20px 10px;margin-bottom:20px;font-size:20px;color:#4078c0;}
-.ptitle span{font-size:14px;color:#555;margin-left:10px;}
+.ptitle span{font-size:13px;color:#666;margin-left:10px;}
 .required{color:red;}
 .shortcut-a{text-decoration:none;font-size:12px;}
-.pure-button-check{font-size:80%;padding:.3em;}
-.pure-button-checked{background-color: #F79F75;}
+.pure-button-check{font-size:80%;padding:4px;background-color: white;border: 1px solid #ddd;}
+.pure-button-check:hover{border-color:#888;}
+.pure-button-checked{border: 2px solid #08c !important;padding:3px;}
 .pure-table-horizontal{border-left:0;border-right:0;}
 .row-onmouseover{background-color:#fffeee;}
 .page-break{}
@@ -50,7 +51,6 @@ ul li{list-style-type:none;}
 .page-break .pure-menu-link{padding: .5em .8em;border:1px solid #ddd;color: green;}
 .page-break .pure-menu-link:hover{border:1px solid green;background-color:white;}
 .page-break .pure-menu-selected{font-weight:bold;color:#333;}
-
 /*
  * -- PURE MENU STYLES --
  * I want to customize how my .pure-menu looks at the top of the page

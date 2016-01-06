@@ -6,6 +6,7 @@ $attr_kv_ctr = CProductAttrKVControl::getInstance($mbs_appenv,
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
 $page_title = isset($_REQUEST['kid']) ? 'edit' : 'add';
 $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
+$info['first_char'] = '';
 
 if(isset($_REQUEST['kid'])){
 	$key = $attr_kv_ctr->key($_REQUEST['kid']);
@@ -14,43 +15,39 @@ if(isset($_REQUEST['kid'])){
 		exit(0);
 	}
 	$info['key'] = $key['value'];
+	$info['first_char'] = $key['first_char'];
 	
 	$attr_kv_ctr->setPrimaryKey($_REQUEST['kid']);
 	$info['value'] = $attr_kv_ctr->getDB()->getAll()->fetchAll(PDO::FETCH_ASSOC);
 }
 
-if(isset($_REQUEST['_timeline'])){	
+if(isset($_REQUEST['_timeline'])){
+	list($key, $first_char) = explode(' ', $_REQUEST['key']);
+	$first_char = strtoupper($first_char);
 	if(empty($info['key'])){
 		$_REQUEST['kid'] = $attr_kv_ctr->add(array(
-			'kid'   => CProductAttrKVControl::KEY_PID,
-			'value' => $_REQUEST['key']
+			'kid'        => CProductAttrKVControl::KEY_PID,
+			'value'      => $key,
+			'first_char' => $first_char,
 		));
 		$attr_kv_ctr->setPrimaryKey($_REQUEST['kid']);
-	}else if($info['key'] != $_REQUEST['key']){
+	}else if($info['key'].' '.$info['first_char'] != $_REQUEST['key']){
 		$attr_kv_ctr->setPrimaryKey(CProductAttrKVControl::KEY_PID);
 		$attr_kv_ctr->setSecondKey($_REQUEST['kid']);
-		$attr_kv_ctr->setNode(array('value'=>$_REQUEST['key']));
+		$attr_kv_ctr->setNode(array('value'=>$key, 'first_char'=>$first_char));
 	}
-	$info['key'] = $_REQUEST['key'];
-	
-	if(!empty($_REQUEST['value'])){
-		foreach(explode("\r\n", $_REQUEST['value']) as $v){
-			$arr = array(
-				'kid'   => $_REQUEST['kid'],
-				'value' => trim($v)
-			);
-			$arr['id'] = $attr_kv_ctr->add($arr);
-			$info['value'][] = $arr;
-		}
-	}
+	$info['key'] = $key;
+	$info['first_char'] = $first_char;
 	
 	foreach($info['value'] as $k=>&$v){
 		$attr_kv_ctr->setPrimaryKey($_REQUEST['kid']);
 		if(isset($_REQUEST['value-'.$v['id']]) 
-			&& $v['value'] != trim($_REQUEST['value-'.$v['id']])){
+			&& $v['value'].' '.$v['first_char'] != trim($_REQUEST['value-'.$v['id']])){
 			$attr_kv_ctr->setSecondKey($v['id']);
-			$v['value'] = trim($_REQUEST['value-'.$v['id']]);
-			$attr_kv_ctr->setNode(array('value'=>$v['value']));
+			list($key, $first_char) = explode(' ', trim($_REQUEST['value-'.$v['id']]));
+			$attr_kv_ctr->setNode(array('value'=>$key, 'first_char'=>strtoupper($first_char)));
+			$v['value'] = $key;
+			$v['first_char'] = strtoupper($first_char);
 		}
 		else if(isset($_REQUEST['del-'.$v['id']])){
 			$attr_kv_ctr->setSecondKey($v['id']);
@@ -59,6 +56,18 @@ if(isset($_REQUEST['_timeline'])){
 		}
 	}
 	
+	if(!empty($_REQUEST['value'])){
+		foreach(explode("\r\n", $_REQUEST['value']) as $val){
+			list($key, $first_char) = explode(' ', trim($val));
+			$arr = array(
+					'kid'        => $_REQUEST['kid'],
+					'value'      => $key,
+					'first_char' => strtoupper($first_char),
+			);
+			$arr['id'] = $attr_kv_ctr->add($arr);
+			$info['value'][] = $arr;
+		}
+	}
 }
 
 ?>
@@ -69,7 +78,7 @@ if(isset($_REQUEST['_timeline'])){
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet"> 
 <style type="text/css">
-input,textarea{width:150px;}
+input,textarea{width:180px;}
 textarea{height:85px;height:110px;}
 ul{margin:0;padding:0;}
 .warpper ul li{border:0;padding:0;}
@@ -92,7 +101,7 @@ ul{margin:0;padding:0;}
 						
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['key'])?></label>
-				<input type="text" name="key" value="<?php echo CStrTools::txt2html($info['key'])?>" />
+				<input type="text" name="key" value="<?php echo empty($info['key']) ? '' : CStrTools::txt2html($info['key']).' '.$info['first_char']?>" />
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['key'], $mbs_appenv)?></aside>
 			</div>
 			<div class="pure-control-group">
@@ -100,9 +109,9 @@ ul{margin:0;padding:0;}
 				<div style="display: inline-block">
 					<textarea name="value"></textarea>
 					<?php if(!empty($info['value'])){ ?>
-					<ul id=IDD_MULTI_OPTS><?php foreach($info['value'] as $v){?>
-						<li><input type="text" name="value-<?php echo $v['id']?>" value="<?php echo CStrTools::txt2html($v['value'])?>" />
-							<a class="pure-button pure-button-check" name="del-<?php echo $v['id']?>[]" _value="1"><?php echo $mbs_appenv->lang('delete')?></a></li>
+					<ul id=IDD_MULTI_OPTS><?php foreach($info['value'] as $val){?>
+						<li><input type="text" name="value-<?php echo $val['id']?>" value="<?php echo CStrTools::txt2html($val['value']), ' ', $val['first_char']?>" />
+							<a class="pure-button pure-button-check" name="del-<?php echo $val['id']?>[]" _value="1"><?php echo $mbs_appenv->lang('delete')?></a></li>
 					<?php }?></ul>
 					<?php } ?>
 				</div>
@@ -122,7 +131,9 @@ ul{margin:0;padding:0;}
 <?php if(!empty($error)){?>
 formSubmitErr(document._form, <?php echo json_encode($error)?>);
 <?php }?>
+<?php if(!empty($info['value'])){ ?>
 btnlist(document.getElementById("IDD_MULTI_OPTS").getElementsByTagName("a"));
+<?php } ?>
 </script>
 </body>
 </html>

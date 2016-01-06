@@ -1,6 +1,7 @@
 <?php
 
 mbs_import('common', 'CMultiRowControl');
+require_once dirname(__FILE__).'/CProductAttrKVTB.php';
 
 class CProductAttrKVControl extends CMultiRowControl {
 	private static $instance = null;
@@ -23,7 +24,7 @@ class CProductAttrKVControl extends CMultiRowControl {
 			try {
 				$memconn = $mempool->getConnection();
 				self::$instance = new CProductAttrKVControl(
-						new CMultiRowOfTable($dbpool->getDefaultConnection(),
+						new CProductAttrKVTB($dbpool->getDefaultConnection(),
 								mbs_tbname('product_attr_kv'), 'kid', $primarykey, 'id'),
 						$memconn ? new CMultiRowOfCache($memconn, $primarykey, __CLASS__) : null
 				);
@@ -34,6 +35,10 @@ class CProductAttrKVControl extends CMultiRowControl {
 		self::$instance->setPrimaryKey($primarykey);
 		
 		return self::$instance;
+	}
+	
+	function setKID(){
+		$this->setPrimaryKey(self::KEY_PID);
 	}
 	
 	function key($id){
