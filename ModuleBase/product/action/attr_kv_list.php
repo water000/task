@@ -42,12 +42,13 @@ i{font-size: 14px;color: #08c;font-weight: bold;display:inline-block;width:18px;
 				$attr_kv_ctr->setPrimaryKey($row['id']); $vs = $attr_kv_ctr->get(); ?>
 			<tr><td><input type=checkbox name="kid" value="<?php echo $row['id']?>" /><?php echo ++$i;?></td>
 				<td><i><?php if($prev_char!=$row['first_char']){$prev_char=$row['first_char']; echo $prev_char; }else{ echo '&nbsp;'; }?></i>
-				<?php echo CStrTools::txt2html($row['value'])?>
-				(<?php foreach($vs as $v){ echo CStrTools::txt2html($v['value']), ';'; }?>)</td>
+				<span><?php echo CStrTools::txt2html($row['value'])?>
+				(<?php foreach($vs as $v){ echo CStrTools::txt2html($v['value']), ';'; }?>)</span></td>
 				<td><a href="<?php echo $mbs_appenv->toURL('attr_kv_edit', '', array('kid'=>$row['id']))?>">
 					<?php echo $mbs_appenv->lang('edit')?></a></td></tr>
 			<?php } ?>
 		</table>
+		<div id=IDD_BTN_BAR></div>
 		
 		<?php if(count($page_num_list) > 1){?>
 		<div class="pure-menu pure-menu-horizontal page-break">
@@ -78,9 +79,28 @@ i{font-size: 14px;color: #08c;font-weight: bold;display:inline-block;width:18px;
 <script type="text/javascript">
 switchRow(document.getElementsByTagName("table")[0], 1, null, "row-onmouseover");
 if(window.parent){
-	window.parent.kv_query = function(id){
+	function _kv_each(fn){
+		var rows = document.getElementByTagName("table")[0].rows, i,chk;
+		for(i=0;i<rows.length; i++){
+			chk = rows[i].cells[0].getElementsByTagName("input");
+			if(chk){
+				fn({kid:chk.value, desc:rows[i].cells[1].getElementsByTagName("span")[0].innerHTML, box:chk});
+			}
+		}
 	}
-	window.parent.kv_selected = function(kv){
+	window.parent.kv_query = function(id){
+		var ret = null;
+		_kv_each(function(kv){if(id==kv.kid) ret=kv;});
+		return ret;
+	}
+	if(window.parent.cb_kv_selected){
+		var btn = document.createElement("button");
+		btn.className = "pure-button pure-button-primary";
+		btn.onclick = function(e){
+			_kv_each(function(kv){
+				if(kv.box.checked) window.parent.cb_kv_selected(kv);
+			});
+		}
 	}
 }
 </script>

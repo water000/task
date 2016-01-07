@@ -148,7 +148,7 @@ else{
 					<a class="pure-button pure-button-check" name="req_aid[]" 
 						_checked="<?php echo isset($pdtattrmap[$row['id']]) && $pdtattrmap[$row['id']]['required'] ?'1':'0'?>" 
 						_value="<?php echo $row['id']?>"><?php echo $mbs_appenv->lang('required')?></a>
-					<a href=""><?php echo $mbs_appenv->lang('kv')?>&gt;</a></td>
+					<a href="#" data-kid="<?php echo isset($pdtattrmap[$row['id']]) ? $pdtattrmap[$row['id']]['kid'] : 0?>"><?php echo $mbs_appenv->lang('kv')?>&gt;</a></td>
 				<?php } ?>
 			</tr>
 			<?php } ?>
@@ -168,6 +168,17 @@ else{
 switchRow(document.getElementsByTagName("table")[0], 1, null, "row-onmouseover");
 <?php if(HAS_PRODUCT){?>
 btnlist(document.form_relate.getElementsByTagName("a"));
+
+var g_cur_btn = null;
+window.cb_kv_selected = function(kv){
+	if(g_cur_btn != null){
+		_kv_show(g_cur_btn, kv);
+		_kv_field(g_cur_btn, kv.kid);
+		kv.box.checked = false;
+		pop_win.style.display = "none";
+	}
+}
+
 var pop_win = document.createElement("div");
 document.body.appendChild(pop_win);
 //pop_win.style.display = "none";
@@ -175,6 +186,34 @@ pop_win.className = "popwin";
 pop_win.innerHTML = "<div>choose key-value<a class=close href='#'>&times</a></div><iframe src='<?php echo $mbs_appenv->toURL('attr_kv_list')?>'></iframe>";
 pop_win.getElementsByTagName("a")[0].onclick=function(e){pop_win.style.display="none";}
 
+function _kv_showv(btn, kv){
+	if(!btn.nextSibling){
+		btn.parentNode.appendChild(document.createElement("span"));
+	}
+	btn.nextSibling.innerHTML = kv.desc;
+}
+function _kv_field(btn, kid){
+	if(btn.previousSibling.tagName != "INPUT"){
+		btn.parentNode.innsertBefore(document.createElement("input"), btn);
+		btn.previousSibling.name = "kid[]";
+		btn.previousSibling.type = "hidden";
+	}
+	btn.previousSibling.value = kid;
+}
+
+var kv_btns = document.getElementsByTagName("a"), i, kid;
+for(i=0; i<kv_btns.length; i++){
+	kid = kv_btns[i].getAttribute("data-kid");
+	if(typeof kid != "undefined"){
+		kv_btns[i].onclick = function(e){
+			pop_win.style.display = "";
+		}
+		if(kid != "0"){
+			var kv = kv_query(kid);
+			if(kv) _kv_show(btns[i], kv);
+		}
+	}
+}
 <?php }?>
 </script>
 </body>
