@@ -61,6 +61,18 @@ class CProductAttrKVControl extends CMultiRowControl {
 			throw $e;
 		}
 	}
+	
+	function kv($kid){
+		$ret = array(null, null);
+		try {
+			$ret[0] = $this->key($kid);
+			$this->setPrimaryKey($kid);
+			$ret[1] = $this->get();
+		} catch (Exception $e) {
+			throw $e;
+		}
+		return $ret;
+	}
 }
 
 ?>

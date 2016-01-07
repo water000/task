@@ -17,7 +17,6 @@ if($count > 0 && $count  > ($pid-1)*$num_per_page){
 	mbs_import('common', 'CTools');
 	$page_num_list = CTools::genPagination($pid, ceil($count/$num_per_page), 8);
 }
-
 ?>
 <!doctype html>
 <html>
@@ -78,6 +77,12 @@ i{font-size: 14px;color: #08c;font-weight: bold;display:inline-block;width:18px;
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('global.js')?>"></script>
 <script type="text/javascript">
 switchRow(document.getElementsByTagName("table")[0], 1, null, "row-onmouseover");
+if(window.parent){
+	window.parent.kv_query = function(id){
+	}
+	window.parent.kv_selected = function(kv){
+	}
+}
 </script>
 </body>
 </html>

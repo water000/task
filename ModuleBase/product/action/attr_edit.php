@@ -87,11 +87,7 @@ textarea{height:85px;}
 				<input type="text" name="en_name" value="<?php echo $info['en_name']?>" />
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['en_name'], $mbs_appenv)?></aside>
 			</div>
-			<div class="pure-control-group">
-				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['name'])?></label>
-				<input type="text" name="name" value="<?php echo $info['name']?>" />
-				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['name'], $mbs_appenv)?></aside>
-			</div>
+			
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['abstract'])?></label>
 				<textarea name="abstract"><?php echo $info['abstract']?></textarea>
@@ -111,18 +107,6 @@ textarea{height:85px;}
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['unit_or_size'])?></label>
 				<input type="text" name="unit_or_size" value="<?php echo $info['unit_or_size']?>" />
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['unit_or_size'], $mbs_appenv)?></aside>
-			</div>
-			<div class="pure-control-group" id="IDD_MULTI_OPTS">
-				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['value_opts'])?></label>
-				<input type="text" name="value_opts" value="<?php echo $info['value_opts']?>" />
-				<a class="pure-button pure-button-check" name="allow_multi" _value="1" _checked="<?php echo '1'==$info['allow_multi']?'1':'0'?>">
-					<?php echo $mbs_appenv->lang('allow_multi')?></a>
-				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['value_opts'], $mbs_appenv)?></aside>
-			</div>
-			<div class="pure-control-group">
-				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['default_value'])?></label>
-				<input type="text" name="default_value" value="<?php echo $info['default_value']?>" />
-				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['default_value'], $mbs_appenv)?></aside>
 			</div>
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
@@ -144,7 +128,6 @@ textarea{height:85px;}
 <?php if(!empty($error)){?>
 formSubmitErr(document._form, <?php echo json_encode($error)?>);
 <?php }?>
-btnlist(document.getElementById("IDD_MULTI_OPTS").getElementsByTagName("a"));
 </script>
 
 </body>

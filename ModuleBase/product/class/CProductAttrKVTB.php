@@ -7,8 +7,8 @@ class CProductAttrKVTB extends CMultiRowOfTable{
 			$this->keyname  => $this->primaryKey,
 		);
 		$opt = array(
-			'offset' => ($this->pageId-1)*$this->numPerPage,
-			'limit'  => $this->numPerPage,
+			//'offset' => ($this->pageId-1)*$this->numPerPage,
+			//'limit'  => $this->numPerPage,
 			'order'  => 'first_char',
 		);
 		try {

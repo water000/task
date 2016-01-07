@@ -100,6 +100,10 @@ else{
 .product img{position:absolute;left:5px;top:5px;width:50px;height:50px;}
 .product div.title{font-weight:bold;}
 .product div.pcontent{color:#666;margin-top: 3px;}
+.popwin{position:absolute;width:60%;height:70%;top:10%;left:20%;background-color:white;border:1px solid #ccc;border-radius: 5px;}
+.popwin div{padding:8px 0;font-weight:bold;position:relative;text-align:center;}
+.popwin div a{font-size:15px;position:absolute;right:3px;top:3px;text-decoration:none;}
+.popwin iframe{width:100%;height:100%;border:0;}
 </style>
 </head>
 <body>
@@ -126,26 +130,25 @@ else{
 			<thead><tr><td>#</td><td><?php echo $mbs_appenv->lang('content')?></td>
 				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'attr_edit', CModDef::P_ARGS, 'value_type', CModDef::G_TL)?></td>
 				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'attr_edit', CModDef::P_ARGS, 'unit_or_size', CModDef::G_TL)?></td>
-				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'attr_edit', CModDef::P_ARGS, 'value_opts', CModDef::G_TL)?></td>
 				<td><?php echo $mbs_appenv->lang(array('edit', 'time'))?></td>
 				<?php if(HAS_PRODUCT){?><td><?php echo $mbs_appenv->lang('relate')?></td><?php } ?>
 			</tr></thead>
 			<?php $i=0; foreach($attr_list as $row){ ?>
 			<tr><td><?php echo ++$i;?></td>
 				<td><a href="<?php echo $mbs_appenv->toURL('attr_edit', '', array('id'=>$row['id']))?>">
-					<?php echo $row['name'], '/', $row['en_name']?></a>
+					<?php echo $row['en_name']?></a>
 					<?php echo HAS_PRODUCT ? '' : '('.CStrTools::cutstr($row['abstract'], 32, $mbs_appenv->item('charset')).')'?>
 				</td>
 				<td><?php echo CProductAttrControl::vtmap($row['value_type'])?></td>
 				<td><?php echo $row['unit_or_size']?></td>
-				<td><?php echo $row['value_opts'], $row['allow_multi']?'<span class=pure-button-checked>'.$mbs_appenv->lang('allow_multi').'</span>':''?></td>
 				<td><?php echo CStrTools::descTime($row['edit_time'], $mbs_appenv)?></td>
 				<?php if(HAS_PRODUCT){?>
 				<td><a class="pure-button pure-button-check" name="aid[]" _value="<?php echo $row['id']?>" 
 						_checked="<?php echo isset($pdtattrmap[$row['id']])?'1':'0'?>" ><?php echo $mbs_appenv->lang('relate')?></a>
 					<a class="pure-button pure-button-check" name="req_aid[]" 
 						_checked="<?php echo isset($pdtattrmap[$row['id']]) && $pdtattrmap[$row['id']]['required'] ?'1':'0'?>" 
-						_value="<?php echo $row['id']?>"><?php echo $mbs_appenv->lang('required')?></a></td>
+						_value="<?php echo $row['id']?>"><?php echo $mbs_appenv->lang('required')?></a>
+					<a href=""><?php echo $mbs_appenv->lang('kv')?>&gt;</a></td>
 				<?php } ?>
 			</tr>
 			<?php } ?>
@@ -164,7 +167,14 @@ else{
 <script type="text/javascript">
 switchRow(document.getElementsByTagName("table")[0], 1, null, "row-onmouseover");
 <?php if(HAS_PRODUCT){?>
-btnlist(document.form_relate.getElementsByTagName("a"));;
+btnlist(document.form_relate.getElementsByTagName("a"));
+var pop_win = document.createElement("div");
+document.body.appendChild(pop_win);
+//pop_win.style.display = "none";
+pop_win.className = "popwin";
+pop_win.innerHTML = "<div>choose key-value<a class=close href='#'>&times</a></div><iframe src='<?php echo $mbs_appenv->toURL('attr_kv_list')?>'></iframe>";
+pop_win.getElementsByTagName("a")[0].onclick=function(e){pop_win.style.display="none";}
+
 <?php }?>
 </script>
 </body>

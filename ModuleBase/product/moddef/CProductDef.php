@@ -29,13 +29,13 @@ class CProductDef extends CModDef {
 				'product_attr_def'=>'(
 					id int unsigned not null auto_increment,
 					en_name varchar(16) not null, -- for field name
-					name varchar(16) not null, -- used to shown on page
+					-- name varchar(16) not null, -- used to shown on page
 					abstract varchar(32) not null,
 					value_type tinyint unsigned not null default 0, -- char, int , ...
 					unit_or_size varchar(32) not null default "", -- unit for number(10m) , size for string()
-					value_opts varchar(128) not null default "",
-					allow_multi tinyint not null,
-					default_value varchar(64) not null default "",
+					-- value_opts varchar(128) not null default "",
+					-- allow_multi tinyint not null,
+					--  default_value varchar(64) not null default "",
 					edit_time int unsigned not null,
 					create_time int unsigned not null,
 					primary key(id)
@@ -44,6 +44,7 @@ class CProductDef extends CModDef {
 					pid int unsigned not null,
 					aid int unsigned not null,
 					required tinyint not null default 0, -- 0/1
+					kid int unsigned not null,
 					primary key(pid, aid)
 				)',
 				'product_attr_kv' => '( -- key value pare for attribute, key is that kid was 0, and value is that kid was not 0
@@ -74,10 +75,6 @@ class CProductDef extends CModDef {
 						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'概要', self::PA_RNG=>'16, 64'),
 						'logo_path'  => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'logo图片'),
 						'baike_link' => array(self::G_TL=>'百科链接', self::G_DC=>'百科的站外链接，例如百度百科，维基百科'),
-						'exterior_name' => array(self::G_TL=>'外观名称', self::G_DC=>'产品的外观，例如颜色 (红;黄;蓝),树形(正常;较好;一般)'),
-						'exterior_value' => array(self::G_TL=>'外观值', self::G_DC=>'外观的可选值，多个用封号;分隔.例如 (红;黄;蓝)'),
-						'size_name' => array(self::G_TL=>'尺寸名称', self::G_DC=>'产品尺寸的名称'),
-						'baike_link' => array(self::G_TL=>'百科链接', self::G_DC=>'百科的站外链接，例如百度百科，维基百科'),
 					),
 				),
 				'attr_list'=> array(
@@ -93,13 +90,13 @@ class CProductDef extends CModDef {
 					self::P_MGR  => true,
 					self::P_ARGS => array(
 						'en_name'    => array(self::PA_REQ=>1, self::G_TL=>'英文名称', self::G_DC=>'有效的英文单词', self::PA_RNG=>'3, 16'),
-						'name'       => array(self::PA_REQ=>1, self::G_TL=>'中文名称', self::PA_RNG=>'2, 16'),
+						//'name'       => array(self::PA_REQ=>1, self::G_TL=>'中文名称', self::PA_RNG=>'2, 16'),
 						'abstract'   => array(self::PA_REQ=>1, self::G_TL=>'概要', self::PA_RNG=>'8, 32'),
 						'value_type' => array(self::PA_REQ=>1, self::G_TL=>'值类型', self::G_DC=>'属性值的类型'),
 						'unit_or_size'=>array(self::G_TL=>'单位/尺寸', self::G_DC=>'如果属性值类型是数字，则是单位；如果是字符串，则是尺寸', self::PA_RNG=>'1,32'),
-						'value_opts' => array(self::G_TL=>'值选项', self::G_DC=>'属性值的选项，多个用封号;分隔', self::PA_RNG=>'2,128'),
-						'allow_multi'=> array(),
-						'default_value'=>array(self::G_TL=>'默认值', self::G_DC=>'属性的默认值。如果有多选，可不填', self::PA_RNG=>'2,128'),
+						//'value_opts' => array(self::G_TL=>'值选项', self::G_DC=>'属性值的选项，多个用封号;分隔', self::PA_RNG=>'2,128'),
+						//'allow_multi'=> array(),
+						//'default_value'=>array(self::G_TL=>'默认值', self::G_DC=>'属性的默认值。如果有多选，可不填', self::PA_RNG=>'2,128'),
 					),
 				),
 				'attr_kv_edit'=> array(
@@ -114,6 +111,19 @@ class CProductDef extends CModDef {
 				),
 			),
 		);
+	}
+	
+	function install($dbpool, $mempool=null){
+		mbs_import('', 'CProductAttrControl');
+		$pdtattr_ctr = CProductAttrControl::getInstance(self::$appenv, $dbpool, $mempool);
+		try {
+			parent::install($dbpool, $mempool);
+			$pdtattr_ctr->add(array('id'=>1, 'en_name'=>'exterior', 'abstract'=>'外观，产品广义的外观，比如颜色，形状等等', 'value_type'=>'23'));
+			$pdtattr_ctr->add(array('id'=>2, 'en_name'=>'size', 'abstract'=>'尺寸，产品广义的尺寸，比如宽度，高度，长度等等', 'value_type'=>'23'));
+		} catch (Exception $e) {
+			throw $e;
+		}
+		
 	}
 }
 
