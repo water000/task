@@ -100,10 +100,11 @@ else{
 .product img{position:absolute;left:5px;top:5px;width:50px;height:50px;}
 .product div.title{font-weight:bold;}
 .product div.pcontent{color:#666;margin-top: 3px;}
-.popwin{position:absolute;width:60%;height:70%;top:10%;left:20%;background-color:white;border:1px solid #ccc;border-radius: 5px;}
-.popwin div{padding:8px 0;font-weight:bold;position:relative;text-align:center;}
-.popwin div a{font-size:15px;position:absolute;right:3px;top:3px;text-decoration:none;}
-.popwin iframe{width:100%;height:100%;border:0;}
+.popwin{position:absolute;width:60%;height:70%;top:10%;left:20%;background-color:white;border:2px solid #ccc;border-radius: 5px;}
+.popwin div{padding:8px 0;font-weight:bold;position:relative;text-align:center;background-color:#eee;}
+.popwin div a{font-size:15px;position:absolute;right:3px;top:3px;text-decoration:none;color:#666;}
+.popwin div a:hover{color:#333;}
+.popwin iframe{width:100%;height:95%;border:0;}
 </style>
 </head>
 <body>
@@ -207,6 +208,7 @@ for(i=0; i<kv_btns.length; i++){
 	if(typeof kid != "undefined"){
 		kv_btns[i].onclick = function(e){
 			pop_win.style.display = "";
+			g_cur_btn = this;
 		}
 		if(kid != "0"){
 			var kv = kv_query(kid);

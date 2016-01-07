@@ -101,6 +101,8 @@ if(window.parent){
 				if(kv.box.checked) window.parent.cb_kv_selected(kv);
 			});
 		}
+		btn.innerHTML = "<?php echo $mbs_appenv->lang('select')?>";
+		document.getElementById("IDD_BTN_BAR").appencChild(bnt);
 	}
 }
 </script>
