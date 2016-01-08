@@ -91,6 +91,17 @@ class CMerchantDef extends CModDef {
 					self::P_ARGS => array(
 					),
 				),
+				'product_edit'     => array(
+					self::P_TLE  => '产品编辑',
+					self::G_DC   => '对产品的基本信息编辑',
+					//self::P_MGR  => false,
+					self::P_ARGS => array(
+						'title'    => array(self::PA_REQ=>1, self::G_TL=>'标题', self::PA_RNG=>'6, 64'),
+						'inventory'=> array(self::PA_REQ=>1, self::G_TL=>'库存', self::PA_TYP=>'integer'),
+						'src_price'=> array(self::PA_REQ=>1, self::G_TL=>'原价', self::PA_TYP=>'integer'),
+						'discount_price'  => array(self::PA_REQ=>1, self::G_TL=>'折扣价', self::PA_TYP=>'integer'),
+					)
+				),
 			),
 		);
 	}

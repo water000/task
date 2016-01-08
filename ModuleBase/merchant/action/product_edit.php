@@ -53,29 +53,12 @@ textarea{height:85px;}
 						CDbPool::getInstance(), CMemcachedPool::getInstance(), $merchant_id);
 					$pdt_list = $mct_pdt_map_ctr->get();
 				}
-
 				?>
 				</div>
 			</div>
-			
 			<div class="pure-control-group">
-				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['abstract'])?></label>
-				<textarea name="abstract"><?php echo $info['abstract']?></textarea>
-				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['abstract'], $mbs_appenv)?></aside>
-			</div>
-			<div class="pure-control-group">
-				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['value_type'])?></label>
-				<select name="value_type">
-					<option value=0><?php echo $mbs_appenv->lang('choose_please')?></option>
-					<?php foreach(CProductAttrControl::vtmap() as $key => $v){?>
-					<option value="<?php echo $key?>" <?php echo $key==$info['value_type']?' SELECTED':''?>><?php echo $v?></option>
-					<?php }?>
-				</select>
-				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['value_type'], $mbs_appenv)?></aside>
-			</div>
-			<div class="pure-control-group">
-				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['unit_or_size'])?></label>
-				<input type="text" name="unit_or_size" value="<?php echo $info['unit_or_size']?>" />
+				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['inventory'])?></label>
+				<input type="text" name="inventory" value="<?php echo $info['inventory']?>" />
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['unit_or_size'], $mbs_appenv)?></aside>
 			</div>
 			<?php if(isset($_REQUEST['id'])){?>
