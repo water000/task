@@ -56,6 +56,16 @@ class CMctProductAttachmentControl extends CMultiRowControl{
 		}
 		return true;
 	}
+	
+	function alterTable($new_product_name){
+		try {
+			$sql = sprintf('ALTER TABLE %s RENAME %s', $this->oDB->tbname(), 
+					self::formatTable($new_product_name));
+			$this->oDB->getConnection()->exec($sql);
+		} catch (Exception $e) {
+			throw $e;
+		}
+	}
 
 }
 

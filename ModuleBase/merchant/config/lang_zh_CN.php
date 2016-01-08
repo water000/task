@@ -12,5 +12,5 @@ $lang_zh_CN = array(
 	'baned'       => '已禁用',
 	'ban'         => '禁用',
 	'reason'      => '原因',
-	
+	'product'     => '产品',
 );

@@ -42,8 +42,8 @@ class CMctProductControl extends CMultiRowControl{
 			merchant_id int unsigned not null,
 			title varchar(64) not null,
 			edit_time int unsigned not null,
-			exterior tinyint not null, -- shirt:color(black,gray,white,..), tree: level(normal, speicail, worse)
-			size int unsigned not null,
+			-- exterior tinyint not null, -- shirt:color(black,gray,white,..), tree: level(normal, speicail, worse)
+			-- size int unsigned not null,
 			inventory int unsigned not null,
 			sale_num int unsigned not null,
 			discount_price int unsigned not null, -- penny start
@@ -68,7 +68,7 @@ class CMctProductControl extends CMultiRowControl{
 	 * @param array $modify, array('field1'=>'sql def', ...),
 	 * @param unknown $change, array('field1'=>'sql def', ...)
 	 */
-	function alterTable($add, $del, $modify, $change){
+	function alterTable($add, $del, $modify, $change, $new_product_name=''){
 		try {
 			foreach($add as $key => $def){
 				$sql = sprintf('ALTER TABLE %s ADD %s %s', $this->oDB->tbname(), 
@@ -88,6 +88,12 @@ class CMctProductControl extends CMultiRowControl{
 				
 			foreach($change as $key => $def){
 				$sql = sprintf('ALTER TABLE %s CHANGE %s %s', $this->oDB->tbname(), $key, $def);
+				$this->oDB->getConnection()->exec($sql);
+			}
+			
+			if(!empty($new_product_name)){
+				$sql = sprintf('ALTER TABLE %s RENAME %s', $this->oDB->tbname(), 
+						self::formatTable($new_product_name));
 				$this->oDB->getConnection()->exec($sql);
 			}
 		} catch (Exception $e) {

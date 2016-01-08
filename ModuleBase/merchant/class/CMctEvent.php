@@ -62,12 +62,28 @@ class CMctEvent{
 		}
 	}
 	
+	static function _doENNameChanged($args, $mbs_appenv){
+		mbs_import('merchant', 'CMctProdcutControl', 'CMctProductAttachmentControl');
+		
+		$mct_pdt = CMctProductControl::getInstance($mbs_appenv, CDbPool::getInstance(),
+				CMemcachedPool::getInstance(), $args['src_name']);
+		$mct_pdt->alterTable(array(), array(), array(), array(), $args['new_name']);
+		
+		$mct_pdt_atch = CMctProductAttachmentControl::getInstance($mbs_appenv, CDbPool::getInstance(),
+				CMemcachedPool::getInstance(), $args['src_name']);
+		$mct_pdt_atch->alterTable($args['new_name']);
+	}
+	
 	static function response($ev, $args, $mbs_appenv, $action=null, $mod=null){
 		switch ($ev){
 			case 'map_changed':
 				self::_doMapChanged($args, $mbs_appenv);
 				break;
 			case 'attr_changed':
+				self::_doAttrChanged($args, $mbs_appenv);
+				break;
+			case 'en_name_changed':
+				self::_doENNameChanged($args, $mbs_appenv);
 				break;
 		}
 	}

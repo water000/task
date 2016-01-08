@@ -78,13 +78,13 @@ i{font-size: 14px;color: #08c;font-weight: bold;display:inline-block;width:18px;
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('global.js')?>"></script>
 <script type="text/javascript">
 switchRow(document.getElementsByTagName("table")[0], 1, null, "row-onmouseover");
-if(window.parent){
+if(window.parent && window.parent.cb_kv_selected){
 	function _kv_each(fn){
-		var rows = document.getElementByTagName("table")[0].rows, i,chk;
+		var rows = document.getElementsByTagName("table")[0].rows, i,chk;
 		for(i=0;i<rows.length; i++){
 			chk = rows[i].cells[0].getElementsByTagName("input");
-			if(chk){
-				fn({kid:chk.value, desc:rows[i].cells[1].getElementsByTagName("span")[0].innerHTML, box:chk});
+			if(chk.length > 0){
+				fn({kid:chk[0].value, desc:rows[i].cells[1].getElementsByTagName("span")[0].innerHTML, box:chk[0]});
 			}
 		}
 	}
@@ -93,17 +93,16 @@ if(window.parent){
 		_kv_each(function(kv){if(id==kv.kid) ret=kv;});
 		return ret;
 	}
-	if(window.parent.cb_kv_selected){
-		var btn = document.createElement("button");
-		btn.className = "pure-button pure-button-primary";
-		btn.onclick = function(e){
-			_kv_each(function(kv){
-				if(kv.box.checked) window.parent.cb_kv_selected(kv);
-			});
-		}
-		btn.innerHTML = "<?php echo $mbs_appenv->lang('select')?>";
-		document.getElementById("IDD_BTN_BAR").appencChild(bnt);
+	
+	var btn = document.createElement("button");
+	btn.className = "pure-button pure-button-primary";
+	btn.onclick = function(e){
+		_kv_each(function(kv){
+			if(kv.box.checked) window.parent.cb_kv_selected(kv);
+		});
 	}
+	btn.innerHTML = "<?php echo $mbs_appenv->lang('select')?>";
+	document.getElementById("IDD_BTN_BAR").appendChild(btn);
 }
 </script>
 </body>

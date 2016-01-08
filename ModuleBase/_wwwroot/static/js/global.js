@@ -173,3 +173,20 @@ function fileUpload(opt){
 	if(num_of_files < opt.max_files) _add();
 }
 
+function popwin(title, body){
+	var pop_win = document.createElement("div");
+	document.body.appendChild(pop_win);
+	pop_win.style.display = "none";
+	pop_win.className = "popwin";
+	pop_win.innerHTML = "<div>"+title+"<a href='javascript:;'>&times</a></div>" 
+		+ ("string" == typeof body ? body : '');
+	if("object" == typeof body)
+		pop_win.appendChild(body);
+	pop_win.show=function(){pop_win.style.display="";}
+	pop_win.hide=function(){pop_win.style.display="none";}
+	pop_win.remove=function(){pop_win.parentNode.removeChild(pop_win);}
+	pop_win.onclose=function(){pop_win.hide();}
+	pop_win.getElementsByTagName("a")[0].onclick=function(e){pop_win.onclose();}
+	return pop_win;
+}
+

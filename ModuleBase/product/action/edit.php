@@ -35,10 +35,16 @@ if(isset($_REQUEST['id'])){
 				}
 			}
 			if(empty($error)){
-				$info['edit_time'] = time();
-				$ret = $pdt_ctr->set($info);
-				if(empty($ret)){
-					$error[] = $pdt_ctr->error();
+				$info['edit_time'] = time();				
+				try{
+					$ret = $pdt_ctr->set($info);
+				} catch (Exception $e) {
+					if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
+						$error['name'] = sprintf('"%s" %s', $info['en_name'], $mbs_appenv->lang('existed'));
+					}else{
+						$error[] = $mbs_appenv->lang('db_exception');
+						mbs_error_log($e.getMessage()."\n".$e->getTraceAsString(), __FILE__, __LINE__);
+					}
 				}
 			}
 		}
@@ -63,11 +69,17 @@ else if(isset($_REQUEST['_timeline'])){
 			$pdt_ctr = CProductControl::getInstance($mbs_appenv,
 					CDbPool::getInstance(), CMemcachedPool::getInstance());
 			$info['edit_time'] = $info['create_time'] = time();
-			$ret = $info_id = $pdt_ctr->add($info);
-			if(empty($ret)){
-				$error[] = $mbs_appenv->lang('error_on_field_exists').'('.$pdt_ctr->error().')';
-			}else{
+			
+			try{
+				$ret = $info_id = $pdt_ctr->add($info);
 				$info = $info_def;
+			} catch (Exception $e) {
+				if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
+					$error['name'] = sprintf('"%s" %s', $info['en_name'], $mbs_appenv->lang('existed'));
+				}else{
+					$error[] = $mbs_appenv->lang('db_exception');
+					mbs_error_log($e.getMessage()."\n".$e->getTraceAsString(), __FILE__, __LINE__);
+				}
 			}
 		}
 	}

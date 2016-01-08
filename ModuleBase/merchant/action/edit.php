@@ -50,6 +50,7 @@ if(isset($_REQUEST['id'])){
 				}
 			}
 		}else{
+			$src_en_name = $info['en_name'];
 			$info = array_intersect_key($_REQUEST, $info) + $info;
 			$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
 			if(empty($error)){
@@ -66,6 +67,15 @@ if(isset($_REQUEST['id'])){
 						}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
 							$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 						}
+					}
+					if($src_en_name != $info['en_name']){
+						mbs_import('common', 'CEvent');
+						$ev_args = array(
+							'product_id' => $info['id'],
+							'src_name'   => $src_en_name,
+							'new_name'   => $info['en_name'],
+						);
+						CEvent::trigger('en_name_changed', $ev_args, $mbs_appenv);
 					}
 				} catch (Exception $e) {
 					if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){

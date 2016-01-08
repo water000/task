@@ -15,7 +15,7 @@ class CProductDef extends CModDef {
 			self::TBDEF => array(
 				'product_info'=>'(
 					id int unsigned not null auto_increment,
-					en_name varchar(16) not null, -- for table name
+					en_name varchar(32) not null, -- for table name
 					name varchar(16) not null, 
 					abstract varchar(64) not null,
 					logo_path varchar(255) not null,
@@ -118,8 +118,9 @@ class CProductDef extends CModDef {
 		$pdtattr_ctr = CProductAttrControl::getInstance(self::$appenv, $dbpool, $mempool);
 		try {
 			parent::install($dbpool, $mempool);
-			$pdtattr_ctr->add(array('id'=>1, 'en_name'=>'exterior', 'abstract'=>'外观，产品广义的外观，比如颜色，形状等等', 'value_type'=>'23'));
-			$pdtattr_ctr->add(array('id'=>2, 'en_name'=>'size', 'abstract'=>'尺寸，产品广义的尺寸，比如宽度，高度，长度等等', 'value_type'=>'23'));
+			$time = time();
+			$pdtattr_ctr->add(array('id'=>1, 'en_name'=>'exterior', 'abstract'=>'外观，产品广义的外观，比如颜色，形状等等', 'value_type'=>'23', 'create_time'=>$time, 'edit_time'=>$time));
+			$pdtattr_ctr->add(array('id'=>2, 'en_name'=>'size', 'abstract'=>'尺寸，产品广义的尺寸，比如宽度，高度，长度等等', 'value_type'=>'23', 'create_time'=>$time, 'edit_time'=>$time));
 		} catch (Exception $e) {
 			throw $e;
 		}

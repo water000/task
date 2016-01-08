@@ -90,7 +90,7 @@ if(isset($_REQUEST['action'])){
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet"> 
 <style type="text/css">
 textarea{vertical-align:bottom;}
-.st-log ul{margin:0;padding:0;}
+.st-log ul{margin:0;padding:0;font-size:60%;}
 .st-log ul li{list-style-type:inherit;border:0;color:#666;padding: 0;}
 </style>
 </head>
