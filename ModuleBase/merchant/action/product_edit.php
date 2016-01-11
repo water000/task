@@ -16,6 +16,8 @@ $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 
 $pdt_ctr = CProductControl::getInstance($mbs_appenv, 
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
+$mct_pdt_attch_ctr = CMctProductAttachmentControl::getInstance($mbs_appenv, 
+		CDbPool::getInstance(), CMemcachedPool::getInstance());
 
 if(isset($_REQUEST['product_id'])){
 	$_REQUEST['product_id'] = intval($_REQUEST['product_id']);
@@ -32,11 +34,13 @@ if(isset($_REQUEST['item'])){ // product_id & item must be set at same time
 	$mct_pdt_ctr = CMctProductControl::getInstance($mbs_appenv, 
 		CDbPool::getInstance(), CMemcachedPool::getInstance(), $pdt_info['en_name']);
 	$mct_pdt_ctr->setPrimaryKey($_REQUEST['item']);
-	$item_info = $mct_pdt_ctr->get();
-	if(empty($item_info)){
+	$info = $mct_pdt_ctr->get();
+	if(empty($info)){
 		$mbs_appenv->echoex($mbs_appenv->lang('not_found'), 'MCT_PRODCT_EDIT_INVALID_ITEM_ID');
 		exit(0);
 	}
+	$mct_pdt_attch_ctr->setPrimaryKey($_REQUEST['item']);
+	$images = $mct_pdt_attch_ctr->get();
 }
 
 ?>
@@ -53,8 +57,8 @@ textarea{height:85px;}
 </head>
 <body>
 <div class="warpper">
-	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title, 'attr'))?>
-		<a class=back href="<?php echo $mbs_appenv->toURL('attr_list')?>">&lt;<?php echo $mbs_appenv->lang(array('attr', 'list'))?></a></div>
+	<div class="ptitle"><?php echo $mbs_appenv->lang(array($page_title, 'product'))?>
+		<a class=back href="<?php echo $mbs_appenv->toURL('attr_list')?>">&lt;<?php echo $mbs_appenv->lang(array('product', 'list'))?></a></div>
 	<div class="">
 	<form class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
 		<input type="hidden" name="_timeline" value="<?php echo time()?>" />
@@ -114,7 +118,7 @@ textarea{height:85px;}
 				<label><?php echo $kv[0]['value'], $row['required']?'<span class=required>*</span>':''?></label>
 				<div style="display: inline-block;">
 				<?php foreach($kv[1] as $v){?>
-					<a href="#" _checked="<?php echo $_REQUEST['product_id']==$row['id'] ? '1':'0'?>"  
+					<a href="#" _checked="<?php echo isset($info[$attr_info['en_name']]) && $info[$attr_info['en_name']]==$row['id'] ? '1':'0'?>"  
 						class="pure-button pure-button-check" value="<?php $v['id']?>"><?php echo $v['value']?></a>
 				<?php }?>
 				</div>
@@ -144,6 +148,16 @@ textarea{height:85px;}
 				<input type="text" name="src_price" value="<?php echo $info['src_price']?>" />
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['src_price'], $mbs_appenv)?></aside>
 			</div>
+			<div class="pure-control-group">
+                <label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
+                <span id=IDS_CONTAINER style="display:inline-block;">
+                <?php if(isset($images)){foreach ($images as $img){ ?>
+                <img src="<?php echo $mbs_appenv->uploadURL(CMctAttachmentControl::completePath($img['path']))?>" _data-id="<?php echo $img['id']?>" />
+                <?php }}?>
+                </span>
+                <aside class="pure-form-message-inline"><?php echo $mbs_appenv->lang('upload_max_filesize'), 
+					',', sprintf($mbs_appenv->lang('upload_max_filenum'), $max_upload_images)?></aside>
+            </div>
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
                 <label><?php $mbs_appenv->lang(array('add', 'time'))?></label>

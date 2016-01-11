@@ -25,7 +25,7 @@ class CMctProductAttachmentControl extends CMultiRowControl{
 				$memconn = $mempool->getConnection();
 				self::$product_ins[$product_name] = new CMctProductAttachmentControl(
 						new CMultiRowOfTable($dbpool->getDefaultConnection(),
-								self::formatTable($product_name), 'id', $primarykey, 'mp_id'),
+								self::formatTable($product_name), 'mp_id', $primarykey, 'id'),
 						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CMctProductAttachmentControl') : null,
 						$primarykey
 				);
