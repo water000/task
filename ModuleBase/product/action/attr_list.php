@@ -135,18 +135,18 @@ else{
 			<thead><tr><td>#</td><td><?php echo $mbs_appenv->lang('content')?></td>
 				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'attr_edit', CModDef::P_ARGS, 'value_type', CModDef::G_TL)?></td>
 				<td><?php echo $mbs_cur_moddef->item(CModDef::PAGES, 'attr_edit', CModDef::P_ARGS, 'unit_or_size', CModDef::G_TL)?></td>
-				<td><?php echo $mbs_appenv->lang(array('edit', 'time'))?></td>
-				<?php if(HAS_PRODUCT){?><td style="width: 45%;"><?php echo $mbs_appenv->lang('relate')?></td><?php } ?>
+				<?php if(!HAS_PRODUCT){?><td><?php echo $mbs_appenv->lang(array('edit', 'time'))?></td><?php }?>
+				<?php if(HAS_PRODUCT){?><td style="width: 40%;"><?php echo $mbs_appenv->lang('relate')?></td><?php } ?>
 			</tr></thead>
 			<?php $i=0; foreach($attr_list as $row){ ?>
 			<tr><td><?php echo ++$i;?></td>
 				<td><a href="<?php echo $mbs_appenv->toURL('attr_edit', '', array('id'=>$row['id']))?>">
 					<?php echo $row['en_name']?></a>
-					<?php echo HAS_PRODUCT ? '' : '('.CStrTools::cutstr($row['abstract'], 32, $mbs_appenv->item('charset')).')'?>
+					<?php echo '('.CStrTools::cutstr($row['abstract'], 32, $mbs_appenv->item('charset')).')'?>
 				</td>
 				<td><?php echo CProductAttrControl::vtmap($row['value_type'])?></td>
 				<td><?php echo $row['unit_or_size']?></td>
-				<td><?php echo CStrTools::descTime($row['edit_time'], $mbs_appenv)?></td>
+				<?php if(!HAS_PRODUCT){?><td><?php echo CStrTools::descTime($row['edit_time'], $mbs_appenv)?></td><?php }?>
 				<?php if(HAS_PRODUCT){?>
 				<td><a class="pure-button pure-button-check" name="aid[]" _value="<?php echo $row['id']?>" 
 						_checked="<?php echo isset($pdtattrmap[$row['id']])?'1':'0'?>" ><?php echo $mbs_appenv->lang('relate')?></a>

@@ -1,5 +1,7 @@
 <?php
 
+mbs_import('common', 'CMultiRowControl');
+
 class CMctControl extends CUniqRowControl {
 	
 	private static $instance   = null;
