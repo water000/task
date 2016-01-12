@@ -5,6 +5,7 @@ mbs_import('product', 'CProductControl', 'CProductAttrMapControl', 'CProductAttr
 mbs_import('user', 'CUserSession');
 
 $page_title = 'add';
+$max_upload_images = $mbs_appenv->config('mct_max_upload_images');
 
 $us = new CUserSession();
 $user_info = $us->get();
@@ -16,8 +17,7 @@ $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 
 $pdt_ctr = CProductControl::getInstance($mbs_appenv, 
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
-$mct_pdt_attch_ctr = CMctProductAttachmentControl::getInstance($mbs_appenv, 
-		CDbPool::getInstance(), CMemcachedPool::getInstance());
+
 
 if(isset($_REQUEST['product_id'])){
 	$_REQUEST['product_id'] = intval($_REQUEST['product_id']);
@@ -27,6 +27,9 @@ if(isset($_REQUEST['product_id'])){
 		$mbs_appenv->echoex($mbs_appenv->lang('not_found'), 'MCT_PRODCT_EDIT_INVALID_PRODUCT_ID');
 		exit(0);
 	}
+	
+	$mct_pdt_attch_ctr = CMctProductAttachmentControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), $pdt_info['en_name']);
 }
 
 if(isset($_REQUEST['item'])){ // product_id & item must be set at same time
@@ -51,7 +54,8 @@ if(isset($_REQUEST['item'])){ // product_id & item must be set at same time
 <link href="<?php echo $mbs_appenv->sURL('pure-min.css')?>" rel="stylesheet">
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet"> 
 <style type="text/css">
-input,textarea,select{width:300px;}
+.btnlist-box{display:inline-block;}
+.btnlist-box, #IDS_CONTAINER, input,textarea,select{width:300px;}
 textarea{height:85px;}
 </style>
 </head>
@@ -71,7 +75,7 @@ textarea{height:85px;}
 						
 			<div class="pure-control-group">
 				<label><?php echo $mbs_appenv->lang('product')?></label>
-				<div style="display: inline-block;">
+				<div class="btnlist-box">
 				<?php
 				if(isset($_REQUEST['item'])){
 					echo $pdt_info['name'];
@@ -82,15 +86,20 @@ textarea{height:85px;}
 					if(!isset($_REQUEST['product_id']) && !empty($pdt_list)){
 						$_REQUEST['product_id'] = $pdt_list[0]['product_id'];
 					}
+					$is_product_in_list = false;
 					foreach($pdt_list as $row){
 						$pdt_ctr->setPrimaryKey($row['product_id']);
 						$pdt_used = $pdt_ctr->get();
 						if(!empty($pdt_used)){
+							$is_product_in_list = $_REQUEST['product_id']==$row['id'];
 				?>
-					<a href="#" _checked="<?php echo $_REQUEST['product_id']==$row['id'] ? '1':'0'?>" 
+					<a href="#" _checked="<?php echo $is_product_in_list ? '1':'0'?>" 
 						class="pure-button pure-button-check" name="product_id" value="<?php echo $row['id']?>" ><?php echo $row['name']?></a>
 				<?php
 						}
+					}
+					if(!$is_product_in_list){
+						echo $pdt_info['name'];
 					}
 				}
 				?>
@@ -116,10 +125,10 @@ textarea{height:85px;}
 			?>
 			<div class="pure-control-group">
 				<label><?php echo $kv[0]['value'], $row['required']?'<span class=required>*</span>':''?></label>
-				<div style="display: inline-block;">
+				<div  class="btnlist-box">
 				<?php foreach($kv[1] as $v){?>
 					<a href="#" _checked="<?php echo isset($info[$attr_info['en_name']]) && $info[$attr_info['en_name']]==$row['id'] ? '1':'0'?>"  
-						class="pure-button pure-button-check" value="<?php $v['id']?>"><?php echo $v['value']?></a>
+						class="pure-button pure-button-check" name="<?php echo $attr_info['en_name']?>" _value="<?php echo $v['id']?>"><?php echo $v['value']?></a>
 				<?php }?>
 				</div>
 			</div>
@@ -179,6 +188,29 @@ textarea{height:85px;}
 <?php if(!empty($error)){?>
 formSubmitErr(document._form, <?php echo json_encode($error)?>);
 <?php }?>
+fileUpload({
+	max_files:<?php echo $max_upload_images?>, 
+	container:"IDS_CONTAINER", 
+	file_name:"image[]", 
+	onFileDel:function(file){
+		var id = <?php echo isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;?>;
+		if(0 == id) return;
+		var f = document.createElement("form");
+		f.method = "post";
+		f.innerHTML = "<input type='hidden' name='id' value='"+id+"' />"+
+			"<input type='hidden' name='_timeline' value='' />"+
+			"<input type='hidden' name='delete' value='' />"+
+			"<input type='hidden' name='aid' value='"+file.getAttribute("_data-id")+"' />";
+		document.body.appendChild(f);
+		f.submit();
+	}
+});
+var btnlist_box = document.getElementsByTagName("DIV"), i;
+for(i=0; i<btnlist_box.length; i++){
+	if("btnlist-box" == btnlist_box[i].className){
+		btnlist(btnlist_box[i].getElementsByTagName("a"));
+	}
+}
 </script>
 
 </body>

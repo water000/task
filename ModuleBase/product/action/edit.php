@@ -19,6 +19,7 @@ if(isset($_REQUEST['id'])){
 		exit(0);
 	}
 	if(isset($_REQUEST['_timeline'])){
+		$src_en_name = $info['en_name'];
 		$info = array_intersect_key($_REQUEST, $info) + $info;
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('logo_path'));
 		if(!isset($error['en_name']) && !CStrTools::isWord($info['en_name'])){
@@ -35,9 +36,19 @@ if(isset($_REQUEST['id'])){
 				}
 			}
 			if(empty($error)){
-				$info['edit_time'] = time();				
+				$info['edit_time'] = time();
 				try{
 					$ret = $pdt_ctr->set($info);
+					
+					if($src_en_name != $info['en_name']){
+						mbs_import('common', 'CEvent');
+						$ev_args = array(
+							'product_id' => $info['id'],
+							'src_name'   => $src_en_name,
+							'new_name'   => $info['en_name'],
+						);
+						CEvent::trigger('en_name_changed', $ev_args, $mbs_appenv);
+					}
 				} catch (Exception $e) {
 					if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
 						$error['name'] = sprintf('"%s" %s', $info['en_name'], $mbs_appenv->lang('existed'));

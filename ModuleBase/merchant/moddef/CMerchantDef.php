@@ -98,8 +98,9 @@ class CMerchantDef extends CModDef {
 					self::P_ARGS => array(
 						'title'    => array(self::PA_REQ=>1, self::G_TL=>'标题', self::PA_RNG=>'6, 64'),
 						'inventory'=> array(self::PA_REQ=>1, self::G_TL=>'库存', self::PA_TYP=>'integer'),
-						'src_price'=> array(self::PA_REQ=>1, self::G_TL=>'原价', self::PA_TYP=>'integer'),
-						'discount_price'  => array(self::PA_REQ=>1, self::G_TL=>'折扣价', self::PA_TYP=>'integer'),
+						'discount_price'  => array(self::PA_REQ=>1, self::G_TL=>'折扣价', self::G_DC=>'单位元(￥)，最小到分(例:10<i style="color:#000;">.</i>12)', self::PA_TYP=>'integer'),
+						'src_price'=> array(self::PA_REQ=>1, self::G_TL=>'原价', self::G_DC=>'同折扣价', self::PA_TYP=>'integer'),
+						'image'      => array(self::PA_REQ=>1, self::PA_TYP=>'file', self::G_TL=>'图片'),
 					)
 				),
 			),

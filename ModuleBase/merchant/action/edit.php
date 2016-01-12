@@ -50,7 +50,6 @@ if(isset($_REQUEST['id'])){
 				}
 			}
 		}else{
-			$src_en_name = $info['en_name'];
 			$info = array_intersect_key($_REQUEST, $info) + $info;
 			$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
 			if(empty($error)){
@@ -58,24 +57,14 @@ if(isset($_REQUEST['id'])){
 				$info['edit_time'] = time();
 				try {
 					$ret = $mct_ctr->set($info);
-					
 					for($i=0; $i<count($_FILES['image']['error']); ++$i){
 						if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 							$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
-							$id = $mct_atch_ctr->addEx($img);
+							$id = $mct_atch_ctr->addNode($img);
 							$images[] = $img;
 						}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
 							$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 						}
-					}
-					if($src_en_name != $info['en_name']){
-						mbs_import('common', 'CEvent');
-						$ev_args = array(
-							'product_id' => $info['id'],
-							'src_name'   => $src_en_name,
-							'new_name'   => $info['en_name'],
-						);
-						CEvent::trigger('en_name_changed', $ev_args, $mbs_appenv);
 					}
 				} catch (Exception $e) {
 					if($mbs_appenv->config('PDO_ER_DUP_ENTRY', 'common') == $e->getCode()){
@@ -110,7 +99,7 @@ else if(isset($_REQUEST['_timeline'])){
 			for($i=0; $i<count($_FILES['image']['error']); ++$i){
 				if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 					$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
-					$id = $mct_atch_ctr->addEx($img);
+					$id = $mct_atch_ctr->addNode($img);
 				}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
 					$error['image'] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
 				}
@@ -151,13 +140,6 @@ textarea{height:85px;}
 .block{background-color:white;margin:10px 12px 0;}
 .map-ctr{display:inline-block;width:380px; height:220px;}
 .map-ctr-bigger{width:500px; height:300px;}
-
-#img-lab-bg{width:67px ;height:67px ;position:relative;display:inline-block;overflow: hidden;margin:0 3px 0 0;}
-#img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:50px;text-align:center; width:65px;height:65px; border-radius:5px;}
-.img-lab-add{color:#7DB8EC;border:1px dashed #ccc;background-color:#fff;overflow:hidden;}
-.img-lab-del{color:red;border:1px dashed red;overflow:hidden;visibility:hidden;}
-.img-name{position:absolute;bottom:0;left:0;margin:1px;font-size:12px;width: 63px;overflow: hidden;text-align:center;}
-#img-lab-bg input{width:10px;margin:2px;float:right;border:0;}
 </style>
 </head>
 <body>

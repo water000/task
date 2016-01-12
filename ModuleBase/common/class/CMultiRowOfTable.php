@@ -9,6 +9,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 	protected $pageId     = 1;
 	protected $numPerPage = 20;
 	protected $orderSecondKey = true;
+	protected $autoAssignLidOnScdKey = true; // auto assign the last insert id for second key on addNode called
 	
 	
 	/*protected */function __construct($oPdoConn, $tbname, 
@@ -51,6 +52,9 @@ class CMultiRowOfTable extends CUniqRowOfTable
 	function disableOrderSecondKey(){
 		$this->orderSecondKey = false;
 	}
+	function setAutoAssign($s){
+		$this->autoAssignLidOnScdKey = $s;
+	}
 	
 	function get(){
 		$sql = sprintf('SELECT * FROM %s WHERE %s=%d %s Limit %d, %d', 
@@ -77,7 +81,7 @@ class CMultiRowOfTable extends CUniqRowOfTable
 		return $pdos;
 	}
 	
-	function addNode($param){	
+	function addNode(&$param){	
 		$ret = false;
 		$sql = sprintf('INSERT INTO %s(%s) VALUES(%s)', 
 				$this->tbname, 
@@ -88,8 +92,8 @@ class CMultiRowOfTable extends CUniqRowOfTable
 		try{
 			$pdos = $this->oPdoConn->prepare($sql);
 			$ret = $pdos->execute(array_values($param));
-			if($ret === false){
-				$this->_seterror($pdos);
+			if($ret !== false && $this->autoAssignLidOnScdKey){
+				$this->secondKey = $param[$this->skeyname] = $this->oPdoConn->lastInsertId();
 			}
 		}catch(Exception $e){
 			throw $e;

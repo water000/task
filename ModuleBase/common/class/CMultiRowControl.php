@@ -107,7 +107,7 @@ class CMultiRowControl extends CUniqRowControl
 		return $ret;
 	}
 	
-	function addNode($param, $pos = self::CACHE_TO_HEAD)
+	function addNode(&$param, $pos = self::CACHE_TO_HEAD)
 	{
 		try
 		{

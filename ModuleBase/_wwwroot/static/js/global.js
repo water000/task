@@ -129,6 +129,7 @@ function fileUpload(opt){
 			if(num_of_files < opt.max_files) _add(null);
 		}
 	}
+	var _remove = function(_win){_win.parentNode.removeChild(_win);num_of_files--;if(num_of_files == opt.max_files-1) _add();}
 	var _show = function(file){
 		var _win = document.createElement("span");
 		_win.id = "img-lab-bg";
@@ -142,7 +143,7 @@ function fileUpload(opt){
 		_win.appendChild(lab);
 		bind(_win, 'mouseover', function(e){lab.style.visibility="visible";});
 		bind(_win, 'mouseout', function(e){lab.style.visibility="hidden";});
-		bind(_win, 'click', function(e){opt.onFileDel(file);_win.parentNode.removeChild(_win);num_of_files--;_add();});
+		bind(_win, 'click', function(e){opt.onFileDel(file);_remove(_win);});
 		num_of_files++;
 	}
 	var _edit = function(inputFile){
@@ -162,7 +163,7 @@ function fileUpload(opt){
 		var lab = _win.childNodes[1];
 		bind(_win, 'mouseover', function(e){lab.style.visibility="visible";});
 		bind(_win, 'mouseout', function(e){lab.style.visibility="hidden";});
-		bind(_win, 'click', function(e){_win.parentNode.removeChild(_win);num_of_files--;_add();});
+		bind(_win, 'click', function(e){_remove(_win);});
 		num_of_files++;
 	}
 	for(var j=0; j<cntr.childNodes.length; j++){
@@ -187,6 +188,6 @@ function popwin(title, body){
 	pop_win.remove=function(){pop_win.parentNode.removeChild(pop_win);}
 	pop_win.onclose=function(){pop_win.hide();}
 	pop_win.getElementsByTagName("a")[0].onclick=function(e){pop_win.onclose();}
-	return pop_win;
+	return popwin;
 }
 
