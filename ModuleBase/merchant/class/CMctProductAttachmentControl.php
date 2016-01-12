@@ -3,15 +3,8 @@
 class CMctProductAttachmentControl extends CMultiRowControl{
 	private static $product_ins = array();
 	
-	private static $subdir = 'mctpdt/';
-	
-	private static $thumb = array(
-		'small'  => array(65,  65,  's'), // width, height, desc
-		'medium' => array(180, 100, 'm'),
-		'big'    => array(400, 220, 'b'),
-	);
-	
 	private static $mbs_appenv = null;
+	private static $imgthumb = null;
 
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
@@ -42,6 +35,7 @@ class CMctProductAttachmentControl extends CMultiRowControl{
 			} catch (Exception $e) {
 				throw $e;
 			}
+			self::$imgthumb = new CImage('mctpdt/');
 		}
 		return self::$product_ins[$product_name];
 	}
@@ -78,41 +72,24 @@ class CMctProductAttachmentControl extends CMultiRowControl{
 	}
 	
 	function addNode(&$arr, $pos=null){
-		list($src, $filename) = $arr;
-		$name = md5(uniqid('mct_', true));
-		$hash = substr($name, 0, 2);
-		$subdir = self::$subdir.$hash.'/';
-		$dest_dir = self::$mbs_appenv->mkdirUpload($subdir);
-		if(false === $dest_dir){
-			trigger_error('mkdirUpload error: '.$subdir, E_USER_WARNING);
-			return false;
-		}
-		$path = $hash.'/'.$name;
-	
-		mbs_import('common', 'CImage');
-		$dest = array_values(self::$thumb);
-		$dest[0][2] = $dest_dir.$name.$dest[0][2].'.'.CImage::THUMB_FORMAT;
-		$dest[1][2] = $dest_dir.$name.$dest[1][2].'.'.CImage::THUMB_FORMAT;
-		$dest[2][2] = $dest_dir.$name.$dest[2][2].'.'.CImage::THUMB_FORMAT;
 		try {
-			CImage::thumbnail($src, $dest);
-			$arr = array(
-					'merchant_id'  => $this->primaryKey,
-					'path'         => $hash.'/'.$name,
-					'name'         => $filename,
-					'create_time'  => time(),
-					'format'       => 1,
+			$path = self::$imgthumb->thumbnailEx(self::$mbs_appenv, $arr);
+			$arr2 = array(
+				'mp_id'        => $this->primaryKey,
+				'path'         => $path,
+				'name'         => $arr[1],
+				'create_time'  => time(),
+				'format'       => 1,
 			);
-			parent::addNode($arr);
+			parent::addNode($arr2);
 		} catch (Exception $e) {
-			trigger_error('thumbnail error: '.$e->getMessage());
-			return false;
+			throw $e;
 		}
-		return $arr['id'];
+		return $arr2['id'];
 	}
 	
 	static function completePath($path, $type='small'){
-		return self::$subdir.$path.self::$thumb[$type][2].'.'.CImage::THUMB_FORMAT;
+		return self::$imgthumb->completePath($path, $type);
 	}
 
 }

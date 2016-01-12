@@ -46,6 +46,11 @@ if(isset($_REQUEST['item'])){ // product_id & item must be set at same time
 	$images = $mct_pdt_attch_ctr->get();
 }
 
+if(isset($_REQUEST['_timeline'])){
+	$info = array_intersect_key($_REQUEST, $info) + $info;
+	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), isset($_REQUEST['item']) ? array('image'):null);
+}
+
 ?>
 <!doctype html>
 <html>
