@@ -13,6 +13,7 @@ $user_info = $us->get();
 //$merchant_id = $user_info['merchant_id'];
 $merchant_id = 1;
 
+
 $info = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 
 $pdt_ctr = CProductControl::getInstance($mbs_appenv, 
@@ -29,7 +30,7 @@ if(isset($_REQUEST['product_id'])){
 	}
 	
 	$mct_pdt_ctr = CMctProductControl::getInstance($mbs_appenv,
-			CDbPool::getInstance(), CMemcachedPool::getInstance(), $pdt_info['en_name']);
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), $pdt_info['en_name'], $merchant_id);
 	$mct_pdt_attch_ctr = CMctProductAttachmentControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), $pdt_info['en_name']);
 	
@@ -44,13 +45,28 @@ if(isset($_REQUEST['product_id'])){
 
 if(isset($_REQUEST['item'])){ // product_id & item must be set at same time
 	$_REQUEST['item'] = intval($_REQUEST['item']);
-	$mct_pdt_ctr->setPrimaryKey($_REQUEST['item']);
-	$info = $mct_pdt_ctr->get();
+	$mct_pdt_ctr->setSecondKey($_REQUEST['item']);
+	$info = $mct_pdt_ctr->getNode();
 	if(empty($info)){
 		$mbs_appenv->echoex($mbs_appenv->lang('not_found'), 'MCT_PRODCT_EDIT_INVALID_ITEM_ID');
 		exit(0);
 	}
 	$mct_pdt_attch_ctr->setPrimaryKey($_REQUEST['item']);
+	if(isset($_REQUEST['del_atch'])){
+		$mct_pdt_attch_ctr->setSecondKey($_REQUEST['del_atch']);
+		$img = $mct_pdt_attch_ctr->getNode();
+		if(!empty($img)){
+			$path = $mbs_appenv->uploadPath(CMctProductAttachmentControl::completePath($img['path']));
+			if(file_exists($path)){
+				unlink($path);
+			}
+			$ret = $mct_pdt_attch_ctr->delNode();
+		}
+		$mbs_appenv->echoex($mbs_appenv->lang('operation_success'));
+		if($mbs_appenv->item('client_accept') != 'html'){
+			exit(0);
+		}
+	}
 	$images = $mct_pdt_attch_ctr->get();
 }
 
@@ -102,13 +118,16 @@ if(isset($_REQUEST['_timeline'])){
 	}else{
 		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 		if(!empty($error)){
+			$info_def = $info;
 			$info = array_intersect_key($_REQUEST,$info) + $info;
 			$info['merchant_id'] = $merchant_id;
 			$info['edit_time']   = time();
 			$mct_pdt_ctr->addNode($info);
+			$mct_pdt_attch_ctr->setPrimaryKey($info['id']);
+			$info = $info_def;
 		}
 	}
-	$mct_pdt_attch_ctr->setPrimaryKey($merchant_id);
+	
 	for($i=0; $i<count($_FILES['image']['error']); ++$i){
 		if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 			$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
@@ -229,7 +248,7 @@ textarea{height:85px;}
                 <label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
                 <span id=IDS_CONTAINER style="display:inline-block;">
                 <?php if(isset($images)){foreach ($images as $img){ ?>
-                <img src="<?php echo $mbs_appenv->uploadURL(CMctAttachmentControl::completePath($img['path']))?>" _data-id="<?php echo $img['id']?>" />
+                <img src="<?php echo $mbs_appenv->uploadURL(CMctProductAttachmentControl::completePath($img['path']))?>" _data-id="<?php echo $img['id']?>" />
                 <?php }}?>
                 </span>
                 <aside class="pure-form-message-inline"><?php echo $mbs_appenv->lang('upload_max_filesize'), 
@@ -237,8 +256,8 @@ textarea{height:85px;}
             </div>
 			<?php if(isset($_REQUEST['id'])){?>
 			<div class="pure-control-group">
-                <label><?php $mbs_appenv->lang(array('add', 'time'))?></label>
-                <?php echo CStrTools::descTime($info['create_time'], $mbs_appenv)?>
+                <label><?php $mbs_appenv->lang(array('edit', 'time'))?></label>
+                <?php echo CStrTools::descTime($info['edit_time'], $mbs_appenv)?>
             </div>
             <?php }?>
             <div class="pure-control-group">
@@ -261,16 +280,17 @@ fileUpload({
 	container:"IDS_CONTAINER", 
 	file_name:"image[]", 
 	onFileDel:function(file){
-		var id = <?php echo isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;?>;
-		if(0 == id) return;
-		var f = document.createElement("form");
-		f.method = "post";
-		f.innerHTML = "<input type='hidden' name='id' value='"+id+"' />"+
-			"<input type='hidden' name='_timeline' value='' />"+
-			"<input type='hidden' name='delete' value='' />"+
-			"<input type='hidden' name='aid' value='"+file.getAttribute("_data-id")+"' />";
-		document.body.appendChild(f);
-		f.submit();
+		<?php if(isset($_REQUEST['product_id']) && isset($_REQUEST['item'])){ ?>
+		var aid = file.getAttribute("_data-id");
+		if(aid != null){
+			var frame = document.createElement("iframe");
+			frame.src = "<?php echo $mbs_appenv->toURL('product_edit', '', array('product_id'=>$_REQUEST['product_id'], 'item'=>$_REQUEST['item']))?>&del_atch="+aid;
+			var pw = popwin("", frame);
+			frame.onload = function(e){
+				setTimeout(function(){pw.hide();}, 3000);
+			}
+		}
+		<?php } ?>
 	}
 });
 var btnlist_box = document.getElementsByTagName("DIV"), i;

@@ -74,18 +74,18 @@ class CMctProductAttachmentControl extends CMultiRowControl{
 	function addNode(&$arr, $pos=null){
 		try {
 			$path = self::$imgthumb->thumbnailEx(self::$mbs_appenv, $arr);
-			$arr2 = array(
+			$arr = array(
 				'mp_id'        => $this->primaryKey,
 				'path'         => $path,
 				'name'         => $arr[1],
 				'create_time'  => time(),
 				'format'       => 1,
 			);
-			parent::addNode($arr2);
+			parent::addNode($arr);
 		} catch (Exception $e) {
 			throw $e;
 		}
-		return $arr2['id'];
+		return $arr['id'];
 	}
 	
 	static function completePath($path, $type='small'){

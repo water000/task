@@ -149,6 +149,9 @@ class CUniqRowOfTable
  			}else{
  				$pdos = $this->oPdoConn->prepare($sql);
  				$ret = $pdos->execute(array_values($condtions));
+ 				if($ret !== false){
+ 					$ret = $pdos->rowCount();
+ 				}
  			}
 			if($ret === false){
 				$this->_seterror($this->oPdoConn);

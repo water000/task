@@ -142,20 +142,31 @@ class CMultiRowOfTable extends CUniqRowOfTable
 		return $ret;
 	}
 	
-	function delNode(){
+	function delNode($condtions=array()){
 		$sql = sprintf('DELETE FROM %s WHERE %s=%d AND %s=%d', 
  			$this->tbname, $this->keyname, $this->primaryKey,
  			$this->skeyname, $this->secondKey);
- 			
- 		try {
-			$ret = $this->oPdoConn->exec($sql);
+		
+		if(!empty($condtions)){
+			$sql .= ' AND '.implode('=? AND ', array_keys($condtions)).'=?';
+		}
+		
+		try {
+			if(empty($condtions)){
+				$ret = $this->oPdoConn->exec($sql);
+			}else{
+				$pdos = $this->oPdoConn->prepare($sql);
+				$ret = $pdos->execute(array_values($condtions));
+				if($ret !== false){
+					$ret = $pdos->rowCount();
+				}
+			}
 			if($ret === false){
 				$this->_seterror($this->oPdoConn);
 			}
 		} catch (Exception $e) {
 			throw $e;
 		}
-		
 		return $ret;
 	}
 	

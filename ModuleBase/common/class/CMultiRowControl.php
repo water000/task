@@ -194,14 +194,14 @@ class CMultiRowControl extends CUniqRowControl
 	}
 	
 	/* need to think how about buf to do*/
-	function delNode()
+	function delNode($condtions=array())
 	{
 		$arr = null;
 		$ret = 0;
 			
 		try
 		{
-			$ret = $this->oDB->delNode();
+			$ret = $this->oDB->delNode($condtions);
 		}
 		catch(Exception $e)
 		{
