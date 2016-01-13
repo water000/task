@@ -9,28 +9,39 @@ class CMctEvent{
 		$mct_pdt = CMctProductControl::getInstance($mbs_appenv, CDbPool::getInstance(),
 				CMemcachedPool::getInstance(), $args['product']['en_name']);
 		
-		
+		$pdt_moddef = mbs_moddef('product');
 		if(count($args['pdtattr']) == count($args['new']) && empty($args['old'])){
 			$mct_pdt_atch = CMctProductAttachmentControl::getInstance($mbs_appenv, CDbPool::getInstance(),
 					CMemcachedPool::getInstance(), $args['product']['en_name']);
 			
 			$field_def = array();
+			$uniq_key = '';
 			foreach($args['req_aid'] as $aid){
 				$field_def[] = CProductAttrControl::def2sql($args['attrmap'][$aid]);
+				if($pdt_moddef::isUniqAttr($aid)){
+					$uniq_key .= $args['attrmap'][$aid]['en_name'].',';
+				}
 			}
 			if(!empty($field_def)){
-				$mct_pdt->createTable($field_def);
+				$mct_pdt->createTable($field_def, empty($uniq_key) ? '' : substr($uniq_key,0,-1));
 				$mct_pdt_atch->createTable($field_def);
 			}
 		}else {
 			$alter_add = $alter_del = array();
+			$uniq_key = '';
 			foreach($args['new'] as $naid){
 				$alter_add[] = CProductAttrControl::def2sql($args['attrmap'][$naid]);
 			}
 			foreach($args['old'] as $oaid){
 				$alter_del[] = $args['attrmap'][$oaid]['en_name'];
 			}
-			$mct_pdt->alterTable($alter_add, $alter_del, array(), array());
+			foreach($args['attrmap'] as $aid => $def){
+				if(false === array_search($aid, $args['old']) && $pdt_moddef::isUniqAttr($aid)){
+					$uniq_key .= $def['en_name'].',';
+				}
+			}
+			$mct_pdt->alterTable($alter_add, $alter_del, array(), array(), '', 
+					empty($uniq_key) ? '' : substr($uniq_key,0,-1));
 		}
 	}
 	

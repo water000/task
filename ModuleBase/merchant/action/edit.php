@@ -50,13 +50,19 @@ if(isset($_REQUEST['id'])){
 				}
 			}
 		}else{
-			$info = array_intersect_key($_REQUEST, $info) + $info;
+			//$req = array_intersect_key($_REQUEST, $info);
+			$diff = array_diff_assoc(array_intersect_key($_REQUEST, $info), $info);
+			//$info = $diff + $info;
 			$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), array('image'));
 			if(empty($error)){
-				unset($info['image']);
-				$info['edit_time'] = time();
+				//unset($info['image']);
+				//$info['edit_time'] = time();
 				try {
-					$ret = $mct_ctr->set($info);
+					if(!empty($diff)){
+						$diff['edit_time'] = time();
+						$info = $diff + $info;
+						$ret = $mct_ctr->set($diff);
+					}
 					for($i=0; $i<count($_FILES['image']['error']); ++$i){
 						if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
 							$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
@@ -149,20 +155,19 @@ textarea{height:85px;}
 	<div class="">
 	<form name=_form action="<?php echo $mbs_appenv->newURI(array('dosubmit'=>1)) ?>" class="pure-form pure-form-aligned" method="post" name="_form" enctype="multipart/form-data" >
 		<input type="hidden" name="_timeline" value="<?php echo time()?>" />
-		<input type="hidden" name="lng_lat" value="" />
-		<input type="hidden" name="address" value="" />
-		<input type="hidden" name="area" value="" />
+		<input type="hidden" name="lng_lat" value="" _data-err-for="IDS_MAP_CTR" />
+		<input type="hidden" name="address" value="" _data-err-for="IDS_MAP_CTR" />
+		<input type="hidden" name="area" value="" _data-err-for="IDS_MAP_CTR" />
 		<fieldset>
 			<?php if(isset($_REQUEST['_timeline'])){ if(isset($error[0])){ ?>
 			<div class=error><?php echo $error[0]?></div>
 			<?php unset($error[0]);}else if(empty($error)){?>
-			<div class=success id=IDD_SUCC_BOX><?php echo $mbs_appenv->lang('operation_success')?></div> 
-			<script type="text/javascript">setTimeout(function(){var box=document.getElementById("IDD_SUCC_BOX");box.parentNode.removeChild(box);}, 3500);</script>
+			<div class=success><?php echo $mbs_appenv->lang('operation_success')?></div> 
 			<?php }} ?>
 			
 			<div class="pure-control-group">
 				<label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['lng_lat'])?></label>
-				<span class="map-ctr"><div id="IDD_MAP" style="width:100%;height: 100%;"></div></span>
+				<span class="map-ctr" id="IDS_MAP_CTR"><div id="IDD_MAP" style="width:100%;height: 100%;"></div></span>
 			</div>
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['name'])?></label>
@@ -181,7 +186,7 @@ textarea{height:85px;}
 			</div>
 			<div class="pure-control-group">
                 <label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
-                <span id=IDS_CONTAINER style="display:inline-block;">
+                <span id=IDS_CONTAINER name="image" style="display:inline-block;">
                 <?php if(isset($images)){foreach ($images as $img){ ?>
                 <img src="<?php echo $mbs_appenv->uploadURL(CMctAttachmentControl::completePath($img['path']))?>" _data-id="<?php echo $img['id']?>" />
                 <?php }}?>
@@ -209,26 +214,7 @@ textarea{height:85px;}
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('global.js')?>"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=S8mKcAyeY2sq2aH7SmsGSHep"></script>
 <script type="text/javascript">
-<?php 
-if(!empty($error)){ 
-	$uerr = array();
-	if(isset($error['image'])){
-		$uerr['image'] = $error['image']; 
-		unset($error['image']);
-	}
-	if(isset($error['address'])){
-		$uerr['address'] = $error['address'];
-		unset($error['address'], $error['area'], $error['lng_lat']);
-	}
-	if(!empty($uerr)){
-?>
-formSubmitErr({image:document.getElementById("IDS_CONTAINER"), address:document.getElementById("IDD_MAP")}, 
-	<?php echo json_encode($uerr)?>);
-<?php
-	}
-?>
-formSubmitErr(document._form, <?php echo json_encode($error)?>);
-<?php }?>
+<?php if(!empty($error)){ ?>formSubmitErr(document._form, <?php echo json_encode($error)?>);<?php }?>
 fileUpload({
 	max_files:<?php echo $max_upload_images?>, 
 	container:"IDS_CONTAINER", 

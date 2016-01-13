@@ -8,9 +8,8 @@ function bind(obj, ev, fn){
 		obj['on'+ev] = fn;
 }
 
-//@form, a <form> dom object or an objects maps like form.elements
 function formSubmitErr(form, inputErr){
-	var elems = form.tagName && "FORM" == form.tagName ? form.elements : form, errctl, as, fnclk, elem;
+	var elems = form.elements, errctl, as, fnclk, elem;
 	fnclk = function(inp, _err, _as){
 		bind(inp, 'click', function(e){
 			this.style.border = "";
@@ -19,22 +18,48 @@ function formSubmitErr(form, inputErr){
 				_as.style.display = "";
 		});
 	}
+	var _rcur = function(node, name){
+		if(node.childNodes){
+			for(var i=0, ret; i<node.childNodes.length; i++){
+				if(node.childNodes[i].tagName && node.childNodes[i].getAttribute("name") == name)
+					return node.childNodes[i];
+				else{
+					ret = _rcur(node.childNodes[i], name);
+					if(ret != null) return ret;
+				}
+			}
+		}
+		return null;
+	}
+	var _err = function(elem, as, msg){
+		elem.style.border = "1px solid red";
+		errctl = document.createElement("span");
+		errctl.innerHTML = msg;
+		errctl.className = "pure-form-message-inline";
+		errctl.style.cssText = "color:red;";
+		elem.parentNode.insertBefore(errctl, as);
+		if(as)
+			as.style.display = "none";
+		fnclk(elem, errctl, as);
+	}
 	for(var k in inputErr){
-		elem =  elems[k]; // some field's name is euqal to attribute like "name"
+		elem =  elems[k];
 		if(typeof elem != "undefined"){
-			elem.style.border = "1px solid red";
-
-			as = elem.parentNode.getElementsByTagName("aside")[0];
-			errctl = document.createElement("span");
-			errctl.innerHTML = inputErr[k];
-			errctl.className = "pure-form-message-inline";
-			errctl.style.cssText = "color:red;";
-			elem.parentNode.insertBefore(errctl, as);
-			
-			if(as)
-				as.style.display = "none";
-
-			fnclk(elem, errctl, as);
+			if(elem.type != "hidden")
+				_err(elem, elem.parentNode.getElementsByTagName("aside")[0] || null, inputErr[k]);
+			else{
+				var errfor = elem.getAttribute("_data-err-for");
+				elem = null;
+				if(errfor != null)
+					elem = document.getElementById(errfor) || _rcur(form, errfor);
+				if(null == elem) alert(inputErr[k]+'('+k+')');
+				else _err(elem, elem.parentNode.getElementsByTagName("aside")[0] || null, inputErr[k]);
+			}
+		}
+		else{
+			node = _rcur(form, k);
+			if(node != null) _err(node, node.parentNode.getElementsByTagName("aside")[0] || null, inputErr[k]);
+			else alert(inputErr[k]+'('+k+')');
 		}
 	}
 }
@@ -47,15 +72,13 @@ function submitForm(btn){
 	return true;
 }
 
-function switchRow(objtb, offset, length, overclass)
-{
+function switchRow(objtb, offset, length, overclass){
 	if(!objtb || "TABLE" != objtb.tagName)
 		return;
 	offset = offset || 0;
 	length = length || objtb.rows.length;
 	length = length<0?objtb.rows.length+length : length;
-	for(var i=offset; i<length;i++)
-	{
+	for(var i=offset; i<length;i++){
 		bind(objtb.rows[i], 'mouseover', function(e){
 			this.className += ' '+overclass;
 		});

@@ -28,14 +28,22 @@ if(isset($_REQUEST['product_id'])){
 		exit(0);
 	}
 	
+	$mct_pdt_ctr = CMctProductControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), $pdt_info['en_name']);
 	$mct_pdt_attch_ctr = CMctProductAttachmentControl::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance(), $pdt_info['en_name']);
+	
+	$pdt_attr_kv_ctr = CProductAttrKVControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance());
+	$pdt_attr_ctr = CProductAttrControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance());
+	$pdt_attr_map_ctr = CProductAttrMapControl::getInstance($mbs_appenv,
+			CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['product_id']);
+	$attr_list = $pdt_attr_map_ctr->get();
 }
 
 if(isset($_REQUEST['item'])){ // product_id & item must be set at same time
 	$_REQUEST['item'] = intval($_REQUEST['item']);
-	$mct_pdt_ctr = CMctProductControl::getInstance($mbs_appenv, 
-		CDbPool::getInstance(), CMemcachedPool::getInstance(), $pdt_info['en_name']);
 	$mct_pdt_ctr->setPrimaryKey($_REQUEST['item']);
 	$info = $mct_pdt_ctr->get();
 	if(empty($info)){
@@ -47,8 +55,70 @@ if(isset($_REQUEST['item'])){ // product_id & item must be set at same time
 }
 
 if(isset($_REQUEST['_timeline'])){
-	$info = array_intersect_key($_REQUEST, $info) + $info;
-	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), isset($_REQUEST['item']) ? array('image'):null);
+	if(!empty($attr_list)){
+		foreach($attr_list as $row){
+			$pdt_attr_ctr->setPrimaryKey($row['aid']);
+			$attr_info = $pdt_attr_ctr->get();
+			if(empty($attr_info)){
+				trigger_error('attr not found: '.$row['aid']);
+				continue;
+			}
+			if(isset($_REQUEST[$attr_info['en_name']])){
+				if(empty($row['kid'])){
+					if($row['required'] && 0 == strlen($_REQUEST[$attr_info['en_name']])){
+						$error[$attr_info['en_name']] = $mbs_appenv->lang('invalid_param');
+					}
+				}else{
+					$kv = $pdt_attr_kv_ctr->kv($row['kid']);
+					if(!empty($kv[1])){
+						$found = false;
+						foreach($kv[1] as $v){
+							if($v['id'] == $_REQUEST[$attr_info['en_name']]){
+								$found = true;
+								break;
+							}
+						}
+						if(!$found){
+							$error[$attr_info['en_name']] = $mbs_appenv->lang('invalid_param');
+						}
+					}else trigger_error('kv not found: '.$row['kid']);
+				}
+			}else if($row['required']){
+				$error[$attr_info['en_name']] = $mbs_appenv->lang('invalid_param');
+			}
+		}
+	}
+	if(isset($_REQUEST['item'])){
+		$diff = array_diff_assoc(array_intersect_key($_REQUEST, $info), $info);
+		if(!empty($diff)){
+			$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), 
+					array_merge(array('image'), array_keys(array_diff_key($info, $diff))));
+			if(!empty($error)){
+				$diff['edit_time']   = time();
+				$info = $diff + $info;
+				$mct_pdt_ctr->set($diff);
+			}
+		}
+	}else{
+		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
+		if(!empty($error)){
+			$info = array_intersect_key($_REQUEST,$info) + $info;
+			$info['merchant_id'] = $merchant_id;
+			$info['edit_time']   = time();
+			$mct_pdt_ctr->addNode($info);
+		}
+	}
+	$mct_pdt_attch_ctr->setPrimaryKey($merchant_id);
+	for($i=0; $i<count($_FILES['image']['error']); ++$i){
+		if(UPLOAD_ERR_OK == $_FILES['image']['error'][$i]){
+			$img = array($_FILES['image']['tmp_name'][$i], $_FILES['image']['name'][$i]);
+			$id = $mct_pdt_attch_ctr->addNode($img);
+			$images[] = $img;
+		}else if($_FILES['image']['error'][$i] != UPLOAD_ERR_NO_FILE){
+			$error[] = $mbs_appenv->lang($_FILES['image']['error'][$i]);
+		}
+	}
+	
 }
 
 ?>
@@ -113,13 +183,6 @@ textarea{height:85px;}
 			</div>
 			<?php 
 			if(isset($_REQUEST['product_id'])){
-				$pdt_attr_kv_ctr = CProductAttrKVControl::getInstance($mbs_appenv, 
-					CDbPool::getInstance(), CMemcachedPool::getInstance());
-				$pdt_attr_ctr = CProductAttrControl::getInstance($mbs_appenv, 
-					CDbPool::getInstance(), CMemcachedPool::getInstance());
-				$pdt_attr_map_ctr = CProductAttrMapControl::getInstance($mbs_appenv, 
-					CDbPool::getInstance(), CMemcachedPool::getInstance(), $_REQUEST['product_id']);
-				$attr_list = $pdt_attr_map_ctr->get();
 				foreach($attr_list as $row){
 					$kv = $pdt_attr_kv_ctr->kv($row['kid']);
 					if(!empty($kv)){
@@ -132,7 +195,7 @@ textarea{height:85px;}
 				<label><?php echo $kv[0]['value'], $row['required']?'<span class=required>*</span>':''?></label>
 				<div  class="btnlist-box">
 				<?php foreach($kv[1] as $v){?>
-					<a href="#" _checked="<?php echo isset($info[$attr_info['en_name']]) && $info[$attr_info['en_name']]==$row['id'] ? '1':'0'?>"  
+					<a href="#" _checked="<?php echo isset($info[$attr_info['en_name']]) && $info[$attr_info['en_name']]==$v['id'] ? '1':'0'?>"  
 						class="pure-button pure-button-check" name="<?php echo $attr_info['en_name']?>" _value="<?php echo $v['id']?>"><?php echo $v['value']?></a>
 				<?php }?>
 				</div>

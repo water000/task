@@ -39,7 +39,7 @@ class CProductDef extends CModDef {
 					edit_time int unsigned not null,
 					create_time int unsigned not null,
 					primary key(id)
-				)',
+				)AUTO_INCREMENT = 11', // 1-10 reserved by system
 				'product_attr_map' => '(
 					pid int unsigned not null,
 					aid int unsigned not null,
@@ -112,6 +112,10 @@ class CProductDef extends CModDef {
 			),
 		);
 	}
+	
+	static function isUniqAttr($aid){
+		return $aid <= 10; // see table def for why
+	} 
 	
 	function install($dbpool, $mempool=null){
 		mbs_import('', 'CProductAttrControl');

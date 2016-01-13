@@ -36,24 +36,27 @@ class CMctProductControl extends CMultiRowControl{
 		return self::$product_ins[$product_name];
 	}
 	
-	function createTable($field_def){
+	function createTable($field_def, $uniq_key=''){
 		$sql = 'CREATE TABLE IF NOT EXISTS %s(
 			id int unsigned not null auto_increment,
 			merchant_id int unsigned not null,
 			title varchar(64) not null,
 			edit_time int unsigned not null,
-			-- exterior tinyint not null, -- shirt:color(black,gray,white,..), tree: level(normal, speicail, worse)
+			-- exterior tinyint not null, -- shirt:color(black,gray,white,..), tree: level(normal, special, worse)
 			-- size int unsigned not null,
 			inventory int unsigned not null,
 			sale_num int unsigned not null,
 			discount_price int unsigned not null, -- penny start
 			src_price int unsigned not null, 
 			%s
-			primary key(id),
-			key(merchant_id)
+			primary key(id),%s
+			-- key(merchant_id)
 		)';
-		$sql = sprintf($sql, $this->oDB->tbname(), 
-				empty($field_def) ? '' : implode(',', $field_def).',');
+		$sql = sprintf($sql, 
+				$this->oDB->tbname(), 
+				empty($field_def) ? '' : implode(',', $field_def).',',
+				empty($uniq_key) ? 'key(merchant_id)' : 'unique key(merchant_id,'.$uniq_key.')'
+		);
 		try {
 			$this->oDB->getConnection()->exec($sql);
 		} catch (Exception $e) {
@@ -68,7 +71,7 @@ class CMctProductControl extends CMultiRowControl{
 	 * @param array $modify, array('field1'=>'sql def', ...),
 	 * @param unknown $change, array('field1'=>'sql def', ...)
 	 */
-	function alterTable($add, $del, $modify, $change, $new_product_name=''){
+	function alterTable($add, $del, $modify, $change, $new_product_name='', $uniq_key=''){
 		try {
 			foreach($add as $key => $def){
 				$sql = sprintf('ALTER TABLE %s ADD %s %s', $this->oDB->tbname(), 
@@ -94,6 +97,13 @@ class CMctProductControl extends CMultiRowControl{
 			if(!empty($new_product_name)){
 				$sql = sprintf('ALTER TABLE %s RENAME %s', $this->oDB->tbname(), 
 						self::formatTable($new_product_name));
+				$this->oDB->getConnection()->exec($sql);
+			}
+			
+			if(!empty($uniq_key)){
+				$sql = sprintf('ALTER TABLE %s ADD UNIQUE KEY (merchant_id, %s)',
+						$this->oDB->tbname(),
+						$uniq_key);
 				$this->oDB->getConnection()->exec($sql);
 			}
 		} catch (Exception $e) {
