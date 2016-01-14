@@ -13,4 +13,5 @@ $lang_zh_CN = array(
 	'ban'         => '禁用',
 	'reason'      => '原因',
 	'product'     => '产品',
+	'save_at_least_one_img' => '至少保存一张图片',
 );

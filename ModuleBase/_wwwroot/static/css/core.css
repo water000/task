@@ -23,7 +23,7 @@ ul li{list-style-type:none;}
 .success a.close:hover, .error a.close:hover{color:#000;}
 .success {  background-color: #F0EED8; color:green;}
 .success a.link{font-size:80%;margin-left:10px;}
-.error {background-color: #f2dede;}
+.error {background-color: #f2dede;color:#E84646}
 
 .no-data{text-align:center;color:#bbb;font-size:80%;padding:10px 0;}
 .back{font-size:65%;color:rgb(92, 92, 245);float:right;display:inline-block;vertical-align:bottom;text-decoration:none;}
@@ -53,11 +53,15 @@ ul li{list-style-type:none;}
 .page-break .pure-menu-selected{font-weight:bold;color:#333;}
 
 .popwin{position:absolute;width:65%;height:70%;top:10%;left:20%;background-color:white;border:2px solid #ccc;border-radius: 5px;}
-.popwin div{padding:6px 0;font-weight:bold;position:relative;text-align:center;background-color:#F3F3F3;}
-.popwin div a{font-size:14px;position:absolute;right:3px;top:3px;text-decoration:none;color:#999;}
-.popwin div a:hover{color:#333;}
+.popwin div.pwtitle{padding:6px 0;font-weight:bold;position:relative;text-align:center;background-color:#F3F3F3;}
+.popwin div.pwtitle a{font-size:14px;position:absolute;right:3px;top:3px;text-decoration:none;color:#999;}
+.popwin div.pwtitle a:hover{color:#333;}
 .popwin ::-webkit-scrollbar{width:6px;height:6px}
 .popwin ::-webkit-scrollbar-thumb{-webkit-border-radius: 3px;webkit-border-radius: 3px;background-color: #c3c3c3;}
+.popwin-m{width:40%;height:50%;top:20%;left:30%;}
+.popwin-s{width:20%;height:13%;top:30%;left:40%;}
+.popwin-f{width:100%;height:100%;top:0;left:0;}
+.popwin .error, .popwin .success{width:100%;background-color:#fff;padding:0;margin-top:8%;}
 
 #img-lab-bg{width:67px ;height:67px ;position:relative;display:inline-block;overflow: hidden;margin:0 3px 0 0;}
 #img-lab{position:absolute;top:0;left:0;line-height:55px;font-size:50px;text-align:center; width:65px;height:65px;}

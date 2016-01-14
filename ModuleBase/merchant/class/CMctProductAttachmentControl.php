@@ -1,5 +1,7 @@
 <?php
 
+mbs_import('common', 'CMultiRowControl', 'CImage');
+
 class CMctProductAttachmentControl extends CMultiRowControl{
 	private static $product_ins = array();
 	
@@ -36,6 +38,7 @@ class CMctProductAttachmentControl extends CMultiRowControl{
 				throw $e;
 			}
 			self::$imgthumb = new CImage('mctpdt/');
+			self::$mbs_appenv = $mbs_appenv;
 		}
 		return self::$product_ins[$product_name];
 	}

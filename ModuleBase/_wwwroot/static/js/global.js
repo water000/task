@@ -131,11 +131,11 @@ function btnlist(list){
 	}
 }
 
-//opt:{max_files:5, file_name:"", onFileDel:fn(imgobj){}, container:string/obj }
+//opt:{max_files:5, file_name:"", onFileDel:fn(imgobj, onsuccess(){}){}, container:string/obj }
 function fileUpload(opt){
 	var cntr = typeof opt.container == "Object" ? opt.container : document.getElementById(opt.container);
 	if(!cntr){
-		alert("container: '" + opt.container + "' invalid!");
+		alert("[fileUpload]container: '" + opt.container + "' invalid!");
 		return false;
 	}
 	var idx_counter = 0, num_of_files = 0;
@@ -166,7 +166,7 @@ function fileUpload(opt){
 		_win.appendChild(lab);
 		bind(_win, 'mouseover', function(e){lab.style.visibility="visible";});
 		bind(_win, 'mouseout', function(e){lab.style.visibility="hidden";});
-		bind(_win, 'click', function(e){opt.onFileDel(file);_remove(_win);});
+		bind(_win, 'click', function(e){opt.onFileDel(file, function(){_remove(_win);});});
 		num_of_files++;
 	}
 	var _edit = function(inputFile){
@@ -202,15 +202,71 @@ function popwin(title, body){
 	document.body.appendChild(pop_win);
 	pop_win.style.display = "none";
 	pop_win.className = "popwin";
-	pop_win.innerHTML = "<div>"+title+"<a href='javascript:;'>&times</a></div>" 
-		+ ("string" == typeof body ? body : '');
-	if("object" == typeof body)
-		pop_win.appendChild(body);
+	var header =  "<div class=pwtitle>"+title+"<a href='javascript:;'>&times</a></div>";
+	pop_win.body=function(b){if("object" == typeof b) pop_win.appendChild(b); else pop_win.innerHTML = header+b;
+		pop_win.childNodes[0].getElementsByTagName("a")[0].onclick=function(e){pop_win.onclose();}}
 	pop_win.show=function(){pop_win.style.display="";}
 	pop_win.hide=function(){pop_win.style.display="none";}
 	pop_win.remove=function(){pop_win.parentNode.removeChild(pop_win);}
 	pop_win.onclose=function(){pop_win.hide();}
-	pop_win.getElementsByTagName("a")[0].onclick=function(e){pop_win.onclose();}
-	return popwin;
+	pop_win.body(body);
+	return pop_win;
+}
+
+function ajax(opt){
+	var defopt = {
+		type:"GET",dataType:"xml",url:"",data:null,
+		timeout:15,async:true,headers:{},
+		success:function(rep){alert(rep);},
+		error:function(str){alert(str);}
+	},xhr;
+	for(var k in defopt) opt[k] = opt[k] || defopt[k];
+	if(!opt.url) return;
+	if("function" != typeof(opt.success) || "function" != typeof(opt.error))
+		return;
+	var mt = opt.type.toUpperCase();
+	if(mt != "GET" && mt != "POST"){alert("Unsurpported method type: "+mt); return;};
+	if(window.XMLHttpRequest){xhr = new XMLHttpRequest();}
+	else if (window.ActiveXObject) {try{xhr = new ActiveXObject("Msxml2.XMLHTTP");}catch(e){xhr = new ActiveXObject("Microsoft.XMLHTTP");}}
+	if(!xhr){
+		alert("error!Unsurpported XMLHTTPRequest on your browser!");
+		return false;
+	}
+	var pre_ok = function(){
+		var d = opt.dataType=="xml"?xhr.responseXML:xhr.responseText;
+		if(null===d){ opt.error("error on parsing or sending");} 
+		else {if("json"==opt.dataType)opt.success(eval('('+d+')')); else opt.success(d);}
+	}
+	xhr.open(mt, opt.url, opt.async);
+	var hd = opt.headers || {};
+	hd["Accept"] = "json" == opt.dataType ? "application/json" : "text/"+opt.dataType;
+	if(mt == "POST")
+		hd["Content-Type"] = "application/x-www-form-urlencoded";
+	for(var k in hd)
+		xhr.setRequestHeader(k, hd[k]);
+	var aborted = false;
+	if(opt.async){
+		xhr.onreadystatechange = function(){
+			if(4 == xhr.readyState){
+				if(200 == xhr.status){
+					pre_ok();
+				}
+				else{
+					opt.error("error!http status: "+xhr.status);
+					xhr.abort();
+					aborted = true;
+				}
+			}
+		}
+	}
+	xhr.send(opt.data);
+	setTimeout(function(){
+		if(200 == xhr.status || aborted) return;
+		xhr.abort();
+		opt.error("error!timeout,http status: "+xhr.status);
+	}, opt.timeout*1000);
+	if(!opt.async && 200 == xhr.status){
+		pre_ok();
+	}
 }
 

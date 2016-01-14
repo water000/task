@@ -85,7 +85,7 @@ class CMultiRowOfCache extends CUniqRowOfCache
 	
 	function setNode($param, $opt=null)
 	{
-		
+
 	}
 	
 	function getNode($param, $opt=null)

@@ -134,6 +134,7 @@ class CMultiRowControl extends CUniqRowControl
 		return $ret;
 	}
 	
+	//confirm the node cache page where to set pageId
 	function setNode($param)
 	{
 		$arr = null;

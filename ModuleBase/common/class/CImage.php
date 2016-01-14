@@ -5,10 +5,10 @@ class CImage{
 	const THUMB_FORMAT   = 'jpeg';
 	
 	private $subdir = '';
-	private $thumb_opt = array(
-		'small'  => array(65,  65,  's'), // width, height, desc
+	private $thumb_opt = array( // order by size desc
+		'big'    => array(400, 220, 'b'), // width, height, desc
 		'medium' => array(180, 100, 'm'),
-		'big'    => array(400, 220, 'b'),
+		'small'  => array(65,  65,  's'),
 	);
 	
 	/**
@@ -19,18 +19,13 @@ class CImage{
 	 */
 	static function thumbnail($src, $dest){
 		try{
-			$nim = $im = new imagick();
-			$im->setCompressionQuality(100);
+			$im = new imagick();
+			$im->setCompressionQuality(75);
 			$im->readImage($src);
-			$nim->setImageFormat(self::THUMB_FORMAT);
 			foreach($dest as $arr){
 				list($width, $height, $rename) = $arr;
-				$nim->thumbnailImage($width, $height);
-				$nim->writeImage($rename);
-			}
-	
-			if($nim != $im){
-				$nim->clear();
+				$im->thumbnailImage($width, $height);
+				$im->writeImage($rename);
 			}
 			$im->clear();
 		}catch (Exception $e){

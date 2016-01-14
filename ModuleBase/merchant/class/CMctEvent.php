@@ -35,7 +35,7 @@ class CMctEvent{
 			foreach($args['old'] as $oaid){
 				$alter_del[] = $args['attrmap'][$oaid]['en_name'];
 			}
-			foreach($args['attrmap'] as $aid => $def){
+			foreach($args['pdtattr'] as $aid => $def){
 				if(false === array_search($aid, $args['old']) && $pdt_moddef::isUniqAttr($aid)){
 					$uniq_key .= $def['en_name'].',';
 				}
