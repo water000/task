@@ -200,7 +200,7 @@ if(isset($_REQUEST['_timeline'])){
 							$is_product_in_list = $_REQUEST['product_id']==$pid;
 				?>
 					<a href="#" _checked="<?php echo $is_product_in_list ? '1':'0'?>" class="pure-button pure-button-check" 
-						name="product_id" value="<?php echo $pid?>" ><?php echo $pdt_used['name']?></a>
+						name="product_id" _value="<?php echo $pid?>" ><?php echo $pdt_used['name']?></a>
 				<?php
 						}
 					}
