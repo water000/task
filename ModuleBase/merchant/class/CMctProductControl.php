@@ -8,7 +8,7 @@ class CMctProductControl extends CMultiRowControl{
 	}
 	
 	static function formatTable($product_name){
-		return mbs_tbname('merchant_product_'.$product_name);
+		return mbs_tbname('merchant_product_instance_'.$product_name);
 	}
 	
 	/**
@@ -48,6 +48,7 @@ class CMctProductControl extends CMultiRowControl{
 			sale_num int unsigned not null,
 			discount_price int unsigned not null, -- penny start
 			src_price int unsigned not null, 
+			status tinyint not null,
 			%s
 			primary key(id),%s
 			-- key(merchant_id)

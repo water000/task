@@ -38,7 +38,7 @@ class CMctProductLIUControl extends CUniqRowControl{
 	}
 	
 	function set($product_id){
-		$ret = $this->get();
+		$ret = parent::get();
 		if(empty($ret)){
 			$arr = array(
 				'merchant_id' => $this->primaryKey,
