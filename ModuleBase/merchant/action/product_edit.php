@@ -315,6 +315,5 @@ for(i=0; i<btnlist_box.length; i++){
 	}
 }
 </script>
-
 </body>
 </html>
