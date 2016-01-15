@@ -108,7 +108,7 @@ else{
 .product img{position:absolute;left:5px;top:5px;width:50px;height:50px;}
 .product div.title{font-weight:bold;}
 .product div.pcontent{color:#666;margin-top: 3px;}
-.popwin iframe{width:100%;height:90%;border:0;}
+.popwin iframe{width:100%;height:100%;border:0;}
 </style>
 </head>
 <body>

@@ -121,7 +121,7 @@ if(isset($_REQUEST['_timeline'])){
 	if(isset($_REQUEST['item'])){
 		$diff = array_diff_assoc(array_intersect_key($_REQUEST, $info), $info);
 		if(!empty($diff)){
-			$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), 
+			$error += $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'), 
 					array_merge(array('image'), array_keys(array_diff_key($info, $diff))));
 			if(empty($error)){
 				$diff['edit_time']   = time();
@@ -131,7 +131,7 @@ if(isset($_REQUEST['_timeline'])){
 			}
 		}
 	}else{
-		$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
+		$error += $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 		if(empty($error)){
 			$info_def = $info;
 			$info = array_intersect_key($_REQUEST,$info) + $info;
@@ -157,7 +157,6 @@ if(isset($_REQUEST['_timeline'])){
 		}
 	}
 }
-
 ?>
 <!doctype html>
 <html>
@@ -224,7 +223,7 @@ if(isset($_REQUEST['_timeline'])){
 			?>
 			<div class="pure-control-group">
 				<label><?php echo $kv[0]['value'], $row['required']?'<span class=required>*</span>':''?></label>
-				<div  class="btnlist-box">
+				<div  class="btnlist-box" name="<?php echo $attr_info['en_name']?>">
 				<?php foreach($kv[1] as $v){?>
 					<a href="#" _checked="<?php echo isset($info[$attr_info['en_name']]) && $info[$attr_info['en_name']]==$v['id'] ? '1':'0'?>"  
 						class="pure-button pure-button-check" name="<?php echo $attr_info['en_name']?>" _value="<?php echo $v['id']?>"><?php echo $v['value']?></a>
@@ -238,7 +237,7 @@ if(isset($_REQUEST['_timeline'])){
 			?>
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['title'])?></label>
-				<input type="text" name="title" value="<?php echo $info['title']?>" />
+				<input type="text" name="title" value="<?php echo $info['title']?>" onkeyup="txtcounter(this)" <?php $rnum = CModDef::pargRange($mbs_cur_actiondef[CModDef::P_ARGS]['title'], $s, $e); echo $e>0?'_data-maximum='.$e:''?> />
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['title'], $mbs_appenv)?></aside>
 			</div>
 			<div class="pure-control-group">
@@ -258,7 +257,7 @@ if(isset($_REQUEST['_timeline'])){
 			</div>
 			<div class="pure-control-group">
                 <label style="vertical-align: top;"><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['image'])?></label>
-                <span id=IDS_CONTAINER style="display:inline-block;">
+                <span name="image" id=IDS_CONTAINER style="display:inline-block;">
                 <?php if(isset($images)){foreach ($images as $img){ ?>
                 <img src="<?php echo $mbs_appenv->uploadURL(CMctProductAttachmentControl::completePath($img['path']))?>" _data-id="<?php echo $img['id']?>" />
                 <?php }}?>

@@ -202,13 +202,14 @@ function popwin(title, body){
 	document.body.appendChild(pop_win);
 	pop_win.style.display = "none";
 	pop_win.className = "popwin";
-	var header =  "<div class=pwtitle>"+title+"<a href='javascript:;'>&times</a></div>";
-	pop_win.body=function(b){if("object" == typeof b) pop_win.appendChild(b); else pop_win.innerHTML = header+b;
-		pop_win.childNodes[0].getElementsByTagName("a")[0].onclick=function(e){pop_win.onclose();}}
+	var header =  "<div class=pwtitle>"+title+"<a href='javascript:;'>&times</a></div><div class=bd></div>";
+	pop_win.body=function(b){var bd=pop_win.childNodes[1];bd.innerHTML="";if("object" == typeof b) bd.appendChild(b); else bd.innerHTML = b;}
 	pop_win.show=function(){pop_win.style.display="";}
 	pop_win.hide=function(){pop_win.style.display="none";}
 	pop_win.remove=function(){pop_win.parentNode.removeChild(pop_win);}
 	pop_win.onclose=function(){pop_win.hide();}
+	pop_win.innerHTML = header;
+	pop_win.childNodes[0].getElementsByTagName("a")[0].onclick=function(e){pop_win.onclose();}
 	pop_win.body(body);
 	return pop_win;
 }
@@ -240,17 +241,13 @@ function ajax(opt){
 	xhr.open(mt, opt.url, opt.async);
 	var hd = opt.headers || {};
 	hd["Accept"] = "json" == opt.dataType ? "application/json" : "text/"+opt.dataType;
-	if(mt == "POST")
-		hd["Content-Type"] = "application/x-www-form-urlencoded";
-	for(var k in hd)
-		xhr.setRequestHeader(k, hd[k]);
+	if(mt == "POST") hd["Content-Type"] = "application/x-www-form-urlencoded";
+	for(var k in hd) xhr.setRequestHeader(k, hd[k]);
 	var aborted = false;
 	if(opt.async){
 		xhr.onreadystatechange = function(){
 			if(4 == xhr.readyState){
-				if(200 == xhr.status){
-					pre_ok();
-				}
+				if(200 == xhr.status) pre_ok();
 				else{
 					opt.error("error!http status: "+xhr.status);
 					xhr.abort();
@@ -268,5 +265,45 @@ function ajax(opt){
 	if(!opt.async && 200 == xhr.status){
 		pre_ok();
 	}
+}
+
+function nodepos(obj){
+	if(!obj || !obj.tagName) return false;
+	var t=obj,x=0, y=0,p;
+	do{
+		x+=t.offsetLeft;
+		y+=t.offsetTop;
+		t=t.offsetParent;
+		if(t){
+			p=t.style.position;
+			if(p=="relative" || p=="absolute") break;
+		}
+	}while(t);
+	return [y,x];
+}
+
+function txtcounter(ctr){
+	if(!ctr || "undefined" == typeof ctr.value) return false;
+	var _pos = function(v){
+		var pos=nodepos(ctr);
+		v.style.right = (document.body.offsetWidth-(pos[1]+ctr.offsetWidth)+3)+"px";
+		v.style.top = (pos[0]+ctr.offsetHeight-18)+"px";
+	}
+	var v = ctr["_txtcounter"];
+	if(!v){
+		v = document.createElement("div");
+		v.className = "txt-counter";
+		document.body.appendChild(v);
+		ctr["_txtcounter"] = v;
+		_pos(v);
+		bind(window, 'resize', function(e){_pos(v)});
+	}
+	var maximum = ctr.getAttribute("_data-maximum") || 0;
+	if(maximum > 0){if(ctr.value.length>maximum)ctr.value=ctr.value.substr(0,maximum);v.innerHTML=ctr.value.length+'/'+maximum;}
+	else v.innerHTML = ctr.value.length;
+	v.style.display="";
+	ctr.setAttribute("_data-txtcounter-time", (new Date().getTime())/1000);
+	setTimeout(function(){if((new Date().getTime())/1000-parseInt(ctr.getAttribute("_data-txtcounter-time")) > 4) v.style.display="none";}, 5000);
+	return true;
 }
 
