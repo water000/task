@@ -307,3 +307,21 @@ function txtcounter(ctr){
 	return true;
 }
 
+function moveable(node){
+	var _x, _y, _cx, _cy, _ox, _oy, _this = this, _bDown=false;
+	var _dmu=function(){
+		var cx=ev.clientX, cy=ev.clientY, ox, oy;
+		if((ev.srcElement||ev.target) != node) return;
+		ox = ev.offsetX||ev.layerX;
+		oy = ev.offsetY||ev.layerY;
+		if(document.attachEvent){
+			ox -= bindedObj.scrollLeft;
+			oy  -= bindedObj.scrollTop;
+		}
+	}
+	bind(node, 'mousedown', function(ev){});
+	bind(node, 'mouseup', function(ev){_bDown = false;});
+	bind(node, 'mouseover', function(ev){});
+	x=y=cx=cy=ox=oy=0;
+}
+
