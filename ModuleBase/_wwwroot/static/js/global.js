@@ -198,16 +198,17 @@ function fileUpload(opt){
 }
 
 function popwin(title, body){
-	var pop_win = document.createElement("div");
+	var pop_win = document.createElement("div"),mask_win;
 	document.body.appendChild(pop_win);
-	pop_win.style.display = "none";
 	pop_win.className = "popwin";
+	pop_win.style.display="none";
 	var header =  "<div class=pwtitle>"+title+"<a href='javascript:;'>&times</a></div><div class=bd></div>";
 	pop_win.body=function(b){var bd=pop_win.childNodes[1];bd.innerHTML="";if("object" == typeof b) bd.appendChild(b); else bd.innerHTML = b;}
-	pop_win.show=function(){pop_win.style.display="";}
-	pop_win.hide=function(){pop_win.style.display="none";}
-	pop_win.remove=function(){pop_win.parentNode.removeChild(pop_win);}
+	pop_win.show=function(){pop_win.style.display="";if(mask_win) mask_win.style.display="";}
+	pop_win.hide=function(){pop_win.style.display="none";if(mask_win) mask_win.style.display="none";}
+	pop_win.remove=function(){pop_win.parentNode.removeChild(pop_win);mask_win.parentNode.removeChild(mask_win);}
 	pop_win.onclose=function(){pop_win.hide();}
+	pop_win.mask=function(){mask_win=document.createElement("div");mask_win.style.display="none";mask_win.className="popwin-mask";document.body.appendChild(mask_win);}
 	pop_win.innerHTML = header;
 	pop_win.childNodes[0].getElementsByTagName("a")[0].onclick=function(e){pop_win.onclose();}
 	pop_win.body(body);

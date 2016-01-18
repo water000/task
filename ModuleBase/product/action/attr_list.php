@@ -187,6 +187,7 @@ window.cb_kv_selected = function(kv){
 var frame = document.createElement("iframe");
 frame.src = "<?php echo $mbs_appenv->toURL('attr_kv_list')?>";
 var pop_win = popwin("<?php echo $mbs_appenv->lang(array('select', 'kv'))?>", frame);
+pop_win.mask();
 
 function _kv_show(btn, kv){
 	if(!btn.nextSibling){
