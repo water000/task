@@ -204,13 +204,15 @@ function popwin(title, body){
 	pop_win.style.display="none";
 	pop_win.innerHTML = "<div class=pwtitle>"+title+"<a href='javascript:;'>&times</a></div><div class=bd></div>";
 	pop_win.body=function(b){var bd=pop_win.childNodes[1];bd.innerHTML="";if("object" == typeof b) bd.appendChild(b); else bd.innerHTML = b;}
-	pop_win.show=function(){pop_win.style.display="";if(mask_win) mask_win.style.display="";}
+	pop_win.show=function(){pop_win.style.display="";if(mask_win) mask_win.style.display="";pop_win.bdheight();}
 	pop_win.hide=function(){pop_win.style.display="none";if(mask_win) mask_win.style.display="none";}
 	pop_win.remove=function(){pop_win.parentNode.removeChild(pop_win);mask_win.parentNode.removeChild(mask_win);}
 	pop_win.onclose=function(){pop_win.hide();}
 	pop_win.mask=function(){mask_win=document.createElement("div");mask_win.style.display="none";mask_win.className="popwin-mask";document.body.appendChild(mask_win);}
+	pop_win.bdheight=function(){pop_win.childNodes[1].style.height = (pop_win.offsetHeight-pop_win.childNodes[0].offsetHeight) + "px";}
 	pop_win.body(body);
 	pop_win.childNodes[0].getElementsByTagName("a")[0].onclick=function(e){pop_win.onclose();}
+	bind(window, 'resize', function(e){pop_win.bdheight();});
 	return pop_win;
 }
 
@@ -305,23 +307,5 @@ function txtcounter(ctr){
 	ctr.setAttribute("_data-txtcounter-time", (new Date().getTime())/1000);
 	setTimeout(function(){if((new Date().getTime())/1000-parseInt(ctr.getAttribute("_data-txtcounter-time")) > 4) v.style.display="none";}, 5000);
 	return true;
-}
-
-function moveable(node){
-	var _x, _y, _cx, _cy, _ox, _oy, _this = this, _bDown=false;
-	var _dmu=function(){
-		var cx=ev.clientX, cy=ev.clientY, ox, oy;
-		if((ev.srcElement||ev.target) != node) return;
-		ox = ev.offsetX||ev.layerX;
-		oy = ev.offsetY||ev.layerY;
-		if(document.attachEvent){
-			ox -= bindedObj.scrollLeft;
-			oy  -= bindedObj.scrollTop;
-		}
-	}
-	bind(node, 'mousedown', function(ev){});
-	bind(node, 'mouseup', function(ev){_bDown = false;});
-	bind(node, 'mouseover', function(ev){});
-	x=y=cx=cy=ox=oy=0;
 }
 

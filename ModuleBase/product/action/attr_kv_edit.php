@@ -107,13 +107,13 @@ ul{margin:0;padding:0;}
 			<div class="pure-control-group">
 				<label><?php CStrTools::fldTitle($mbs_cur_actiondef[CModDef::P_ARGS]['value'])?></label>
 				<div style="display: inline-block">
-					<textarea name="value"></textarea>
 					<?php if(!empty($info['value'])){ ?>
 					<ul id=IDD_MULTI_OPTS><?php foreach($info['value'] as $val){?>
 						<li><input type="text" name="value-<?php echo $val['id']?>" value="<?php echo CStrTools::txt2html($val['value']), ' ', $val['first_char']?>" />
 							<a class="pure-button pure-button-check" name="del-<?php echo $val['id']?>[]" _value="1"><?php echo $mbs_appenv->lang('delete')?></a></li>
 					<?php }?></ul>
 					<?php } ?>
+					<textarea name="value"></textarea>
 				</div>
 				<aside class="pure-form-message-inline"><?php CStrTools::fldDesc($mbs_cur_actiondef[CModDef::P_ARGS]['value'], $mbs_appenv)?></aside>
 			</div>

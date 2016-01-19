@@ -8,7 +8,7 @@ class CMctProductControl extends CMultiRowControl{
 	}
 	
 	static function formatTable($product_name){
-		return mbs_tbname('merchant_product_instance_'.$product_name);
+		return mbs_tbname('merchant_product_'.$product_name);
 	}
 	
 	/**

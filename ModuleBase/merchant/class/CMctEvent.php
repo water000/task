@@ -22,10 +22,10 @@ class CMctEvent{
 					$uniq_key .= $args['attrmap'][$aid]['en_name'].',';
 				}
 			}
-			if(!empty($field_def)){
+			//if(!empty($field_def)){
 				$mct_pdt->createTable($field_def, empty($uniq_key) ? '' : substr($uniq_key,0,-1));
 				$mct_pdt_atch->createTable($field_def);
-			}
+			//}
 		}else {
 			$alter_add = $alter_del = array();
 			$uniq_key = '';

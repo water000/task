@@ -293,7 +293,7 @@ fileUpload({
 		<?php if(isset($_REQUEST['item'])){ ?>
 		var aid = file.getAttribute("_data-id");
 		if(aid != null){
-			var pw = popwin("<?php echo $mbs_appenv->lang('result')?>", "<h2 style='text-align:center;color:green;'>loading...</h2>");
+			var pw = popwin("<?php echo $mbs_appenv->lang(array('delete', 'result'))?>", "<h2 style='text-align:center;color:green;'>loading...</h2>");
 			pw.className += " popwin-s";
 			pw.show();
 			ajax({dataType:"json", url:"<?php echo $mbs_appenv->toURL('product_edit', '', array('product_id'=>$_REQUEST['product_id'], 'item'=>$_REQUEST['item']))?>&del_atch="+aid, 
