@@ -20,7 +20,7 @@ $default = array(
 	'table_prefix'         => 'mbs_',
 	'database'             => array(
 		// format: host_port_dbname, the 'dbname' is a database name that should be created by yourself
-		'localhost_3306_module_base' => array('username'=>'root', 'pwd'=>''),
+		'localhost_3306_task' => array('username'=>'root', 'pwd'=>''),
 		//... more
 	),
 	'PDO_ER_DUP_ENTRY'     => '23000', 

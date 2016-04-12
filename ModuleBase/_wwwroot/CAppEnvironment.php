@@ -321,7 +321,7 @@ class CAppEnvironment{
 				$msg .= sprintf('<p style="text-align:right;font-size: 12px;padding: 0 10px;">%s&nbsp;<a href="%s">%s</a></p>', 
 						$this->lang('click_if_not_redirect', 'common'), $redirect_url, $redirect_url);
 			}
-			echo sprintf($this->lang('notice_page', 'common'), $meta, $style, $msg);
+			echo sprintf($this->lang('notice_page', 'common'), $meta, $style, str_replace("\n", '<br/>', $msg));
 		}
 	}
 	
