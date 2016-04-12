@@ -91,7 +91,7 @@ class CTaskDef extends CModDef {
                         'category_id' => array(self::PA_REQ=>1, self::G_DC=>'分类id', self::PA_TYP=>'integer'),
                         'res_page_id' => array(self::PA_REQ=>0, self::G_DC=>'分页id', self::PA_TYP=>'integer'),
                     ),
-                    self::P_OUT => '{has_more:0/1, list:[{id:1, 详见task_info表}, ...]}',
+                    self::P_OUT => '{has_more:0/1, list:[{id:1, 详见#task_info#表}, ...]}',
                 ), 
                 'category_list' => array(
                     self::P_TLE => '分类列表',
@@ -121,7 +121,7 @@ class CTaskDef extends CModDef {
                     self::P_ARGS => array(
                         'task_id' => array(self::PA_REQ=>1, self::G_DC=>'任务id', self::PA_TYP=>'integer'),
                     ),
-                    self::P_OUT => '{has_more:0/1, list:[{id:1, submit_uid, submit_uname, 详见task_submit表}, ...]}'
+                    self::P_OUT => '{has_more:0/1, list:[{id:1, submit_uid, submit_uname, 详见#task_submit#表}, ...]}'
                 ),
                 /*'logout' => array(
                     self::P_TLE => '注销',

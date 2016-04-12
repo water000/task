@@ -10,6 +10,27 @@ if(isset($_REQUEST['mod']) && !empty($_REQUEST['mod'])){
 	$_REQUEST['mod'] = '';
 }
 
+function _parse_tb($txt, $mod){
+    static $TPL = <<<END
+    <a href="javascript:window.open(NULL, 'TBNAME').document.body.innerHTML='TBDEF';">TBNAME</a>';
+END;
+    if(preg_match_all('/#([^#])#/', $txt, $matches) > 0){
+        var_dump($matches);
+        $moddef = mbs_moddef($mod);
+        $tbdef = $moddef->item(CModDef::TBDEF);
+        for($i=0; $i<count($matches[1]); ++$i){
+            if(isset($tbdef[$matches[1][$i]])){
+                $txt = str_replace($matches[0][$i], 
+                    str_replace(array('TBNAME', 'TBDEF'), array($matches[0][$i], 
+                           htmlspecialchars($tbdef[$matches[1][$i]],ENT_QUOTES)), $TPL), 
+                    $txt);
+            }
+        }
+    }
+    
+    return $txt;
+}
+
 $output_type = array('html', 'not_html');
 function _is_spec_type(&$actiondef){
 	switch ($_REQUEST['otype']){
@@ -75,8 +96,8 @@ td{word-wrap:break-word;word-break:break-all;}
 .even{background-color:#eee;}
 </style>
 </head>
-<body>
-<div class="warpper">
+<body style="background-color:#eee;">
+<div class="warpper" >
 	<div class=header></div>
 	<div class=content>
 		<h2>Actions Info</h2>
@@ -151,7 +172,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 					</table>
 					<p class=table_title><?php echo $mbs_appenv->lang(CModDef::P_OUT)?></p>
 					<table><tr><td style="font-size: 13px;background-color:#fff9ea;">
-						<?php echo isset($def[CModDef::P_OUT]) ? CStrTools::txt2html($def[CModDef::P_OUT]) : 'NULL'?>
+						<?php echo isset($def[CModDef::P_OUT]) ? _parse_tb(CStrTools::txt2html($def[CModDef::P_OUT]), $all_actions[$i]['_mod']) : 'NULL'?>
 					</td></tr></table>
 				</div>
 			</div>

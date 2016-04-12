@@ -31,7 +31,7 @@ $moddef = mbs_moddef($selected_mod);
 </style>
 </head>
 <body>
-<div class="warpper">
+<div class="warpper" style="background-color:#eee;">
 	<div class=content>
 		<div class="left vertical-menu" >
 			<p class=title><?php echo $mbs_appenv->lang('mod_list')?></p>
