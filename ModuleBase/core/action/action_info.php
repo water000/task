@@ -12,16 +12,15 @@ if(isset($_REQUEST['mod']) && !empty($_REQUEST['mod'])){
 
 function _parse_tb($txt, $mod){
     static $TPL = <<<END
-    <a href="javascript:window.open(NULL, 'TBNAME').document.body.innerHTML='TBDEF';">TBNAME</a>';
+    <a href="javascript:window.open('', 'TBNAME').document.body.innerHTML='TBDEF';">TBNAME</a>';
 END;
-    if(preg_match_all('/#([^#])#/', $txt, $matches) > 0){
-        var_dump($matches);
+    if(preg_match_all('/#([^#]+)#/', $txt, $matches) > 0){
         $moddef = mbs_moddef($mod);
         $tbdef = $moddef->item(CModDef::TBDEF);
         for($i=0; $i<count($matches[1]); ++$i){
             if(isset($tbdef[$matches[1][$i]])){
                 $txt = str_replace($matches[0][$i], 
-                    str_replace(array('TBNAME', 'TBDEF'), array($matches[0][$i], 
+                    str_replace(array('TBNAME', 'TBDEF'), array($matches[1][$i], 
                            htmlspecialchars($tbdef[$matches[1][$i]],ENT_QUOTES)), $TPL), 
                     $txt);
             }
