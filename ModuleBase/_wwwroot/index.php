@@ -127,7 +127,7 @@ function _main($mbs_appenv){
 	
 	if(false !== strpos(PHP_SAPI, 'cli')){
 		if($argc < 3){
-			trigger_error('param is missing', E_USER_ERROR);
+			trigger_error('BIN/php index.php module action', E_USER_ERROR);
 		}
 		$mod = $argv[1];
 		$action = $argv[2];
