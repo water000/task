@@ -216,12 +216,12 @@ function _main($mbs_appenv){
 	if(CModDef::isReservedAction($action)){
 		$err = '';
 		try {
-			$err = $mbs_cur_moddef->install(CDbPool::getInstance(), CMemcachedPool::getInstance());
+			$err = $mbs_cur_moddef->$action(CDbPool::getInstance(), CMemcachedPool::getInstance());
 		} catch (Exception $e) {
 			//echo $mbs_appenv->lang('db_exception', 'common');
 			echo $e->getMessage(), "\n<br/>", $e->getTraceAsString();
 		}
-		echo empty($err)? 'install complete, successed' : "error: \n". implode("\n<br/>", $err);
+		echo $action, empty($err)? ' successed' : " error: \n". implode("\n<br/>", $err);
 	}else{
 		
 		//do filter checking
@@ -230,7 +230,7 @@ function _main($mbs_appenv){
 		}
 		
 		$filters = $mbs_appenv->config('action_filters', 'common');
-		if(!empty($filters)){
+		if(!empty($filters) && !empty($mbs_cur_actiondef)){
 			foreach($filters as $ftr){
 				if(count($ftr) >=3 && $ftr[0]($mbs_cur_actiondef)){
 					$mdef = mbs_moddef($ftr[1]);

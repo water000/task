@@ -54,7 +54,7 @@ abstract class CModDef {
 	
 	protected static $appenv = null;
 	private $desc = null;
-	private static $reserve_actions = array('install', 'upgrade', 'uninstall');
+	private static $reserve_actions = array('init', 'install', 'upgrade', 'uninstall');
 	
 	/**
 	 * @return array(
@@ -105,6 +105,140 @@ abstract class CModDef {
 	function __construct($appenv){
 		self::$appenv = $appenv;
 		$this->desc = $this->desc();
+	}
+	
+	static function tbname2class($tbn){
+	    $class = 'C';
+	    foreach(explode('_', $tbn) as $p){
+	        $class .= ucfirst($p);
+	    }
+	    return $class.'Ctr';
+	}
+	
+	static function _createClass($class, $tbname, $tbdef, $path){
+	    static $uniq = 
+'class #classname# extends CUniqRowControl{
+
+	private static $instance = null;
+	
+	protected function __construct($db, $cache, $primarykey = null){
+		parent::__construct($db, $cache, $primarykey);
+	}
+
+	/**
+	 *
+	 * @param CAppEnvironment $mbs_appenv
+	 * @param CDbPool $dbpool
+	 * @param CMemcachePool $mempool
+	 * @param string $primarykey
+	 */
+	static function getInstance($mbs_appenv, $dbpool, $mempool, $primarykey = null){
+		if(empty(self::$instance)){
+			try {
+				$memconn = $mempool->getConnection();
+				self::$instance = new #classname#(
+						new CUniqRowOfTable($dbpool->getDefaultConnection(),
+								mbs_tbname(\'#tbname#\'), \'#keyname#\', $primarykey),
+						$memconn ? new CUniqRowOfCache($memconn, $primarykey, \'#classname#\') : null,
+						$primarykey
+				);
+			} catch (Exception $e) {
+				throw $e;
+			}
+		}else {
+			self::$instance->setPrimaryKey($primarykey);
+		}
+		return self::$instance;
+	}
+}';
+	    static $multi = 
+'mbs_import(\'common\', \'CMultiRowControl\');
+
+class #classname# extends CMultiRowControl {
+	private static $instance = null;
+	
+	protected function __construct($db, $cache, $primarykey = null, $secondKey = null){
+		parent::__construct($db, $cache, $primarykey, $secondKey);
+	}
+	
+	/**
+	 *
+	 * @param CAppEnvironment $mbs_appenv
+	 * @param CDbPool $dbpool
+	 * @param CMemcachePool $mempool
+	 * @param string $primarykey
+	 */
+	static function getInstance($mbs_appenv, $dbpool, $mempool, $primarykey = null){
+		if(empty(self::$instance)){
+			try {
+				$memconn = $mempool->getConnection();
+				self::$instance = new CUserDepMemberControl(
+						new CMultiRowOfTable($dbpool->getDefaultConnection(),
+								mbs_tbname(\'#tbname#\'), \'#keyname#\', $primarykey, \'#secondkeyname#\'),
+						$memconn ? new CMultiRowOfCache($memconn, $primarykey, \'#classname#\') : null
+				);
+			} catch (Exception $e) {
+				throw $e;
+			}
+		}
+		self::$instance->setPrimaryKey($primarykey);
+		
+		return self::$instance;
+	}
+} ';
+	    
+	    $pos = strpos($tbdef, "\n");
+	    if($pos > 0){
+	        $def = substr($tbdef, 0, $pos);
+	        if(preg_match('/--\s+(U|M)\(([^\)]+)\)/', $def, $matches) > 0){
+	            $keys = explode(',', trim($matches[2]));
+	            if('U' == $matches[1]){
+	                file_put_contents($path, "<?php\r\n".
+	                    str_replace(array('#classname#', '#tbname#', '#keyname#'),
+	                        array($class, $tbname, trim($keys[0])), $uniq).
+	                    "\r\n?>");
+	            }else{
+	                $two = explode('|', trim($keys[0]));
+	                if(2 == count($two)){
+	                    
+	                }else{
+	                    file_put_contents($path, "<?php\r\n".
+	                        str_replace(array('#classname#', '#tbname#', '#keyname#', '#secondkeyname#'),
+	                            array($class, $tbname, trim($keys[0]), trim($keys[1])), $multi).
+	                        "\r\n?>");
+	                }
+	            }
+	        }else if(preg_match('/primary key\(([^\)]+)\)/i', $tbdef, $matches) > 0){
+	            $keys = explode(',', trim($matches[1]));
+	            if(1 == count($keys)){
+	                file_put_contents($path, "<?php\r\n".
+	                    str_replace(array('#classname#', '#tbname#', '#keyname#'), 
+	                        array($class, $tbname, trim($keys[0])), $uniq).
+	                    "\r\n?>");
+	            }else{
+	                file_put_contents($path, "<?php\r\n".
+	                    str_replace(array('#classname#', '#tbname#', '#keyname#', '#secondkeyname#'),
+	                        array($class, $tbname, trim($keys[0]), trim($keys[1])), $multi).
+	                    "\r\n?>");
+	            }
+	        }
+	    }
+	}
+	function init(){
+	    $dir = __DIR__.'/../../'.$this->desc[self::MOD][self::G_NM].'/';
+	    if(isset($this->desc[self::TBDEF])){
+	        $dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnvironment::FT_CLASS);
+	        if(!file_exists($dir)){
+	            mkdir($dir) or trigger_error('mkdir error!'.__FILE__.':'.__LINE__);
+	        }
+	        foreach($this->desc[self::TBDEF] as $tbn => $tbdef){
+	            $class = self::tbname2class($tbn);
+	            $classpath = self::$appenv->getClassPath($class, $this->desc[self::MOD][self::G_NM]);
+	            if(!file_exists($classpath)){
+	                self::_createClass($class, $tbn, $tbdef, $classpath);
+	            }
+	        }
+	    }
 	}
 	
 	function item($key, $subkey=''){
