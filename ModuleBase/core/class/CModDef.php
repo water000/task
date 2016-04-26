@@ -225,19 +225,41 @@ class #classname# extends CMultiRowControl {
 	    }
 	}
 	function init(){
-	    $dir = __DIR__.'/../../'.$this->desc[self::MOD][self::G_NM].'/';
 	    if(isset($this->desc[self::TBDEF])){
 	        $dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnvironment::FT_CLASS);
-	        if(!file_exists($dir)){
-	            mkdir($dir) or trigger_error('mkdir error!'.__FILE__.':'.__LINE__);
+	        if(!file_exists($dir) && !mkdir($dir)){
+	            trigger_error(sprintf('[error]mkdir "%s" failed on "%s:%d".'), $dir, __FILE__, __LINE__);
+	        }else{
+    	        foreach($this->desc[self::TBDEF] as $tbn => $tbdef){
+    	            $class = self::tbname2class($tbn);
+    	            $classpath = self::$appenv->getClassPath($class, $this->desc[self::MOD][self::G_NM]);
+    	            if(!file_exists($classpath)){
+    	                self::_createClass($class, $tbn, $tbdef, $classpath);
+    	            }
+    	        }
 	        }
-	        foreach($this->desc[self::TBDEF] as $tbn => $tbdef){
-	            $class = self::tbname2class($tbn);
-	            $classpath = self::$appenv->getClassPath($class, $this->desc[self::MOD][self::G_NM]);
-	            if(!file_exists($classpath)){
-	                self::_createClass($class, $tbn, $tbdef, $classpath);
-	            }
+	    }
+	    if(isset($this->desc[self::PAGES])){
+	        $dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnvironment::FT_ACTION);
+	        if(!file_exists($dir) && !mkdir($dir)){
+	             trigger_error(sprintf('[error]mkdir "%s" failed on "%s:%d".'), $dir, __FILE__, __LINE__);
+	        }else{
+    	        foreach($this->desc[self::PAGES] as $name => $def){
+    	            $path = self::$appenv->getActionPath($name, $this->desc[self::MOD][self::G_NM]);
+    	            if(!file_exists($path) && !touch($path)){
+    	                trigger_error(sprintf('[error]touch "%s" failed on "%s:%d".'), $path, __FILE__, __LINE__);
+    	            }
+    	        }
 	        }
+	    }
+	    $config_dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnvironment::FT_CONFIG);
+	    if(!file_exists($config_dir) && !mkdir($config_dir)){
+	        trigger_error(sprintf('[error]mkdir "%s" failed on "%s:%d".'), $config_dir, __FILE__, __LINE__);
+	    }else{
+	        $path = $config_dir.'/default.php';
+	        file_put_contents($path, "<?php\n\$default=array(\n);\n?>");
+	        $path = $config_dir.'lang_'.self::$appenv->item('lang').'.php';
+	        file_put_contents($path, sprintf("<?php\n\$lang_%s=array(\n);\n?>", self::$appenv->item('lang')));
 	    }
 	}
 	

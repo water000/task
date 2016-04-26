@@ -7,6 +7,7 @@ class CAppEnvironment{
 	CONST FT_CLASS      = 'class';	
 	CONST FT_ACTION     = 'action';
 	CONST FT_MODDEF     = 'moddef';
+	CONST FT_CONFIG     = 'config';
 	
 	private static $instance = null;
 	

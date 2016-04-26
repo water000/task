@@ -80,6 +80,17 @@ class CTaskDef extends CModDef {
                     key(task_id),
                     key(uid)
                 )',
+                'task_submit_attachment' => '( -- M(submit_id, id)
+                    id        int unsigned auto_increment not null,
+                    submit_id int unsigned not null,
+                    name      varchar(64) not null,
+                    path      char(32) not null,
+                    size      int unsigned not null,
+                    mime_type varhcar(32) not null,
+                    file_type tinyint not null,
+                    primary key(id),
+                    key(submit_id)
+                )',
                 'task_submit_paid_log' => '(
                     acnt_id   int unsigned not null, 
                     submit_id int unsigned not null, 
