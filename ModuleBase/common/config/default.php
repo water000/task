@@ -37,7 +37,8 @@ $default = array(
 		array(function($action_def){return !empty($action_def) && isset($action_def[CModDef::P_MGR]); }, 
 			'privilege', 'privFtr'),
 		
-		//array(function($action_def){return !empty($action_def) && isset($action_def[CModDef::P_OUT]); }, '', ''),
+		array(function($action_def){return !empty($action_def) && isset($action_def[CModDef::P_OUT]); }, 
+		  'common', 'CApiParamFilter'),
 		
 		//.... more
 	), 

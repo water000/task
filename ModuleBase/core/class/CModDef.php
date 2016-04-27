@@ -12,7 +12,7 @@
  * if CFileTypeDef::CLASS_FILE_SUFFIX not present, the FILE_NAME was treated as class_name, 
  * then the CFileTypeDef::CLASS_FILE_SUFFIX was appended to class_name to get the FILE_NAME
  * @author Administrator
- * @dependent: CAppEnvironment.php, index.php:mbs_moddef(), index.php:mbs_tbname()
+ * @dependent: CAppEnv.php, index.php:mbs_moddef(), index.php:mbs_tbname()
  *
  */
 abstract class CModDef {
@@ -127,7 +127,7 @@ abstract class CModDef {
 
 	/**
 	 *
-	 * @param CAppEnvironment $mbs_appenv
+	 * @param CAppEnv $mbs_appenv
 	 * @param CDbPool $dbpool
 	 * @param CMemcachePool $mempool
 	 * @param string $primarykey
@@ -163,7 +163,7 @@ class #classname# extends CMultiRowControl {
 	
 	/**
 	 *
-	 * @param CAppEnvironment $mbs_appenv
+	 * @param CAppEnv $mbs_appenv
 	 * @param CDbPool $dbpool
 	 * @param CMemcachePool $mempool
 	 * @param string $primarykey
@@ -226,7 +226,7 @@ class #classname# extends CMultiRowControl {
 	}
 	function init(){
 	    if(isset($this->desc[self::TBDEF])){
-	        $dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnvironment::FT_CLASS);
+	        $dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnv::FT_CLASS);
 	        if(!file_exists($dir) && !mkdir($dir)){
 	            trigger_error(sprintf('[error]mkdir "%s" failed on "%s:%d".'), $dir, __FILE__, __LINE__);
 	        }else{
@@ -240,7 +240,7 @@ class #classname# extends CMultiRowControl {
 	        }
 	    }
 	    if(isset($this->desc[self::PAGES])){
-	        $dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnvironment::FT_ACTION);
+	        $dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnv::FT_ACTION);
 	        if(!file_exists($dir) && !mkdir($dir)){
 	             trigger_error(sprintf('[error]mkdir "%s" failed on "%s:%d".'), $dir, __FILE__, __LINE__);
 	        }else{
@@ -252,7 +252,7 @@ class #classname# extends CMultiRowControl {
     	        }
 	        }
 	    }
-	    $config_dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnvironment::FT_CONFIG);
+	    $config_dir = self::$appenv->getDir($this->desc[self::MOD][self::G_NM], CAppEnv::FT_CONFIG);
 	    if(!file_exists($config_dir) && !mkdir($config_dir)){
 	        trigger_error(sprintf('[error]mkdir "%s" failed on "%s:%d".'), $config_dir, __FILE__, __LINE__);
 	    }else{

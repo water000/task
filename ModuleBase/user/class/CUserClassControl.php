@@ -10,7 +10,7 @@ class CUserClassControl extends CUniqRowControl{
 	
 	/**
 	 *
-	 * @param CAppEnvironment $mbs_appenv
+	 * @param CAppEnv $mbs_appenv
 	 * @param CDbPool $dbpool
 	 * @param CMemcachePool $mempool
 	 * @param string $primarykey

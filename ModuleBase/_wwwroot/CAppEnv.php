@@ -2,7 +2,7 @@
 
 defined('IN_INDEX') or exit('access denied');
 
-class CAppEnvironment{
+class CAppEnv{
 
 	CONST FT_CLASS      = 'class';	
 	CONST FT_ACTION     = 'action';
@@ -57,7 +57,7 @@ class CAppEnvironment{
 	
 	static function getInstance(){
 		if(empty(self::$instance)){
-			self::$instance = new CAppEnvironment();
+			self::$instance = new CAppEnv();
 		}
 		return self::$instance;
 	}

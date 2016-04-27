@@ -26,7 +26,7 @@ class CTaskDef extends CModDef {
                 )',
                 'task_dep_accountant' => '(
                     dep_id    int unsigned not null, 
-                    acnt_uid   int unsigned not null, 
+                    acnt_uid  int unsigned not null, 
                     amount    int unsigned not null, 
                     balance   int unsigned not null, 
                     join_time int unsigned not null, 

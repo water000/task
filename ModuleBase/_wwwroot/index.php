@@ -5,13 +5,13 @@ date_default_timezone_set('Asia/Shanghai');
 
 define('RTM_DEBUG', 1);
 error_reporting(RTM_DEBUG ? E_ALL : 0);	
-define('IN_INDEX', 1); //ref file: CAppEnvironment.php
+define('IN_INDEX', 1); //ref file: CAppEnv.php
 
 //env and conf init;there are two kinds of const in the system.
 //one start with 'RTM_' what means 'run-time' defined;the other start
 //with 'CFG_' what means 'configuration(installing)' defined
-require 'CAppEnvironment.php';
-$mbs_appenv     = CAppEnvironment::getInstance();
+require 'CAppEnv.php';
+$mbs_appenv     = CAppEnv::getInstance();
 $mbs_cur_moddef = $mbs_cur_actiondef = null;
 
 //exception, database error, ...
