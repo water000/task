@@ -172,7 +172,7 @@ class #classname# extends CMultiRowControl {
 		if(empty(self::$instance)){
 			try {
 				$memconn = $mempool->getConnection();
-				self::$instance = new CUserDepMemberControl(
+				self::$instance = new #classname#(
 						new CMultiRowOfTable($dbpool->getDefaultConnection(),
 								mbs_tbname(\'#tbname#\'), \'#keyname#\', $primarykey, \'#secondkeyname#\'),
 						$memconn ? new CMultiRowOfCache($memconn, $primarykey, \'#classname#\') : null

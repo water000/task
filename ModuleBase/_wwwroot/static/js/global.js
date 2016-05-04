@@ -95,7 +95,7 @@ function btnlist(list){
 		var inph;
 		if(!allow_multi_opt){
 			if(prev_checked_btn != null)
-				_fndechecked(prev_checked_btn);
+				_fnunchecked(prev_checked_btn);
 			prev_checked_btn = elem;
 		}
 		elem.className += " pure-button-checked";
@@ -106,7 +106,7 @@ function btnlist(list){
 		elem.parentNode.insertBefore(inph, elem);
 		elem.setAttribute("_checked", "1");
 	}
-	var _fndechecked = function(elem){
+	var _fnunchecked = function(elem){
 		elem.className = elem.className.replace(" pure-button-checked", "");
 		elem.parentNode.removeChild(elem.previousSibling);
 		elem.setAttribute("_checked", "0");
@@ -122,7 +122,7 @@ function btnlist(list){
 			}
 			bind(list[i], 'click', function(e){
 				if('1' == this.getAttribute("_checked")){
-					_fndechecked(this);
+					_fnunchecked(this);
 				}else{
 					_fnchecked(this);
 				}
@@ -208,7 +208,7 @@ function popwin(title, body){
 	pop_win.hide=function(){pop_win.style.display="none";if(mask_win) mask_win.style.display="none";}
 	pop_win.remove=function(){pop_win.parentNode.removeChild(pop_win);mask_win.parentNode.removeChild(mask_win);}
 	pop_win.onclose=function(){pop_win.hide();}
-	pop_win.mask=function(){mask_win=document.createElement("div");mask_win.style.display="none";mask_win.className="popwin-mask";document.body.appendChild(mask_win);}
+	pop_win.mask=function(){mask_win=document.createElement("div");mask_win.style.display="none";mask_win.className="popwin-mask";document.body.appendChild(mask_win);bind(mask_win, "click", function(){pop_win.hide();});}
 	pop_win.bdheight=function(){pop_win.childNodes[1].style.height = (pop_win.offsetHeight-pop_win.childNodes[0].offsetHeight) + "px";}
 	pop_win.body(body);
 	pop_win.childNodes[0].getElementsByTagName("a")[0].onclick=function(e){pop_win.onclose();}
