@@ -2,10 +2,14 @@
 
 date_default_timezone_set('Asia/Shanghai');
 
-
 define('RTM_DEBUG', 1);
-error_reporting(RTM_DEBUG ? E_ALL : 0);	
-define('IN_INDEX', 1); //ref file: CAppEnv.php
+define('RTM_INDEX', 1); //ref file: CAppEnv.php
+if(RTM_DEBUG){
+    error_reporting(E_ALL);
+    ini_set('display_startup_errors', '1');
+}else{
+    ini_set('display_errors', '0');// do not display errors on genaration env. HIGH recommend that the errors put in logs
+}
 
 //env and conf init;there are two kinds of const in the system.
 //one start with 'RTM_' what means 'run-time' defined;the other start
@@ -14,37 +18,33 @@ require 'CAppEnv.php';
 $mbs_appenv     = CAppEnv::getInstance();
 $mbs_cur_moddef = $mbs_cur_actiondef = null;
 
-//exception, database error, ...
-//mbs_error_log('some errors', __FILE__, __LINE__);
-function mbs_error_log($msg, $file, $lineno){
+//DO not call the function directly, instead of using the trigger_error function.
+//mbs_error_log('[int]error type/no', 'some errors', __FILE__, __LINE__);
+function mbs_error_log($errno, $msg, $file, $lineno){
 	global $mbs_appenv;
 	//U: marking as user level
-	$error = sprintf("U[%s]%s.%s(%s:%d)\n%s\n",
+	$error = sprintf("U%d[%s]%s.%s:%s(%s:%d)\n",
+	        $errno,
 			date('Y/m/d H:i:s'),
 			$mbs_appenv->item('cur_mod'),
 			$mbs_appenv->item('cur_action'),
-			$file,
-			$lineno,
-			$msg
+			$msg,
+	        $file,
+	        $lineno
 	);
 	if(RTM_DEBUG)
 		$mbs_appenv->echoex($error, 'SYS_ERROR');
 	error_log($error, 0);
+	if(E_USER_ERROR == $errno)
+	    exit(1);
 }
-
 set_exception_handler(function($e){// handle some exceptions that do not catch
-	mbs_error_log($e->getMessage()."\n".$e->getTraceAsString(), 'UNCAUGHT', 0);
-	if(!RTM_DEBUG)
-		$mbs_appenv->echoex($mbs_appenv->lang('db_exception'), 'SYS_EXCEPTION');
+    if(!RTM_DEBUG)
+        $mbs_appenv->echoex($mbs_appenv->lang('db_exception'), 'SYS_EXCEPTION');
+	mbs_error_log(E_USER_ERROR, $e->getMessage()."\n".$e->getTraceAsString(), 'UNCAUGHT', 0);
 });
-
-/* php.ini (log_errors=ture, error_log=path)
- * if(!RTM_DEBUG){
-	set_error_handler(function($eno, $err, $file, $line){
-		mbs_error_log($err.'('.$eno.')', $file, $line);
-	});
-}*/
-
+set_error_handler('mbs_error_log');// php.ini (log_errors=ture, error_log=path)
+    
 // import class only
 function mbs_import($mod, $class){
 	global $mbs_appenv;
@@ -122,8 +122,8 @@ function mbs_runtime_close_debug(){ // call the function before the echoex invok
 	$mbs_appenv->setLogAPI(null);  // do NOT record log
 }
 
-function _main($mbs_appenv){
-	global $mbs_cur_moddef, $mbs_cur_actiondef;
+function _main(){
+	global $mbs_appenv, $mbs_cur_moddef, $mbs_cur_actiondef;
 	
 	if(false !== strpos(PHP_SAPI, 'cli')){
 		if($argc < 3){
@@ -218,7 +218,6 @@ function _main($mbs_appenv){
 		try {
 			$err = $mbs_cur_moddef->$action(CDbPool::getInstance(), CMemcachedPool::getInstance());
 		} catch (Exception $e) {
-			//echo $mbs_appenv->lang('db_exception', 'common');
 			echo $e->getMessage(), "\n<br/>", $e->getTraceAsString();
 		}
 		echo $action, empty($err)? ' successed' : " error: \n". implode("\n<br/>", $err);
@@ -254,7 +253,7 @@ function _main($mbs_appenv){
 		call_user_func('fastcgi_finish_request');	
 }
 
-_main($mbs_appenv);
+_main();
 
 exit(0);
 ?>

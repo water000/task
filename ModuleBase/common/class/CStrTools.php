@@ -82,7 +82,7 @@ class CStrTools {
 	{
 		return str_replace(
 			array(' ', "\r\n", "\r", "\n", "\t"),
-			array('&nbsp;', '<br />', '<br />', '<br />', '&nbsp;&nbsp;'),
+			array('&nbsp;', '<br />', '', '<br />', '&nbsp;&nbsp;'),
 			$htmlspec ? htmlspecialchars($str) : $str
 		);
 	}

@@ -1,6 +1,6 @@
 <?php
 
-defined('IN_INDEX') or exit('access denied');
+defined('RTM_INDEX') or exit('access denied');
 
 class CAppEnv{
 
@@ -234,8 +234,8 @@ class CAppEnv{
 					trigger_error('no such config item defined: '.$cfg, E_USER_WARNING);
 				}
 			}else{
+			    trigger_error('no such config file found: '.$path, E_USER_WARNING);
 				return false;
-				//trigger_error('no such config file found: '.$mod.'.'.$cfg, E_USER_WARNING);
 			}
 		}
 		
