@@ -70,7 +70,7 @@ class CTaskDef extends CModDef {
                     id                 int unsigned auto_increment not null, 
                     task_id            int unsigned not null, 
                     uid                int unsigned not null, 
-                    time               int unsigned not null, 
+                    submit_ts          int unsigned not null, 
                     content            varchar(64) not null, 
                     contain_attachment tinyint not null, -- no=0, yes=1
                     comment            varchar(32) not null,
@@ -91,12 +91,24 @@ class CTaskDef extends CModDef {
                     primary key(id),
                     key(submit_id)
                 )',
-                'task_submit_paid_log' => '(
+                'task_submit_to_pay' => '(
+                    submit_id int unsigned not null,
                     acnt_id   int unsigned not null, 
-                    submit_id int unsigned not null, 
-                    time      int unsigned not null, 
-                    amount    int unsigned not null,
-                    primary key(acnt_id, submit_id)
+                    total_fee int unsigned not null, 
+                    submit_ts int unsigned not null,
+                    status    tinyint not null, -- 0: to pay, 1: success, 2: fail
+                    fault_msg varchar(32) not null,
+                    primary key(submit_id),
+                    key(acnt_id)
+                )',
+                'task_submit_paid_history' => '(
+                    submit_id   int unsigned not null,
+                    acnt_id     int unsigned not null, 
+                    total_fee   int unsigned not null,
+                    submit_ts   int unsigned not null, 
+                    success_ts  int unsigned not null,
+                    primary key(submit_id),
+                    key(acnt_id)
                 )',
             ),
             self::PAGES => array(

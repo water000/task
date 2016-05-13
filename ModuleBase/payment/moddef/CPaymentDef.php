@@ -1,5 +1,9 @@
 <?php
 
+//批量支付 https://doc.open.alipay.com/doc2/detail?treeId=64&articleId=103569&docType=1 
+//curl "https://ccdcapi.alipay.com/validateAndCacheCardInfo.json?_input_charset=utf-8&cardNo=银行卡卡号&cardBinCheck=true"
+//银联代付 https://open.unionpay.com/ajweb/product/detail?id=67
+//银联批量代付文件标准 https://open.unionpay.com/ajweb/help?id=207#4.4.2
 class CPaymentDef extends CModDef {
 	protected function desc() {
 		return array(
@@ -11,20 +15,26 @@ class CPaymentDef extends CModDef {
 			),
 			self::TBDEF => array(
 				'payment_order' => '(
-					id int unsigned not null auto_increment,
-					user_id int unsigned not null,
-					product_desc varchar(16) not null,
-					product_img_url varchar(128),
-					product_num int unsigned,
+					id                 int unsigned not null auto_increment,
+					user_id            int unsigned not null,
+					product_desc       varchar(16) not null,
+					product_img_url    varchar(128),
+					product_num        int unsigned,
 					product_unit_price int unsigned,
-					product_extra varchar(32), -- product extra info 
-					create_ts int unsigned not null, -- register timestamp
-					pay_type tinyint unsigned, -- 1:points, 2: voucher, 4:alipay, 8:unionpay, 16:weixin, 4:..
-					pay_extra varchar(32) not null, -- extra info of which pay_type
-					status tinyint unsigned, -- 0:unpaid, 1:paid
+					product_extra      varchar(32), -- product extra info 
+					create_ts          int unsigned not null, -- register timestamp
+					pay_type           tinyint unsigned, -- 1:points, 2: voucher, 4:alipay, 8:unionpay, 16:weixin, 4:..
+					pay_extra          varchar(32) not null, -- extra info of which pay_type
+					status             tinyint unsigned, -- 0:unpaid, 1:paid
 					primary key(id),
 					key(user_id)
 				)',
+			    'pm_unionpay_to_account' => '(
+			        order_id, 
+			        acc_no, 
+			        acc_type, 
+			        acc_name,
+			    )',
 			),
 			self::PAGES => array(
 				'unionpay_notify' => array(

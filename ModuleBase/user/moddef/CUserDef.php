@@ -11,72 +11,76 @@ class CUserDef extends CModDef {
 			),
 			self::FTR => array(
 				'checkLogin' =>array(self::G_CS=>'CUserSession', self::G_DC=>'检查用户是否登录'),
-				'checkDepLogin' =>array(self::G_CS=>'CUserDepSession', self::G_DC=>'检查用户是否登录相应的部门')
 			),
 			self::TBDEF => array(
+			    'user_career_category' => '(
+			        id   int unsigned auto_increment not null,
+				    name varchar(64) not null,
+			        primary key(id)
+			    )',
+			    'user_city_dict' => '(
+			   
+			    )',
 				'user_info' => '(
 					id                   int unsigned auto_increment not null,
-				    name                 varchar(16),
-				    password             char(38),
-				    organization         varchar(32),
-				    phone                char(11),
-				    email                varchar(255),
-				    IMEI                 varchar(32),
-				    IMSI                 varchar(32),
-				    VPDN_name            varchar(32),
-				    VPDN_pass            varchar(32),
-				    class_id             int unsigned,
-				    reg_time             int unsigned,
-				    reg_ip               varchar(32),
-					pwd_modify_count     int unsigned,
+				    name                 varchar(16) not null,
+			        avatar_path          varchar(40) not null,
+				    password             char(38) not null,
+				    phone                char(11) not null,
+				    email                varchar(255) not null,
+			        career_cid           int unsigned not null,
+			        city_no              int unsigned not null,
+				    reg_time             int unsigned not null,
+				    reg_ip               varchar(32) not null,
+					pwd_modify_count     int unsigned not null,
 					primary key(id),
 					unique key(phone)
 				)',
-				/*'user_third_platform' => '(
-					user_id int unsigned not null,
-					plat_id varchar(33) not null, -- value=([1:weixin, 2:weibo, ...])+returned-id-by-third-platform
-					unique key(plat_id),
-					key(user_id)
-				)',*/
-				'user_mobile_device' => '(
-					user_id int unsigned not null,
-					os_type tinyint not null, -- 1:ios, 2:android, 3:...
-					token varchar(32) not null,
-					last_submit_ts int unsigned not null, -- last submit device token timestamp
-					unique key(user_id)
-				)',
-				'user_class' => '(
-					id                   int unsigned auto_increment not null,
-					name                 varchar(16),
-					code                 varchar(32),
-					create_time          int unsigned,
-					primary key (id),
-					unique key(name),
-					unique key(code)
-				)',
-				'user_department' => '(
-					id                   int unsigned auto_increment not null,
-					name           		 varchar(16),
-					password             char(32),
-					edit_time            int unsigned,
-					primary key (id),
-					unique key(name)
-				)',
-				'user_department_member' => '(
-					id                   int unsigned auto_increment not null,
-					user_id              int unsigned,
-					dep_id               int unsigned,
-					join_time            int unsigned,
-					primary key (id),
-					unique key(user_id),
-					key(dep_id)
-				)',
-				'user_login_log'        => '(
-					 user_id              int unsigned not null,
-				   	 token                char(32),
-				     time                 int unsigned,
-				     primary key (user_id)
-				)',
+			    'user_wallet' => '(
+			        uid            int unsigned not null, 
+			        amount         int unsigned not null, 
+			        history_amount int unsigned not null,
+			        last_change_ts int unsigned not null,
+			        status         tinyint not null, -- 0: normal, 1: banned(banned by sys if the user operate with some exceptions)
+			        primary key(uid)
+			    )',
+			    'user_wallet_change_history' => '(
+			        id         int unsigned auto_increment not null,
+			        pay_uid    int unsigned not null,
+			        payee_uid  int unsigned not null,
+			        event_type tinyint unsigned not null, -- 0: get by submiting task, 1: withdraw
+			        fee        int unsigned not null,
+			        change_ts  int unsigned not null,
+			        primary key(id),
+			        key(uid),
+			        key(other_uid)
+			    )',
+			    // insert the record to 'user_wallet_withdraw_history' if successful and delete it after user visit
+			    'user_wallet_withdraw_apply' => '(
+			        uid          int unsigned not null,
+			        fee          int unsigned not null,
+			        dest_account varchar(64) not null,
+			        account_name varchar(8) not null,
+			        account_type tinyint not null,
+			        submit_date  int unsigned not null,
+			        status       tinyint not null, -- 0: user submit, 1: sys accepted, 2: successful, 3: failure
+			        fault_msg    varchar(16) not null, -- payment result, successful or failure
+			        attempt_num  tinyint not null,
+			        primary key(uid)
+			    )',
+			    'user_wallet_withdraw_history' => '(
+			        id           int unsigned auto_increment not null, 
+			        uid          int unsigned not null, 
+			        fee          int unsigned not null, 
+			        dest_account varchar(64) not null,
+			        account_name varchar(8) not null,
+			        account_type tinyint not null,
+			        submit_ts    int unsigned not null, 
+			        success_ts   int unsigned not null,
+			        primary key(id),
+			        key(uid)
+			    )',
+			    
 			),
 			self::PAGES => array(
 				'login' => array(
