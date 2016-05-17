@@ -14,6 +14,7 @@ class CTaskDef extends CModDef {
                     name        varchar(16) not null, 
                     abstract    varchar(64) not null, 
                     create_uid  int unsigned not null, 
+                    leader_uid  int unsigned not null,
                     create_time int unsigned not null,
                     primary key(id)
                 )',
@@ -74,7 +75,7 @@ class CTaskDef extends CModDef {
                     content            varchar(64) not null, 
                     contain_attachment tinyint not null, -- no=0, yes=1
                     comment            varchar(32) not null,
-                    -- ST_SUBMITED=0, ST_SAW=10, ST_USED=11, ST_UNUSED=12, ST_WAIT_TO_PAY=20, ST_PAIED=21 , ST_SUB_DEL=30, ST_SYS_DEL=31
+                    -- ST_SUBMITED=0, ST_SAW=10, ST_USED=11, ST_UNUSED=12, ST_TO_PAY=20, ST_PAIED_OK=21 , ST_PAID_ERR=22, ST_SUB_DEL=30, ST_SYS_DEL=31
                     status             tinyint not null, 
                     primary key(id),
                     key(task_id),
@@ -135,7 +136,7 @@ class CTaskDef extends CModDef {
                         'id'         => array(self::G_DC=>'任务id', self::PA_TYP=>'integer'),
                         'title'      => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'标题', self::PA_TYP=>'string', self::PA_RNG=>'6, 16'),
                         'desc'       => array(self::G_DC=>'描述', self::PA_TYP=>'string', self::PA_RNG=>'6, 64'),
-                        'attachment' => array(self::G_DC=>'附件', self::PA_TYP=>'file'),
+                        'image'      => array(self::G_DC=>'附件', self::PA_TYP=>'file'),
                         'cate_id'    => array(self::G_DC=>'分类id', self::PA_TYP=>'integer'),
                         'price'      => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'价格', self::PA_TYP=>'integer'),
                     ),

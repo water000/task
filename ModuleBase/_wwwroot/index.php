@@ -123,7 +123,7 @@ function mbs_runtime_close_debug(){ // call the function before the echoex invok
 }
 
 function _main(){
-	global $mbs_appenv, $mbs_cur_moddef, $mbs_cur_actiondef;
+	global $mbs_appenv, $mbs_cur_moddef, $mbs_cur_actiondef, $argc, $argv;
 	
 	if(false !== strpos(PHP_SAPI, 'cli')){
 		if($argc < 3){

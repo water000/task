@@ -1,13 +1,12 @@
-<?php 
+<?php
+class CUserInfoCtr extends CUniqRowControl{
 
-class CUserClassControl extends CUniqRowControl{
-	
 	private static $instance = null;
 	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
 	}
-	
+
 	/**
 	 *
 	 * @param CAppEnv $mbs_appenv
@@ -19,10 +18,10 @@ class CUserClassControl extends CUniqRowControl{
 		if(empty(self::$instance)){
 			try {
 				$memconn = $mempool->getConnection();
-				self::$instance = new CUserClassControl(
+				self::$instance = new CUserInfoCtr(
 						new CUniqRowOfTable($dbpool->getDefaultConnection(),
-								mbs_tbname('user_class'), 'id', $primarykey),
-						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CUserClassControl') : null,
+								mbs_tbname('user_info'), 'id', $primarykey),
+						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CUserInfoCtr') : null,
 						$primarykey
 				);
 			} catch (Exception $e) {
@@ -33,6 +32,13 @@ class CUserClassControl extends CUniqRowControl{
 		}
 		return self::$instance;
 	}
+	
+	static function passwordFormat($pwd){
+	    return password_hash($pwd, PASSWORD_BCRYPT);
+	}
+	
+	static function passwordVerify($pwd, $hash){
+	    return password_verify($pwd, $hash);
+	}
 }
-
 ?>

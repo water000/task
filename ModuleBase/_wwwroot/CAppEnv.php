@@ -278,6 +278,10 @@ class CAppEnv{
 	}
 	
 	function echoex($data, $errcode='', $redirect_url=''){
+	    if(false !== strpos(PHP_SAPI, 'cli')){
+	        echo $data, '(', $errcode, ')', "\r\n";
+	        return;
+	    }
 		if('json' == $this->env['client_accept'] 
 			|| 'xml' == $this->env['client_accept'])
 		{

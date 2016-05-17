@@ -1,14 +1,12 @@
-<?php 
+<?php
+class CUserWalletWithdrawApplyCtr extends CUniqRowControl{
 
-require_once dirname(__FILE__).'/CUserLoginLogTB.php';
-
-class CUserLoginLogControl extends CUniqRowControl{
-	private static $instance   = null;
+	private static $instance = null;
 	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
 	}
-	
+
 	/**
 	 *
 	 * @param CAppEnv $mbs_appenv
@@ -20,19 +18,19 @@ class CUserLoginLogControl extends CUniqRowControl{
 		if(empty(self::$instance)){
 			try {
 				$memconn = $mempool->getConnection();
-				self::$instance = new CUserLoginLogControl(
-						new CUserLoginLogTB($dbpool->getDefaultConnection(),
-								mbs_tbname('user_login_log'), 'user_id', $primarykey),
-						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CUserLoginLogControl') : null,
+				self::$instance = new CUserWalletWithdrawApplyCtr(
+						new CUniqRowOfTable($dbpool->getDefaultConnection(),
+								mbs_tbname('user_wallet_withdraw_apply'), 'uid', $primarykey),
+						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CUserWalletWithdrawApplyCtr') : null,
 						$primarykey
 				);
 			} catch (Exception $e) {
 				throw $e;
 			}
+		}else {
+			self::$instance->setPrimaryKey($primarykey);
 		}
 		return self::$instance;
 	}
 }
-
-
 ?>

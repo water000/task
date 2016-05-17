@@ -1,8 +1,9 @@
 <?php
-mbs_import('common', 'CMultiRowControl');
+mbs_import('common', 'CMultiRowControl', 'CImage');
 
 class CTaskAttachmentCtr extends CMultiRowControl {
 	private static $instance = null;
+	const SUB_DIR = 'task/';
 	
 	protected function __construct($db, $cache, $primarykey = null, $secondKey = null){
 		parent::__construct($db, $cache, $primarykey, $secondKey);
@@ -32,5 +33,6 @@ class CTaskAttachmentCtr extends CMultiRowControl {
 		
 		return self::$instance;
 	}
+	
 } 
 ?>

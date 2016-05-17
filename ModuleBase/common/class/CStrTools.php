@@ -156,6 +156,17 @@ class CStrTools {
 				break;
 		}
 	}
+	
+	//currency convert(string to integer), the DB store the integer(fen) 
+	static function currconv($s, $u=100){
+	    if(is_string($s)){
+	       return floatval($s) * $u;
+	    }else if(is_int($s)){
+	        return sprintf('%.2f', $s/$u);
+	    }else{
+	        return 0;
+	    }
+	}
 
 }
 

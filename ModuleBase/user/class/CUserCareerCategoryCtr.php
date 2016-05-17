@@ -1,16 +1,8 @@
-<?php 
-
-class CUserDepControl extends CUniqRowControl{
+<?php
+class CUserCareerCategoryCtr extends CUniqRowControl{
 
 	private static $instance = null;
 	
-	private static $DEP_MAP = array(
-		'',
-		'CX', //业务系统查询结果 
-		'YQ', //舆情报告
-		'SX'  //声像信息（视频）
-	);
-
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
 	}
@@ -26,10 +18,10 @@ class CUserDepControl extends CUniqRowControl{
 		if(empty(self::$instance)){
 			try {
 				$memconn = $mempool->getConnection();
-				self::$instance = new CUserDepControl(
+				self::$instance = new CUserCareerCategoryCtr(
 						new CUniqRowOfTable($dbpool->getDefaultConnection(),
-								mbs_tbname('user_department'), 'id', $primarykey),
-						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CUserDepControl') : null,
+								mbs_tbname('user_career_category'), 'id', $primarykey),
+						$memconn ? new CUniqRowOfCache($memconn, $primarykey, 'CUserCareerCategoryCtr') : null,
 						$primarykey
 				);
 			} catch (Exception $e) {
@@ -40,10 +32,5 @@ class CUserDepControl extends CUniqRowControl{
 		}
 		return self::$instance;
 	}
-	
-	static function txt2id($txt){
-		return array_search($txt, self::$DEP_MAP);
-	}
 }
-
 ?>

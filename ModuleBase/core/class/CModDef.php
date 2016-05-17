@@ -95,6 +95,7 @@ abstract class CModDef {
 	 *   	array(mod, ftr_name, isExitOnFilterUndefined, array('arg1'=>v1, 'arg2'=>v2, ...)),
 	 *   	...
 	 *   ),
+	 *   self::DEPEXT=>array('mysql', 'memcache', ...),
 	 * ) 
 	 */
 	abstract protected function desc();

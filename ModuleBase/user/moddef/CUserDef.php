@@ -12,6 +12,7 @@ class CUserDef extends CModDef {
 			self::FTR => array(
 				'checkLogin' =>array(self::G_CS=>'CUserSession', self::G_DC=>'检查用户是否登录'),
 			),
+		    self::DEPEXT => array('password_hash'),
 			self::TBDEF => array(
 			    'user_career_category' => '(
 			        id   int unsigned auto_increment not null,
@@ -25,14 +26,15 @@ class CUserDef extends CModDef {
 					id                   int unsigned auto_increment not null,
 				    name                 varchar(16) not null,
 			        avatar_path          varchar(40) not null,
-				    password             char(38) not null,
+				    password             varchar(128) not null,
 				    phone                char(11) not null,
-				    email                varchar(255) not null,
+				    email                varchar(64) not null,
 			        career_cid           int unsigned not null,
 			        city_no              int unsigned not null,
 				    reg_time             int unsigned not null,
 				    reg_ip               varchar(32) not null,
 					pwd_modify_count     int unsigned not null,
+			        status               tinyint not null,
 					primary key(id),
 					unique key(phone)
 				)',
@@ -83,6 +85,21 @@ class CUserDef extends CModDef {
 			    
 			),
 			self::PAGES => array(
+			    'reg' => array(
+			        self::P_TLE => '注册',
+			        self::G_DC  => '用户注册系统的入口',
+			        self::P_ARGS => array(
+			            'name'          => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'手机', self::PA_RNG=>'2, 16'),
+			            'phone'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'手机', self::PA_RNG=>'11, 16'),
+			            'password'      => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6, 32'),
+			            'captcha'       => array(self::PA_REQ=>0, self::G_DC=>'第一次登录没有验证码，当登录失败后会出现，客户端需要做相应处理', self::PA_RNG=>'4,5'),
+			            'email'         => array(self::PA_REQ=>0, self::G_DC=>'邮箱', self::PA_RNG=>'6, 64'),
+			            'career_cid'    => array(self::PA_REQ=>0, self::PA_TYP=>'integer', self::G_DC=>'职业id'),
+			            'city_no'       => array(self::PA_REQ=>0, self::G_DC=>'city编号', self::PA_TYP=>'integer'),
+			            'avatar'        => array(self::PA_REQ=>0, self::G_DC=>'头像', self::PA_TYP=>'file'),
+			        ),
+			        self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG", data:{user_id:1, avatar:"url"}',
+			    ),
 				'login' => array(
 					self::P_TLE => '登录',
 					self::G_DC  => '用户登录系统的入口',
@@ -91,10 +108,8 @@ class CUserDef extends CModDef {
 						'password'      => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6, 32'),
 						'captcha'       => array(self::PA_REQ=>0, self::G_DC=>'第一次登录没有验证码，当登录失败后会出现，客户端需要做相应处理', self::PA_RNG=>'4,5'),
 						'remember_me'   => array(self::PA_REQ=>0, self::G_DC=>'记住我！延长用户登录的有效期'),
-						'IMEI'          => array(self::PA_REQ=>0, self::G_DC=>'当系统中记录时，需要提供。主要用于检测移动设备的有效性'),
-						'IMSI'          => array(self::PA_REQ=>0, self::G_DC=>'同IMEI'),
 					),
-					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG", data:{user:{详见user_info表中字段列表}, token:32为的字符串}',
+					self::P_OUT => '{retcode:"SUCCESS/ERROR_MSG", data:{user:{详见#user_info#表中字段列表}, token:32位的字符串}',
 				),
 				'logout' => array(
 					self::P_TLE => '注销',
@@ -109,53 +124,14 @@ class CUserDef extends CModDef {
 					self::P_ARGS => array(
 						'name'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2, 17'),
 						'password'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6, 17'),
-						'organization' => array(self::PA_REQ=>0, self::G_DC=>'单位', self::PA_RNG=>'2, 32'),
 						'phone'        => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'手机', self::PA_RNG=>'11, 12'),
 						'email'        => array(self::PA_REQ=>0, self::G_DC=>'邮箱', self::PA_RNG=>'6, 255'),
-						'IMEI'         => array(self::PA_REQ=>0, self::G_DC=>'IMEI', self::PA_RNG=>'6, 32'),
-						'IMSI'         => array(self::PA_REQ=>0, self::G_DC=>'IMSI', self::PA_RNG=>'6, 32'),
-						'class_id'     => array(self::PA_REQ=>0, self::G_DC=>'分类id'),
-						'VPDN_name'    => array(self::PA_REQ=>0, self::G_DC=>'VPDN名称', self::PA_RNG=>'6, 32'),
-						'VPDN_pass'    => array(self::PA_REQ=>0, self::G_DC=>'VPDN密码', self::PA_RNG=>'6, 32'),
-						'class_id'     => array(self::PA_REQ=>0, self::G_DC=>'分类id', self::PA_TYP=>'integer', self::PA_RNG=>'1, 4'),
 					),
 				),
 				'list' => array(
 					self::P_TLE => '用户管理',
 					self::G_DC  => '用户的列表，也可以搜索用户(phone, name, email)，都是精确查询，不支持模糊查询',
 					self::P_MGR => true
-				),
-				'class' => array(
-					self::P_TLE => '分类管理',
-					self::G_DC  => '获取、删除用户分类',
-					self::P_MGR => true,
-					
-				),
-				'class_edit' => array(
-					self::P_TLE => '分类编辑',
-					self::G_DC => '对分类进行批量编辑',
-					self::P_MGR => true,
-					self::P_NCD => true,
-					self::P_ARGS => array(
-						'name'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2, 16'),
-						'code'         => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'编码', self::PA_RNG=>'2, 32'),
-					),
-				),
-				'department' => array(
-					self::P_TLE => '部门管理',
-					self::G_DC => '添加、删除部门，及获取列表',
-					self::P_MGR => true,
-					
-				),
-				'dep_edit' => array(
-					self::P_TLE => '部门编辑',
-					self::G_DC => '对部门进行批量编辑, 以及加入指定用户到当前部门',
-					self::P_MGR => true,
-					self::P_NCD => true,
-					self::P_ARGS => array(
-						'name'     => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'名称', self::PA_RNG=>'2,16'),
-						'password' => array(self::PA_REQ=>1, self::PA_EMP=>0, self::G_DC=>'密码', self::PA_RNG=>'6,'),
-					)
 				),
 				'myinfo'  => array(
 					self::P_TLE => '我的信息',
@@ -173,52 +149,37 @@ class CUserDef extends CModDef {
 			),
 		);
 	}
-	
-	const BANNED_DEL_MAX_CLASS_ID = 3;
-	
+		
 	function install($dbpool, $mempool=null){
 		parent::install($dbpool, $mempool);
 		
-		mbs_import('', 'CUserControl', 'CUserClassControl', 'CUserDepControl');
+		mbs_import('', 'CUserInfoCtr');
 		try {
-			$ins = CUserControl::getInstance(self::$appenv, $dbpool, $mempool);
+			$ins = CUserInfoCtr::getInstance(self::$appenv, $dbpool, $mempool);
 			$uid = $ins->add(array(
 				'id'        => 1,
 				'name'      => 'admin',
-				'password'  => CUserControl::formatPassword('123321'),
+				'password'  => CUserInfoCtr::passwordFormat('123321'),
 				'phone'     => '13666666666',
 				'reg_time'  => time(),
 				'reg_ip'    => self::$appenv->item('client_ip')
 			));
 			$uid = $ins->add(array(
-				'id'        => 2,
+				'id'        => 10,
 				'name'      => 'developer',
-				'password'  => CUserControl::formatPassword('123123'),
+				'password'  => CUserInfoCtr::passwordFormat('123123'),
 				'phone'     => '13888888888',
 				'reg_time'  => time(),
 				'reg_ip'    => self::$appenv->item('client_ip')
 			));
-			
-			//由于系统的要求，分类和部门的id需要一一对应.且在CUserDepControl中的$DEP_MAP的内容也是遵循这里的顺序
-			$uc = CUserClassControl::getInstance(self::$appenv, $dbpool, $mempool);
-			$pre_class = array(
-				array('id' => 1, 'name' => '干警', 'code' => 'POLICE', 'create_time' => time()),
-				array('id' => 2, 'name' => '厅、处领导', 'code' => 'TC_LDR', 'create_time' => time()),
-				array('id' => 3, 'name' => '省委领导', 'code' => 'PV_LDR', 'create_time' => time()),
-			);
-			foreach($pre_class as $c){
-				$uc->add($c);
-			}
-			
-			$ud = CUserDepControl::getInstance(self::$appenv, $dbpool, $mempool);
-			$pre_dep = array(
-				array('id' => 1, 'name' => '业务系统查询结果', 'password'=>'123123', 'edit_time'=>time()),
-				array('id' => 2, 'name' => '舆情报告', 'password'=>'123123', 'edit_time'=>time()),
-				array('id' => 3, 'name' => '声像信息（视频）', 'password'=>'123123', 'edit_time'=>time()),
-			);
-			foreach($pre_dep as $d){
-				$ud->add($d);
-			}
+			$uid = $ins->add(array(
+			    'id'        => 99,
+			    'name'      => 'tester',
+			    'password'  => CUserInfoCtr::passwordFormat('123123'),
+			    'phone'     => '13999999999',
+			    'reg_time'  => time(),
+			    'reg_ip'    => self::$appenv->item('client_ip')
+			));
 		} catch (Exception $e) {
 			throw $e;
 		}

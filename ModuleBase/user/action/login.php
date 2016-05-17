@@ -49,8 +49,9 @@ if(isset($_REQUEST['phone'])){
 	
 	$error_code = 'LOGIN_FAILED';
 	if(empty($error)){
-		mbs_import('', 'CUserControl');
-		$uc = CUserControl::getInstance($mbs_appenv, CDbPool::getInstance(), CMemcachedPool::getInstance());
+		mbs_import('', 'CUserInfoCtr ');
+		$uc = CUserInfoCtr::getInstance($mbs_appenv, CDbPool::getInstance(), 
+		    CMemcachedPool::getInstance());
 		$rs = null;
 		try {
 			$rs = $uc->search(array('phone'=>$_REQUEST['phone']));
@@ -62,24 +63,10 @@ if(isset($_REQUEST['phone'])){
 		}
 		else{
 			$rs = $rs[0];
-			if(!CUserControl::checkPassword($_REQUEST['password'], $rs['password'])){
+			if(!CUserInfoCtr::checkPassword($_REQUEST['password'], $rs['password'])){
 				$error[] = $mbs_appenv->lang('invalid_password');
 			}
-			else if(!empty($rs['IMEI'])){
-				if(isset($_REQUEST['IMEI']) && isset($_REQUEST['IMSI']) 
-					&& $_REQUEST['IMEI'] == $rs['IMEI'] && $_REQUEST['IMSI'] == $rs['IMSI'])
-				{
-// 					if(0 == $rs['pwd_modify_count']){ // for app only
-// 						$error[] = $mbs_appenv->lang('user_must_modify_pwd');
-// 						$error_code = 'USER_MUST_MODIFY_PWD_ON_FIRST_LOGIN';
-// 					}
-				}
-				else{
-					$error[] = $mbs_appenv->lang('invalid_device');
-				}
-			}
-			
-			if(empty($error)){
+			else{
 				if(isset($_COOKIE[ini_get('session.name')])){
 					session_regenerate_id();
 				}
@@ -89,23 +76,6 @@ if(isset($_REQUEST['phone'])){
 				$mbs_appenv->echoex(array('user'=>$rs, 'token'=>$sid,
 						'allow_comment'=>$rs['class_id']>1), '', REDIRECT_AFTER_LOGIN);
 				
-				mbs_import('', 'CUserLoginLogControl');
-				$user_llog = CUserLoginLogControl::getInstance($mbs_appenv, 
-						CDbPool::getInstance(), CMemcachedPool::getInstance(), $rs['id']);
-				$llog = $user_llog->get();
-				if(!empty($llog) && !empty($llog['token']) && $llog['token'] != $sid){//delete the session which previous user logined
-					session_write_close();
-					
-					if('files' == ini_get('session.save_handler')){
-						$sess_path = session_save_path();
-						$sess_path = empty($sess_path) ? getenv('TMP') : $sess_path;
-						@unlink($sess_path.'/sess_'.$llog['token']);
-					}else{
-						session_id($llog['token']);
-						session_destroy();
-					}
-				}
-				$user_llog->add(array('user_id'=>$rs['id'], 'token'=>$sid, 'time'=>time()));
 				exit(0);
 			}
 		}
