@@ -29,7 +29,7 @@ class CPaymentDef extends CModDef {
 					primary key(id),
 					key(user_id)
 				)',
-			    'pm_unionpay_to_account' => '(
+			    'payment_unionpay_to_account' => '(
 			        order_id, 
 			        acc_no, 
 			        acc_type, 

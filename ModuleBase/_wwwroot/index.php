@@ -23,9 +23,8 @@ $mbs_cur_moddef = $mbs_cur_actiondef = null;
 function mbs_error_log($errno, $msg, $file, $lineno){
 	global $mbs_appenv;
 	//U: marking as user level
-	$error = sprintf("U%d[%s]%s.%s:'%s'(%s:%d)\n",
+	$error = sprintf("U%d#%s.%s#: '%s'(%s:%d)\n",
 	        $errno,
-			date('Y/m/d H:i:s'),
 			$mbs_appenv->item('cur_mod'),
 			$mbs_appenv->item('cur_action'),
 			$msg,
@@ -33,7 +32,7 @@ function mbs_error_log($errno, $msg, $file, $lineno){
 	        $lineno
 	);
 	if(RTM_DEBUG)
-		$mbs_appenv->echoex($error, 'SYS_ERROR');
+		$mbs_appenv->echoex('['.date('Y/m/d H:i:s e').']'.$error, 'SYS_ERROR');
 	error_log($error, 0);
 	if(E_USER_ERROR == $errno)
 	    exit(1);

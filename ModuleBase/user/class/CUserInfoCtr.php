@@ -2,6 +2,8 @@
 class CUserInfoCtr extends CUniqRowControl{
 
 	private static $instance = null;
+	private static $searchKeys = array('phone'=>'', 'id'=>'', 'name'=>'');
+	const USER_AVATAR_SUBDIR = 'user_avater';
 	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
@@ -31,6 +33,22 @@ class CUserInfoCtr extends CUniqRowControl{
 			self::$instance->setPrimaryKey($primarykey);
 		}
 		return self::$instance;
+	}
+	
+	/**
+	 *
+	 * @param array $keyval
+	 * @throws Exception
+	 * @return return the result if $keyval exists, else return NULL
+	 */
+	function search($keyval){
+	    $keyval = array_intersect_key($keyval, self::$searchKeys);
+	    try{
+	        return $this->oDB->search($keyval);
+	    }catch (Exception $e){
+	        throw $e;
+	    }
+	    return null;
 	}
 	
 	static function passwordFormat($pwd){

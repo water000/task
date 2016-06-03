@@ -1,18 +1,18 @@
 <?php 
 
-mbs_import('', 'CUserControl', 'CUserSession');
+mbs_import('', 'CUserInfoCtr', 'CUserSession');
 
 $usess = new CUserSession();
 list($sess_uid, ) = $usess->get();
 
-$user_ins = CUserControl::getInstance($mbs_appenv,
+$user_ins = CUserInfoCtr::getInstance($mbs_appenv,
 		CDbPool::getInstance(), CMemcachedPool::getInstance(), $sess_uid);
 
 if(isset($_REQUEST['pwd1'])){
 	$err = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 	if(empty($err)){
 		$uinfo = $user_ins->get();
-		if(!CUserControl::checkPassword($_REQUEST['src_pwd'], $uinfo['password'])){
+		if(!CUserInfoCtr::checkPassword($_REQUEST['src_pwd'], $uinfo['password'])){
 			$mbs_appenv->echoex($mbs_appenv->lang('invalid_password'), 'USER_MYINFO_PWD_INCORRECT');
 			exit(0);
 		}
@@ -20,7 +20,7 @@ if(isset($_REQUEST['pwd1'])){
 			$mbs_appenv->echoex($mbs_appenv->lang('pwd_diff_or_error'), 'USER_MYINFO_PWD_DIFF');
 			exit(0);
 		}
-		$req_args['password'] = CUserControl::formatPassword($_REQUEST['pwd1']);
+		$req_args['password'] = CUserInfoCtr::formatPassword($_REQUEST['pwd1']);
 		$req_args['pwd_modify_count'] = 1;
 		$user_ins->set($req_args);
 		$mbs_appenv->echoex(null);

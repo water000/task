@@ -1,13 +1,13 @@
 <?php
 
 mbs_import('privilege', 'CPrivGroupControl', 'CPrivUserControl');
-mbs_import('user', 'CUserControl');
+mbs_import('user', 'CUserInfoCtr');
 
 $priv_group = CPrivGroupControl::getInstance($mbs_appenv,
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
 $all = $priv_group->getDB()->listAll()->fetchAll();
 
-$user_ctr = CUserControl::getInstance($mbs_appenv,
+$user_ctr = CUserInfoCtr::getInstance($mbs_appenv,
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
 
 $priv_user_ctr = CPrivUserControl::getInstance($mbs_appenv,

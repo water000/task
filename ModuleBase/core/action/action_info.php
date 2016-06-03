@@ -12,7 +12,7 @@ if(isset($_REQUEST['mod']) && !empty($_REQUEST['mod'])){
 
 function _parse_tb($txt, $mod){
     static $TPL = <<<END
-    <a href="javascript:;" onclick="open('', 'TBNAME', 'width=800,height=600,toolbar=no,menubar=no,location=no, status=no').document.body.innerHTML='TBDEF';">TBNAME</a>';
+    <a href="javascript:;" onclick="_pwin(this.innerHTML, 'TBDEF', this);event.cancelBubble=true;">TBNAME</a>
 END;
     if(preg_match_all('/#([^#]+)#/', $txt, $matches) > 0){
         $moddef = mbs_moddef($mod);
@@ -22,7 +22,7 @@ END;
                 $tb = explode("\n", htmlspecialchars($tbdef[$matches[1][$i]], ENT_QUOTES));
                 array_walk($tb, function(&$item){$item=CStrTools::txt2html(trim($item));});
                 $txt = str_replace($matches[0][$i], 
-                    str_replace(array('TBNAME', 'TBDEF'), array($matches[1][$i], implode('<br/>', $tb)), $TPL), 
+                    str_replace(array('TBNAME', 'TBDEF'), array($matches[1][$i], implode("<br/>", $tb)), $TPL), 
                     $txt);
             }
         }
@@ -96,6 +96,7 @@ td{word-wrap:break-word;word-break:break-all;}
 .even{background-color:#eee;}
 h2{text-align:center;}
 </style>
+
 </head>
 <body style="background-color:#eee;">
 <div class="warpper" >
@@ -146,7 +147,7 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 					<span class=title>[<?php echo $all_actions[$i]['_mod']?>.<?php echo $all_actions[$i]['_name']?>]
 						<?php echo CStrTools::txt2html($def[CModDef::P_TLE])?></span>
 				</div>
-				<div class=desc><?php echo CStrTools::txt2html(CStrTools::cutstr($def[CModDef::G_DC], 45, $mbs_appenv->item('charset')))?></div>
+				
 				<div class="action" style="display: none;">
 					<p class=table_title>Basic Info</p>
 					<table cellspacing=0 class=basic_info>
@@ -184,7 +185,22 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 	</div>
 	<div class=footer></div>
 </div>
+<script type="text/javascript" src="/static/js/global.js"></script>
 <script type="text/javascript">
+
+var g_tbwin = [];
+function _pwin(title, content, node){
+	if(!g_tbwin[title]){
+		var d = document.createElement("div");
+		d.style.cssText = "padding:8px 5px;background-color:#fff9ea;";
+		d.innerHTML = content;
+		g_tbwin[title] = popwin("", d);
+		g_tbwin[title].style.cssText = "width: auto;height:auto;";
+		g_tbwin[title].autoclose().noclose();
+	}
+	g_tbwin[title].show().around(node);
+}
+
 var g_curAction = null, defClass = null, 
 	g_rightAction=document.getElementById("IDD_RIGHT").childNodes[0];
 var childs = document.getElementById("IDD_LEFT").childNodes, i;

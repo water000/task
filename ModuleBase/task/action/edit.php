@@ -41,7 +41,7 @@ if(isset($_REQUEST['id'])){
             'cate_id'            => $info['cate_id'],
             'price'              => CStrTools::currconv($info['price']),
             'pub_uid'            => $sess_uid,
-            'pub_time'           => time(),
+            'pub_ts'             => time(),
         );
         $task_ctr = CTaskInfoCtr::getInstance($mbs_appenv,
             CDbPool::getInstance(), CMemcachedPool::getInstance());

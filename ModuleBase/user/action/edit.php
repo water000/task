@@ -1,7 +1,7 @@
 <?php 
 $page_title = $mbs_appenv->lang(isset($_REQUEST['id']) ? 'edit_info' : 'record_info');
 
-mbs_import('', 'CUserControl', 'CUserClassControl');
+mbs_import('', 'CUserInfoCtr', 'CUserClassControl');
 
 $uclass_ctr = CUserClassControl::getInstance($mbs_appenv,
 		CDbPool::getInstance(), CMemcachedPool::getInstance());
@@ -18,7 +18,7 @@ if(isset($_REQUEST['password']) && $_REQUEST['password'] == $user_def_pwd){
 $user = array_fill_keys(array_keys($mbs_cur_actiondef[CModDef::P_ARGS]), '');
 
 if(isset($_REQUEST['id'])){
-	$user_ins = CUserControl::getInstance($mbs_appenv,
+	$user_ins = CUserInfoCtr::getInstance($mbs_appenv,
 			CDbPool::getInstance(), CMemcachedPool::getInstance());
 	
 	if(isset($_REQUEST['delete'])){
@@ -39,7 +39,7 @@ if(isset($_REQUEST['id'])){
 		$user = array_intersect_key($_REQUEST, $user);
 		$exclude = array();
 		if(!empty($user['password'])){
-			$user['password']= CUserControl::formatPassword($user['password']);
+			$user['password']= CUserInfoCtr::formatPassword($user['password']);
 		}else{
 			unset($user['password']);
 			$exclude[] = 'password';
@@ -67,7 +67,7 @@ else if(isset($_REQUEST['__timeline'])){
 	$new_user = array_intersect_key($_REQUEST, $user);
 	$error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 	if(empty($error)){
-		$user_ins = CUserControl::getInstance($mbs_appenv,
+		$user_ins = CUserInfoCtr::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance());
 		$ret = $user_ins->add($new_user);
 		if(empty($ret)){

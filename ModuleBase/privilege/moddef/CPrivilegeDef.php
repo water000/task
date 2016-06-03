@@ -24,21 +24,22 @@ class CPrivilegeDef extends CModDef {
 			),
 			self::TBDEF => array(
 				'priv_group' => "(
-		  			id int unsigned not null auto_increment,
-					name varchar(16) not null default '',
-					type tinyint not null default 0, -- 1:allow , 2:deny
-					priv_list text,
+		  			id         int unsigned not null auto_increment,
+					name       varchar(16) not null default '',
+					type       tinyint not null default 0, -- 1:allow , 2:deny
+					priv_list  text not null,
 					creator_id int unsigned not null default 0,
-					create_ts int unsigned not null default 0,
+					create_ts  int unsigned not null default 0,
 					primary key(id),
 					unique key(name)
 		  		)",
 				'priv_user' => "(
-					user_id int unsigned not null default 0,
-					creator_id int unsigned not null default 0, -- creator_id add priv_group_id to user_id
+					user_id       int unsigned not null default 0,
+					creator_id    int unsigned not null default 0, -- creator_id add priv_group_id to user_id
 					priv_group_id int unsigned not null default 0,
-					join_ts int unsigned not null default 0,
-					last_edit_ts int unsigned not null default 0,
+					join_ts       int unsigned not null default 0,
+					last_edit_ts  int unsigned not null default 0,
+			        note          varchar(16) not null,
 					unique key(user_id),
 					key(priv_group_id)
 				)"
@@ -101,28 +102,30 @@ class CPrivilegeDef extends CModDef {
 		);
 	}
 	
-	function install($dbpool, $mempool=null){
-		parent::install($dbpool, $mempool);
-		
+	function install($dbpool, $mempool=null){	
 		mbs_import('', 'CPrivGroupControl', 'CPrivUserControl');
 		try {
-			$ins = CPrivGroupControl::getInstance(self::$appenv, $dbpool, $mempool);
-			$pgid = $ins->add(array(
-				'id'        => 1,
-				'name'      => 'topmost',
-				'type'      => self::TYPE_ALLOW,
-				'priv_list' => CPrivGroupControl::encodePrivList(array(CPrivGroupControl::PRIV_TOPMOST=>'')),
-				'create_ts' => time()
-			));
-			
-			$ins = CPrivUserControl::getInstance(self::$appenv, $dbpool, $mempool, 1);
-			$ins->setSecondKey(1);
-			$ins->delNode();
-			$ins->add(array(
-				'user_id'       => 1,
-				'priv_group_id' => 1,
-				'join_ts'       => time(),
-			));
+		    $ret = parent::install($dbpool, $mempool);
+		    if(empty($ret)){
+    			$ins = CPrivGroupControl::getInstance(self::$appenv, $dbpool, $mempool);
+    			$pgid = $ins->add(array(
+    				'id'        => 1,
+    				'name'      => 'topmost',
+    				'type'      => self::TYPE_ALLOW,
+    				'priv_list' => CPrivGroupControl::encodePrivList(array(CPrivGroupControl::PRIV_TOPMOST=>'')),
+    				'create_ts' => time()
+    			));
+    			
+    			$ins = CPrivUserControl::getInstance(self::$appenv, $dbpool, $mempool, 1);
+    			$ins->setSecondKey(1);
+    			$ins->delNode();
+    			$ins->add(array(
+    				'user_id'       => 1,
+    				'priv_group_id' => 1,
+    				'join_ts'       => time(),
+    			));
+		    }
+		    return $ret;
 		} catch (Exception $e) {
 			throw $e;
 		}

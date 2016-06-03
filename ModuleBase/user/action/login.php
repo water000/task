@@ -49,7 +49,7 @@ if(isset($_REQUEST['phone'])){
 	
 	$error_code = 'LOGIN_FAILED';
 	if(empty($error)){
-		mbs_import('', 'CUserInfoCtr ');
+		mbs_import('', 'CUserInfoCtr');
 		$uc = CUserInfoCtr::getInstance($mbs_appenv, CDbPool::getInstance(), 
 		    CMemcachedPool::getInstance());
 		$rs = null;
@@ -63,7 +63,8 @@ if(isset($_REQUEST['phone'])){
 		}
 		else{
 			$rs = $rs[0];
-			if(!CUserInfoCtr::checkPassword($_REQUEST['password'], $rs['password'])){
+			var_dump($_REQUEST['password'], $rs['password']);
+			if(!CUserInfoCtr::passwordVerify($_REQUEST['password'], $rs['password'])){
 				$error[] = $mbs_appenv->lang('invalid_password');
 			}
 			else{
@@ -73,8 +74,7 @@ if(isset($_REQUEST['phone'])){
 				
 				$us->set($rs['id'], $rs);
 				$sid = session_id();
-				$mbs_appenv->echoex(array('user'=>$rs, 'token'=>$sid,
-						'allow_comment'=>$rs['class_id']>1), '', REDIRECT_AFTER_LOGIN);
+				$mbs_appenv->echoex(array('user'=>$rs, 'token'=>$sid), '', REDIRECT_AFTER_LOGIN);
 				
 				exit(0);
 			}

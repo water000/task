@@ -1,5 +1,16 @@
 <?php
 
+define('DEBUG', true);
+
+include_once dirname(__FILE__) . '/union/secureUtil.php';
+include_once dirname(__FILE__) . '/union/common.php';
+
+if(defined('DEBUG')){
+    include_once dirname(__FILE__) . '/union/SDKConfig.test.php';
+}else{
+    include_once dirname(__FILE__) . '/union/SDKConfig.php';
+}
+
 class CUnionPay extends CMultiRowControl {
 	private static $instance = null;
 	

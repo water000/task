@@ -20,18 +20,20 @@ class CUserDef extends CModDef {
 			        primary key(id)
 			    )',
 			    'user_city_dict' => '(
-			   
+			        id   int unsigned auto_increment not null,
+				    name varchar(64) not null,
+			        primary key(id) 
 			    )',
 				'user_info' => '(
 					id                   int unsigned auto_increment not null,
 				    name                 varchar(16) not null,
-			        avatar_path          varchar(40) not null,
+			        avatar_path          varchar(64) not null,
 				    password             varchar(128) not null,
 				    phone                char(11) not null,
 				    email                varchar(64) not null,
 			        career_cid           int unsigned not null,
 			        city_no              int unsigned not null,
-				    reg_time             int unsigned not null,
+				    reg_ts               int unsigned not null,
 				    reg_ip               varchar(32) not null,
 					pwd_modify_count     int unsigned not null,
 			        status               tinyint not null,
@@ -54,8 +56,8 @@ class CUserDef extends CModDef {
 			        fee        int unsigned not null,
 			        change_ts  int unsigned not null,
 			        primary key(id),
-			        key(uid),
-			        key(other_uid)
+			        key(pay_uid),
+			        key(payee_uid)
 			    )',
 			    // insert the record to 'user_wallet_withdraw_history' if successful and delete it after user visit
 			    'user_wallet_withdraw_apply' => '(
@@ -161,7 +163,7 @@ class CUserDef extends CModDef {
 				'name'      => 'admin',
 				'password'  => CUserInfoCtr::passwordFormat('123321'),
 				'phone'     => '13666666666',
-				'reg_time'  => time(),
+				'reg_ts'    => time(),
 				'reg_ip'    => self::$appenv->item('client_ip')
 			));
 			$uid = $ins->add(array(
@@ -169,7 +171,7 @@ class CUserDef extends CModDef {
 				'name'      => 'developer',
 				'password'  => CUserInfoCtr::passwordFormat('123123'),
 				'phone'     => '13888888888',
-				'reg_time'  => time(),
+				'reg_ts'    => time(),
 				'reg_ip'    => self::$appenv->item('client_ip')
 			));
 			$uid = $ins->add(array(
@@ -177,7 +179,7 @@ class CUserDef extends CModDef {
 			    'name'      => 'tester',
 			    'password'  => CUserInfoCtr::passwordFormat('123123'),
 			    'phone'     => '13999999999',
-			    'reg_time'  => time(),
+			    'reg_ts'    => time(),
 			    'reg_ip'    => self::$appenv->item('client_ip')
 			));
 		} catch (Exception $e) {

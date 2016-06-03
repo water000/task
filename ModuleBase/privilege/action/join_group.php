@@ -1,7 +1,7 @@
 <?php
 
 mbs_import('privilege', 'CPrivGroupControl', 'CPrivUserControl');
-mbs_import('user', 'CUserControl');
+mbs_import('user', 'CUserInfoCtr');
 
 $error = $mbs_cur_moddef->checkargs($mbs_appenv->item('cur_action'));
 $priv_info = null;
@@ -46,7 +46,7 @@ if(empty($error)){
 		
 		$pu_list = $pu->get();
 		
-		$usr = CUserControl::getInstance($mbs_appenv,
+		$usr = CUserInfoCtr::getInstance($mbs_appenv,
 				CDbPool::getInstance(), CMemcachedPool::getInstance());
 	} catch (Exception $e) {
 		$error[] = $e->getMessage();

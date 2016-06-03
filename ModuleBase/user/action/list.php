@@ -1,8 +1,8 @@
 <?php 
 
-mbs_import('', 'CUserControl', 'CUserClassControl');
+mbs_import('', 'CUserInfoCtr', 'CUserClassControl');
 
-$user_ins = CUserControl::getInstance($mbs_appenv,
+$user_ins = CUserInfoCtr::getInstance($mbs_appenv,
 	CDbPool::getInstance(), CMemcachedPool::getInstance());
 
 $uclass_ctr = CUserClassControl::getInstance($mbs_appenv, 

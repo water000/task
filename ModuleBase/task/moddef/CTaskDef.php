@@ -25,6 +25,13 @@ class CTaskDef extends CModDef {
                     status     tinyint not null,
                     primary key(dep_id, member_uid)
                 )',
+                'task_dep_spec_user' => '(
+                    dep_id     int unsigned not null,
+                    spec_uid   int unsigned not null,
+                    join_time  int unsigned not null,
+                    status     tinyint not null,
+                    primary key(dep_id, spec_uid)
+                )',
                 'task_dep_accountant' => '(
                     dep_id    int unsigned not null, 
                     acnt_uid  int unsigned not null, 
@@ -47,11 +54,13 @@ class CTaskDef extends CModDef {
 				    title                varchar(16) not null,
 				    `desc`               varchar(64) not null,
                     contain_attachment   tinyint not null,  -- no=0, yes=1
+                    max_submits          tinyint unsigned not null,  -- auto closed if accepted submits equal to max_submits
                     cate_id              int unsigned not null,
                     price                int unsigned not null,
 				    pub_uid              int unsigned not null,
-                    pub_time             int unsigned not null,
-                    edit_time            int unsigned not null,
+                    pub_ts               int unsigned not null,
+                    edit_ts              int unsigned not null,
+                    end_ts               int unsigned not null, -- default to 1 month later
                     status               int unsigned not null, -- ST_OPENING=0, ST_CLOSED=1
 					primary key(id),
                     key(pub_uid)
@@ -75,7 +84,8 @@ class CTaskDef extends CModDef {
                     content            varchar(64) not null, 
                     contain_attachment tinyint not null, -- no=0, yes=1
                     comment            varchar(32) not null,
-                    -- ST_SUBMITED=0, ST_SAW=10, ST_USED=11, ST_UNUSED=12, ST_TO_PAY=20, ST_PAIED_OK=21 , ST_PAID_ERR=22, ST_SUB_DEL=30, ST_SYS_DEL=31
+                    -- ST_SUBMITED=0, ST_SAW=10, ST_USED=11, ST_UNUSED=12, ST_TO_PAY=20, 
+                    -- ST_PAIED_OK=21 , ST_PAID_ERR=22, ST_SUB_DEL=30, ST_SYS_DEL=31
                     status             tinyint not null, 
                     primary key(id),
                     key(task_id),
@@ -146,9 +156,9 @@ class CTaskDef extends CModDef {
                     self::P_TLE => '任务详情',
                     self::G_DC  => '',
                     self::P_ARGS => array(
-                        'task_id' => array(self::PA_REQ=>1, self::G_DC=>'任务id', self::PA_TYP=>'integer'),
+                        'id' => array(self::PA_REQ=>1, self::G_DC=>'任务id', self::PA_TYP=>'integer'),
                     ),
-                    self::P_OUT => '{id:1, 详见task_info表}'
+                    self::P_OUT => '{id:1, 详见#task_info#表}'
                 ),
                 'opening_list' => array(
                     self::P_TLE => '正打开的任务列表',
