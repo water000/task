@@ -215,7 +215,7 @@ function popwin(title, body){
 	pw.mask=function(){mask_win=document.createElement("div");mask_win.style.display="none";mask_win.className="popwin-mask";document.body.appendChild(mask_win);bind(mask_win, "click", function(){pw.hide();});return pw;}
 	pw.bdheight=function(){pw.childNodes[1].style.height = (pw.offsetHeight-pw.childNodes[0].offsetHeight) + "px";}
 	pw.autoclose=function(){bind(document.body, 'click', function(e){var ev=e||event, en=ev.target||ev.srcElement; if(childof(en, pw))return; pw.hide();}); return pw;}
-	pw.around=function(node){var dd=document.documentElement, dw=dd.clientWidth, dh=dd.clientHeight, p=nodepos(node), x=p[1], y=p[0]; if(dw<p[1]+pw.offsetWidth) x=dw-pw.offsetWidth;if(dh<p[0]+pw.offsetHeight) y-=pw.offsetHeight;pw.style.left=x+"px";pw.style.top=y+"px"; return pw;}
+	pw.around=function(node){var dd=document.documentElement, dw=dd.clientWidth-10, dh=dd.clientHeight-10, p=nodepos(node), x=p[1], y=p[0]; if(dw<x+pw.offsetWidth) x=dw-pw.offsetWidth;y=dh<y+node.offsetHeight+pw.offsetHeight?y-pw.offsetHeight:y+node.offsetHeight;pw.style.left=x+"px";pw.style.top=y+"px"; return pw;}
 	pw.noclose=function(){pw.childNodes[0].style.display="none";return pw;}
 	pw.body(body);
 	pw.childNodes[0].getElementsByTagName("a")[0].onclick=function(e){pw.onclose();}
