@@ -49,7 +49,7 @@ h1 span{font-size:12px;}
 <body>
 <div id="IDD_WIN" class="pure-g">
     <h1>TAIL PHP ERROR LOG</h1>
-    <div style="background-color:white; padding:8px 6px;margin:5px 0;"><?php echo CStrTools::txt2html($tail)?></div>
+    <div style="background-color:white; padding:8px 6px;margin:5px 0;word-break: break-all;"><?php echo CStrTools::txt2html($tail)?></div>
     <?php if(!empty($error)){ ?><div class=error><?php echo $error;?></div><?php } ?>
     <div>
         <span style="float: left;">path:<?php echo $log_path?></span>

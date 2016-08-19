@@ -1,24 +1,25 @@
 <?php 
 
-mbs_import('user', 'CUserSession');
+mbs_import('user', 'CUserSession', 'CUserInfoCtr');
 $us = new CUserSession();
 $user_id = $us->checkLogin();
 if(empty($user_id)){
 	echo $us->getError();
 	exit(0);
 }
+$user_ctr = CUserInfoCtr::getInstance($mbs_appenv, 
+    CDbPool::getInstance(), CMemcachedPool::getInstance(), $user_id);
+$uinfo = $user_ctr->get();
+
 
 mbs_import('privilege', 'CPrivUserControl', 'CPrivGroupControl');
 
 $priv_info = null;
-try {
-	$pu = CPrivUserControl::getInstance($mbs_appenv,
-			CDbPool::getInstance(), CMemcachedPool::getInstance());
-	$priv_info = $pu->getDB()->search(array('user_id' => $user_id));
-} catch (Exception $e) {
-	echo $mbs_appenv->lang('db_exception', 'common');
-	exit();
-}
+
+$pu = CPrivUserControl::getInstance($mbs_appenv,
+		CDbPool::getInstance(), CMemcachedPool::getInstance());
+$priv_info = $pu->getDB()->search(array('user_id' => $user_id));
+
 if(empty($priv_info) || !($priv_info = $priv_info->fetchAll(PDO::FETCH_ASSOC))){
 	echo 'access denied(1)';
 	exit(0);
@@ -35,25 +36,22 @@ if(empty($priv_list)){
 
 $priv_group = CPrivGroupControl::decodePrivList($priv_list['priv_list']);
 
+$mod_entry = array(
+	'task.mgr' => '&#xe604;',
+	'task.dep_mgr' => '&#xe606;',
+
+	'wallet.withdraw_mgr'    => '&#xe60b;',
+	'wallet.recharge_mgr'    => '&#xe607;',
+	
+	'news.cate_mgr'          => '&#xe609;',
+		
+	'privilege.group_list'   => '&#xe602;',
+);
 
 function _fn_icon($mod, $ac){
-	static $icon_map = array(
-		'info.edit' => 'ico1',
-		'info.list' => 'ico2',
-
-		'info_push.push'         => 'ico3',
-		'info_push.push_list'    => 'ico4',
-		'info_push.comment_list' => 'ico5',
-		
-		'user.list'              => 'ico6',
-		'user.class'             => 'ico7',
-		'user.department'        => 'ico8',
-			
-		'privilege.group_list'   => 'ico11',
-		'privilege.edit_group'   => 'ico12',
-		'privilege.rematch_action' => 'ico13',
-	);
-	echo isset($icon_map[$mod.'.'.$ac]) ?  '<i class="ico '. $icon_map[$mod.'.'.$ac]. '"></i>' : '';
+    global $mod_entry;
+    var_dump($mod_entry);
+	echo isset($mod_entry[$mod.'.'.$ac]) ?  '<i class="iconfont">'. $mod_entry[$mod.'.'.$ac]. '</i>' : '';
 }
 
 ?>
@@ -74,6 +72,9 @@ function _fn_icon($mod, $ac){
 	</script>
 	<![endif]-->
 	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('zebra-dialog/zebra_dialog.css')?>" />
+	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('style.css')?>" />
+	<link rel="stylesheet" href="<?php echo $mbs_appenv->sURL('reset.css')?>" />
+	<link href="<?php echo $mbs_appenv->sURL('iconfont.css')?>" rel="stylesheet">
 	<style type="text/css">
 	iframe{width:100%;border:0;}
 	.myclass td.col1{font-size:12px;font-weight:bold;}
@@ -81,16 +82,16 @@ function _fn_icon($mod, $ac){
 	.myclass td.col2 b{color:red;padding-right:3px;}
 	.myclass td.col2 a{text-decoration:none;}
 	.myclass td.col2 a:hover{text-decoration:underline;}
+	
+	/*
+	 * .tab li{padding-right: 15px; margin-right: 15px; border-right: 1px solid #dedede;}
+	*/
 	</style>
 </head>
 <body>
-<div class=top-win>
-	<!-- 头部 -->
-	<header class="header"><?php echo $mbs_appenv->lang('header_html')?></header>
-	<!-- 头部end -->
-	<!-- 左边栏 -->
-	<nav id="navBar">
-		<dl class="navBar">
+<div class="sm_left">
+		<div class="logo2"></div>
+		<div class="nav">
 <?php 
 $mgr_notify_list = array();
 
@@ -102,6 +103,7 @@ foreach($mod_list as $mod){
 	$moddef=mbs_moddef($mod);
 	if(empty($moddef)) continue;
 	$actions = $moddef->filterActions(CModDef::P_MGR);
+	
 	if(empty($actions)) continue;
 	if(isset($priv_group[$mod])){
 		foreach($priv_group[$mod] as $ac){
@@ -110,36 +112,39 @@ foreach($mod_list as $mod){
 			}
 		}
 	}
+	//<dt class="group-type">?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?</dt>
 ?>
-		<dt class="group-type"><?php echo $moddef->item(CModDef::MOD, CModDef::G_TL)?></dt>
 <?php 
 foreach($actions as $ac => $def){ 
 	if(isset($def[CModDef::P_MGNF])){
 		$mgr_notify_list[$mod.'.'.$ac] = $def[CModDef::P_MGNF];
 		continue;
 	} 
-	if(isset($def[CModDef::P_NCD])) continue; 
+	if(isset($def[CModDef::P_NCD]) || !isset($mod_entry[$mod.'.'.$ac])) continue; 
 ?>
-		<dd class="type"><a href="#" class="link-type" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)">
-			<?php _fn_icon($mod, $ac)?><?php echo $def[CModDef::P_TLE]?></a></dd>
+		<a href="#" data="<?php echo $mbs_appenv->toURL($ac, $mod)?>" onclick="_to(this)">
+			<i class="iconfont"><?php echo isset($mod_entry[$mod.'.'.$ac]) ?  $mod_entry[$mod.'.'.$ac] : ''?></i>
+			<?php echo $def[CModDef::P_TLE]?></a>
 <?php
 }}
 ?>
-		</dl>
-	</nav>
-	<!-- 左边栏end -->
-	<!-- 内容主体 -->
-	<section class="wrap" id="wrap">
-		<iframe src=""></iframe>
-	</section>
-	<!-- 内容主体end -->
-
-	<!-- 加载jquery.js -->
-	<!--[if ie 6]>
-	<script src="<?php echo $mbs_appenv->sURL('jquery-1.10.2.js')?>"></script>
-	<script src="<?php echo $mbs_appenv->sURL('fixIE6.js')?>"></script>
-	<![endif]-->
+	</div>
 </div>
+<!-- 左边栏end -->
+<!-- 内容主体 -->
+<div class="sm_right">
+	<div class="top"><?php echo $mbs_appenv->lang('welcome'), $uinfo['name']?>
+	   <a href="<?php echo $mbs_appenv->toURL('logout', 'user')?>"><?php echo $mbs_appenv->lang('logout')?></a></div>
+	<iframe src=""></iframe>
+</div>
+<!-- 内容主体end -->
+
+<!-- 加载jquery.js -->
+<!--[if ie 6]>
+<script src="<?php echo $mbs_appenv->sURL('jquery-1.10.2.js')?>"></script>
+<script src="<?php echo $mbs_appenv->sURL('fixIE6.js')?>"></script>
+<![endif]-->
+
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('jquery-1.10.2.js')?>"></script>
 <script type="text/javascript" src="<?php echo $mbs_appenv->sURL('zebra_dialog.js')?>"></script>
 
@@ -186,6 +191,7 @@ function _to(link, is_redirect){
 }
 
 frame.onload = frame.onreadystatechange = function(e){ //onload: for chrom
+	frame.contentWindow.document.body.style.backgroundColor = "#fff";
 	if (frame.contentWindow.document.readyState=="complete"){
 		frame.style.height=(document.getElementsByTagName("html")[0].clientHeight-65)+"px";
 		document.title = frame.contentWindow.document.title;

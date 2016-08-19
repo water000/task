@@ -81,12 +81,7 @@ foreach($all as $row){
 </head>
 <body>
 <div class="allInfo">
-<<<<<<< HEAD
-	<h2 class="tit"><?php echo $mbs_appenv->lang('group_list')?></h2>
-=======
-	<h2 class="tit"><?php echo $mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'), CModDef::P_TLE)?></h2>
->>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
-	
+	<h2 class="tit"><?php echo $mbs_cur_moddef->item(CModDef::PAGES, $mbs_appenv->item('cur_action'), CModDef::P_TLE)?></h2>	
 	<?php if(!empty($error)){ ?>
 	<div class=error><?php  foreach($error as $e){?><p><?php echo CStrTools::txt2html($e)?></p><?php }?>
 	<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
@@ -100,17 +95,10 @@ foreach($all as $row){
 	<form name=_form action="" method="post" >
 			<table cellspacing=0 class=info-table style="margin-top: 26px">
 				<thead><tr>
-<<<<<<< HEAD
-					<th>MODULE</th>
-					<th>NOT FOUND</th>
-					<th>CHANGE TO</th>
-					<th>DELETE</th>
-=======
 					<th><?php echo $mbs_appenv->lang('module')?></th>
 					<th><?php echo $mbs_appenv->lang('not_found')?></th>
 					<th><?php echo $mbs_appenv->lang('change_to')?></th>
 					<th><?php echo $mbs_appenv->lang('delete')?></th>
->>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 				</tr></thead>
 <?php 
 $no =1; 
@@ -148,11 +136,7 @@ foreach($mod_items as $mod => &$actions){
 			<div style="margin-top:50px;text-align:center;color:#999;">
 			<?php if($diff_num > 0){?>
 			<a href="javascript:document._form.submit();" class="btn-primary" style="padding:6px 35px;"><?php echo $mbs_appenv->lang('submit')?></a>
-<<<<<<< HEAD
-			<?php }else{?> no action was changed <?php }?>
-=======
 			<?php }else{?> no action need to rematch <?php }?>
->>>>>>> 34fb3f7efb340cde68392838046ce78e5cca682d
 			</div>
 	</form>
 			

@@ -56,6 +56,11 @@ class CStrTools {
 		return false;
 	}
 	
+	static function hidePhone($phone){
+	    $j=strlen($phone);
+	    return substr($phone, 0, $j-8).'*****'.substr($phone, $j-3);	    
+	}
+	
 	static function isValidPassword($pwd){
 		if(strlen($pwd) >= 6)
 			return true;
@@ -136,30 +141,32 @@ class CStrTools {
 		echo isset($def[CModDef::G_DC])?$def[CModDef::G_DC]:'';
 	}
 	
-	static function bytechange($v){
-		$unit = $v[strlen($v) -1];
-		switch ($unit){
-			case 'm':
-			case 'M':
-				return intval($v) << 20;
-				break;
-			case 'g':
-			case 'G':
-				return intval($v) << 30;
-				break;
-			case 't':
-			case 'T':
-				return intval($v) << 40;
-				break;
-			default:
-				return $v;
-				break;
-		}
+	static function byteconv($v){
+	    static $unit = array('b', 'k', 'm', 'g', 't', 'p');
+	    if(is_string($v)){
+	        $u = $v[strlen($v) -1];
+	        if($u>='a' && $u<='z') ;
+	        else if($u>='A' || $u<='Z') $u = strtolower($u);
+	        else return intval($v);
+	        $i = array_search($u, $unit);
+	        return false === $i ? intval($v) : intval($v) << (10*$i);
+	    }else if(is_int($v)){
+	        for($i=0; $v>1024 ; ++$i, $x=$v, $v >>= 10) ;
+	        if($i > 0){
+	            $m = $x % 1024;
+	            if($m != 0){
+	                $v += $m/1024;
+	                $v = sprintf('%.2f', $v);
+	            }
+	        }
+	        return $v.$unit[$i];
+	    }
+	    else return $v;
 	}
 	
 	//currency convert(string to integer), the DB store the integer(fen) 
 	static function currconv($s, $u=100){
-	    if(is_string($s)){
+	    if(is_string($s) || is_float($s)){
 	       return floatval($s) * $u;
 	    }else if(is_int($s)){
 	        return sprintf('%.2f', $s/$u);

@@ -2,17 +2,21 @@
 
 //do not add any constant in the file.
 
+/* php.ini
+session.use_only_cookies = 1
+session.gc_maxlifetime = 86400*7
+log_errors = On
+error_log = path
+post_max_size = 10M
+upload_max_filesize = 10M
+max_file_uploads = 20
+*/
+
 
 //ini_set('session.save_handler', 'memcache');
 //ini_set('session.save_path',    'tcp://127.0.0.1:11211');
-ini_set('session.use_only_cookies', 1);
-
-if(isset($_SERVER['HTTP_X_LOGIN_TOKEN']) && !empty($_SERVER['HTTP_X_LOGIN_TOKEN'])){ // only for app request
-	$_COOKIE[session_name()] = $_SERVER['HTTP_X_LOGIN_TOKEN'];
-}
-else if(isset($_REQUEST['X-LOGIN-TOKEN'])){
-	$_COOKIE[session_name()] = $_REQUEST['X-LOGIN-TOKEN'];
-}
+//ini_set('session.use_only_cookies', 1);
+ini_set('session.gc_maxlifetime', 86400*7);
 
 $default = array(
 	'default_module'       => 'user',
@@ -38,7 +42,7 @@ $default = array(
 			'privilege', 'privFtr'),
 		
 		array(function($action_def){global $mbs_appenv;return !empty($action_def) && isset($action_def[CModDef::P_OUT]) && $mbs_appenv->item('client_accept') != 'html'; }, 
-		  'common', 'CApiParamFilter'),
+		    'common', 'ApiSignFtr'),
 		
 		//.... more
 	), 
@@ -48,12 +52,25 @@ $default = array(
 	),
 	
 	'events'     => array(
-		'product.attr_list.map_changed' => array('merchant.CMctEvent'),
-		'product.attr_edit.attr_changed' => array('merchant.CMctEvent'),
-		'product.edit.en_name_changed' => array('merchant.CMctEvent'),
+	    //'mod.action.event'=>array('mod.classEventListener'),
+	    'task.submit_verify.on_submit_used' => array('wallet.CWalletHandle'),
+	    'task.edit.on_task_create' => array('task.CTaskDepCtr'),
+	    'task.edit.on_task_edit'   => array('task.CTaskDepCtr'),
+	    
+	    'user.reg.on_user_add' => array('user.CUserSyncIM'),
+	    'user.myinfo.on_user_edit' => array('user.CUserSyncIM'),
+	    'user.pwd_reset.on_user_edit'=> array('user.CUserSyncIM'),
+	    'user.pwd_modify.on_user_edit'=> array('user.CUserSyncIM'),
 	),
 	
-	
+	'listener' => array(
+	    'task.CTaskInfoCtr.add' => array('task.CTaskDepMapCtr'),
+	    'task.CTaskInfoCtr.set' => array('task.CTaskDepMapCtr'),
+	    'task.CTaskSubmitCtr.setNode' => array('wallet.CWalletHandle'),
+	    
+	    'user.CUserInfoCtr.add' => array('user.CUserSyncIM'),
+	    'user.CUserInfoCtr.set' => array('user.CUserSyncIM'),
+	),
 );
 
 ?>

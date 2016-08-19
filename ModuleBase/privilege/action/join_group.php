@@ -31,12 +31,13 @@ if(empty($error)){
 			$us = new CUserSession();
 			list($user_id, ) = $us->get();
 			foreach($_REQUEST['join'] as $uid){
-				$ret = $pu->addNode(array(
+			    $arr = array(
 					'priv_group_id' => $_REQUEST['group_id'],
 					'user_id'       => $uid,
 					'creator_id'    => $user_id,
 					'join_ts'       => time()
-				));
+				);
+				$ret = $pu->addNode($arr);
 				if(!$ret){
 					$error[] = sprintf($mbs_appenv->lang('user_exsits'), $uid);
 				}

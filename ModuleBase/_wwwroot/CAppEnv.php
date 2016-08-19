@@ -16,6 +16,7 @@ class CAppEnv{
 		'charset'           => 'utf-8',
 		'lang'              => 'zh_CN',
 		'class_file_suffix' => '.php',
+	    'req_sep'           => '/',
 		/********** config end **********/
 		
 		/********** runtime item **********/
@@ -99,8 +100,25 @@ class CAppEnv{
 		*/
 		
 		// detail at the 'fromURL()'
-		return $this->env['web_root'].(empty($mod)?$this->env['cur_mod']:$mod).'/'.$action
+		return $this->env['web_root'].(empty($mod)?$this->env['cur_mod']:$mod).$this->item('req_sep').$action
 			.(empty($args) ? '' : '?'.http_build_query($args));
+	}
+	
+	function url2path($url){
+	    $arr = explode($this->item('req_sep'), trim($url, '/'));
+
+	    if(!empty($arr[0]) && isset($arr[0]) && !empty($arr[1]))
+	        ;
+	    else return '';
+	    
+	    if(CStrTools::isModifier($arr[0]) && CStrTools::isModifier($arr[1]))
+	        ;
+	    else{
+	        trigger_error('invalid modifier: mod.action');
+	        return '';
+	    }
+	    
+	    return $this->getActionPath($arr[1], $arr[0]);
 	}
 	
 	/**
@@ -129,7 +147,7 @@ class CAppEnv{
 		$arr2 = array('', '', '');
 		
   		if(isset($_GET['__path__'])){ 
-			$arr = explode('/', trim($_GET['__path__'], '/'));
+			$arr = explode($this->item('req_sep'), trim($_GET['__path__'], '/'));
 			$arr2[0] = empty($arr[0]) ? $mod : $arr[0];
 			$arr2[1] = isset($arr[1]) ? $arr[1] : $action;
 			unset($_GET['__path__'], $_REQUEST['__path__']);
@@ -144,6 +162,15 @@ class CAppEnv{
   		$this->env['cur_action_url'] = $this->toURL($arr2[1], $arr2[0]);
 
 		return $arr2;
+	}
+	
+	function fromCLI(){
+	    global $argv;
+	    $this->env['cur_mod']    = $arr2[0] = $argv[1];
+	    $this->env['cur_action'] = $arr2[1] = $argv[2];
+	    $this->env['cur_action_url'] = $this->toURL($arr2[1], $arr2[0]);
+	    $arr2[] = array_slice($argv, 0, 3);
+	    return $arr2;
 	}
 	
 	/**
@@ -194,15 +221,7 @@ class CAppEnv{
 		
 		return $list;
 	}
-	
-	function mkdirUpload($subdir=''){
-		$dest = dirname(__FILE__).'/upload/'.$this->item('cur_mod').'/'.$subdir.'/';
-		if(file_exists($dest)){
-			return $dest;
-		}
-		return mkdir($dest, '0755', true) ? $dest : false;
-	}
-	
+
 	function uploadURL($filename, $mod='', $host=''){
 		return $host.'/upload/'.(empty($mod)?$this->item('cur_mod'):$mod).'/'.$filename;
 	}
@@ -278,6 +297,8 @@ class CAppEnv{
 	}
 	
 	function echoex($data, $errcode='', $redirect_url=''){
+	    static $is_output = false;
+	    
 	    if(false !== strpos(PHP_SAPI, 'cli')){
 	        echo $data, '(', $errcode, ')', "\r\n";
 	        return;
@@ -285,6 +306,8 @@ class CAppEnv{
 		if('json' == $this->env['client_accept'] 
 			|| 'xml' == $this->env['client_accept'])
 		{
+		    if($is_output) return;
+		    
 			$out = array('retcode' => empty($errcode) ? 'SUCCESS': $errcode, 'data' => $data);
 			if(empty($errcode)){
 				$out = array('retcode'=>'SUCCESS', 'data'=>$data);
@@ -307,11 +330,41 @@ class CAppEnv{
 				}
 				$this->log_api->write($out, $other);
 			}
+			
+			$is_output = true;
 		}else{
 			$style = $msg = '';
 			if(empty($errcode)){
 				$style = 'success'; 
-				$msg =   is_string($data) ? $data : '';
+				if(is_array($data)){
+				    $msg = '<dl style="text-align:left;word-wrap:break-word;">';
+				    foreach($data as $key=>$val){
+				        $msg .= '<dt>'.$key.'</dt>';
+				        if(!is_array($val)){ $msg .= '<dd>'.(is_bool($val)?($val?'true':'false'):$val).'</dd>';}
+				        else {
+				            if(isset($val[0]) && is_array($val[0])){
+				                $msg .= '<dd><table><tr>';
+				                foreach($val[0] as $k=>$v){
+				                    $msg .= '<th>'.$k.'</th>';
+				                }
+				                $msg .= '</tr>';
+				                foreach($val as $row){
+				                    $msg .= '<tr>';
+				                    foreach($val[0] as $k=>$v){
+				                        $msg .= '<td>'.(is_string($row[$k])?$row[$k]:var_export($row[$k], true)).'</td>';
+				                    }
+				                    $msg .= '</tr>';
+				                }
+				                $msg .= '</table></dd>';
+				            }else{
+    				            foreach($val as $sk => $sval){
+    				                $msg .= '<dd>'.$sk.':'.var_export($sval, true).'</dd>';
+    				            }
+				            }
+				        }
+				    }
+				    $msg .= '</dl>';
+				}else $msg = $data;
 			}else{
 				$style = 'error';
 				$msg   = $data.'('.$errcode.')';

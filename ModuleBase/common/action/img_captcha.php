@@ -1,6 +1,6 @@
 <?php
 
-mbs_import('common', 'CImgCaptcha');
+mbs_import('common', 'CImage');
 
 $str = $str2 = '';
 $num = 4;
@@ -13,6 +13,6 @@ for($i=0; $i<$num; ++$i){
 session_start();
 $_SESSION['common_img_captcha'] = $str2;
 
-CImgCaptcha::drawPNG($num*20, 30, $str);
+CImage::captcha($num*20, 30, $str);
 
 ?>

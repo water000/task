@@ -11,6 +11,15 @@ class CUniqRowControl
 	protected $arrBuf     = array();
 	protected $error      = '';
 	
+	protected $listener   = array(
+	    'add'     => array(),
+	    'set'     => array(),
+	    'destroy' => array(),
+	    'addNode' => array(),
+	    'setNode' => array(),
+	    'delNode' => array(),
+	);
+	
 	/**
 	 * 
 	 * @param CUniqRowOfTable $db the instance that extends the interface 'CUniqRowOfTable'
@@ -75,16 +84,21 @@ class CUniqRowControl
 		try
 		{
 			$prikey = $this->oDB->add($arr);
-			
-			$this->append($prikey);
-			if($this->oCache)
-				$this->oCache->set($arr); // use the 'set' to replace 'add' which that the multi-add will cause failure
+			if($prikey){
+    			$this->append($prikey);
+    			$this->arrBuf[$prikey] = $arr;
+    			
+    			if($this->oCache)
+    				$this->oCache->set($arr); // use the 'set' to replace 'add' which that the multi-add will cause failure
+			}
 		}
 		catch(Exception $e)
 		{
 			throw $e;
 		}
-		$this->arrBuf[$prikey] = $arr;
+		
+		$this->consume(__FUNCTION__, $arr);
+		
 		return $prikey;
 	}
 	
@@ -169,6 +183,9 @@ class CUniqRowControl
 			throw $e;
 		}
 		$this->arrBuf[$this->primaryKey] = $newcache;
+		
+		$this->consume(__FUNCTION__, $newcache);
+		
 		return $ret;
 	}
 	
@@ -185,7 +202,26 @@ class CUniqRowControl
 			throw $e;
 		}
 		unset($this->arrBuf[$this->primaryKey]);
+		
+		$this->consume(__FUNCTION__, array($this->oDB->keyname()=>$this->primaryKey));
+		
 		return $ret;
+	}
+	
+	function produce($func, $lis, $detail){
+	    if(isset($this->listener[$func])){
+	        $this->listener[$func] = array($detail, $lis);
+	    }
+	}
+	
+	function consume($func, $args){
+	    if(!empty($this->listener[$func])){
+	        foreach($this->listener[$func][1] as $modresp){
+	            list($mod, $resp) = explode('.', $modresp);
+	            mbs_import($mod, $resp);
+	            $resp::response($this->listener[$func][0], $args);
+	        }
+	    }
 	}
 }
 ?>

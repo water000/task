@@ -3,7 +3,8 @@ class CUserInfoCtr extends CUniqRowControl{
 
 	private static $instance = null;
 	private static $searchKeys = array('phone'=>'', 'id'=>'', 'name'=>'');
-	const USER_AVATAR_SUBDIR = 'user_avater';
+	const AVATAR_SUBDIR = 'avatar/';
+	
 	
 	protected function __construct($db, $cache, $primarykey = null){
 		parent::__construct($db, $cache, $primarykey);
@@ -35,6 +36,11 @@ class CUserInfoCtr extends CUniqRowControl{
 		return self::$instance;
 	}
 	
+	function name(){
+	    $u = $this->get();
+	    return empty($u) ? 'unknown' : (empty($u['name']) ? CStrTools::hidePhone($u['phone']) : $u['name']);
+	}
+	
 	/**
 	 *
 	 * @param array $keyval
@@ -58,5 +64,7 @@ class CUserInfoCtr extends CUniqRowControl{
 	static function passwordVerify($pwd, $hash){
 	    return password_verify($pwd, $hash);
 	}
+	
+	
 }
 ?>

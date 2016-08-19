@@ -19,6 +19,12 @@ class CUniqRowOfTable
 		$this->tbname     = $tbname;
 	}
 	
+	function setKeyname($name){
+	    $this->keyname = $name;
+	}
+	function keyname(){
+	    return $this->keyname;
+	}
 	function setPrimaryKey($key)
 	{
 		$this->primaryKey = $key;
@@ -68,12 +74,15 @@ class CUniqRowOfTable
 				$this->_seterror($pre);
 				return 0;
 			}
-			$this->primaryKey = $this->oPdoConn->lastInsertId();
+			if(!isset($param[$this->keyname])){
+			    $ret = $this->primaryKey= $param[$this->keyname] = $this->oPdoConn->lastInsertId();
+			}else{
+			    $ret = $this->primaryKey= $param[$this->keyname];
+			}
 		}catch(Exception $e){
 			throw $e;
 		}
-		$param[$this->keyname] = $this->primaryKey;
-		return $this->primaryKey;
+		return $ret;
 	}
 	
 	function get(){
@@ -195,8 +204,13 @@ class CUniqRowOfTable
  		$values = array();
  		foreach ($keyval as $key => $val){
  			if(is_array($val)){
- 				$sql .= sprintf(' AND %s>=? AND %s<?', $key, $key);
- 				array_push($values, $val[0], $val[1]);
+ 				if(1 == count($val)){
+ 				    $sql .= sprintf(' AND %s>=?', $key);
+ 				    array_push($values, $val[0]);
+ 				}else{
+ 				    $sql .= sprintf(' AND %s>=? AND %s<?', $key, $key);
+ 				    array_push($values, $val[0], $val[1]);
+ 				}
  			}
  			else{
  				if(is_string($val) && 
@@ -231,8 +245,13 @@ class CUniqRowOfTable
  		$values = array();
  		foreach ($keyval as $key => $val){
  			if(is_array($val)){
- 				$sql .= sprintf(' AND %s>=? AND %s<?', $key, $key);
- 				array_push($values, $val[0], $val[1]);
+ 			    if(1 == count($val)){
+ 			        $sql .= sprintf(' AND %s>=?', $key);
+ 			        array_push($values, $val[0]);
+ 			    }else{
+ 				   $sql .= sprintf(' AND %s>=? AND %s<?', $key, $key);
+ 				   array_push($values, $val[0], $val[1]);
+ 			    }
  			}
  			else{
  				if(is_string($val) &&

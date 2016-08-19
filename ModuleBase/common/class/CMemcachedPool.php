@@ -36,7 +36,7 @@ class CMemcachedPool implements IDebugOutput
 	
 	public function html()
 	{
-		if($this->conn_d != null && CMemcachedDebug::getTotalExec() != 0)
+		if($this->conn_d != null)
 		{
 			//echo '<div style="padding:5px;margin:10px;font-size:14px;"><h3 style="text-align:center;padding:3px 0;">memcache query detail</h3>';
 			echo '<div style="padding:5px;margin:10px;font-size:14px;">';

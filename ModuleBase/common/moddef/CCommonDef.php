@@ -2,23 +2,46 @@
 class CCommonDef extends CModDef{
 	protected function desc(){
 		return array(
-		    self::MOD => array(self::G_NM=>'common', self::G_CS=>'公共模块', self::M_CS=>'gbk', ),
-		    /*self::FTR => array(
-		    	self::G_NM => array(G_CS => '', G_DC => ''),
-		    ),*/
+		    self::MOD => array(self::G_NM=>'common', self::G_CS=>'公共模块', self::M_CS=>'utf-8', ),
+		    self::DEPEXT => array('curl'),
+		    self::FTR => array(
+		    	'ApiSignFtr' => array(self::G_CS => 'CApiSignFtr', self::G_DC => '对接口请求参数的加密进行检查'),
+		    ),
 		    /*self::LTN => array(
 		    	'class' => 'mod.action1,mod.action2,...'
 		    ),*/
+		    self::TBDEF => array(
+		        'common_sms_captcha' => '(
+                    `id`         int(10) unsigned NOT NULL AUTO_INCREMENT,
+                    `phone`      varchar(16) CHARACTER SET latin1 NOT NULL,
+                    `captcha`    char(6) CHARACTER SET latin1 NOT NULL,
+                    `created_at` int(10) unsigned NOT NULL,
+                    `verify_num` tinyint(4) NOT NULL,
+                    `send_num`   tinyint(4) NOT NULL,
+                    `succeed`    tinyint(4) NOT NULL,
+                    `group_id`   tinyint(4) NOT NULL,
+                    PRIMARY KEY (`id`),
+		            KEY `phone` (`phone`,`group_id`)
+		        )', 
+		        'common_session' => '(
+		            id       char(32) CHARACTER SET latin1 NOT NULL , 
+		            data     varchar(512) NOT NULL,
+		            write_ts int unsigned NOT NULL,
+		            primary key(id)
+		        )',
+		    ),
 			self::PAGES => array(
-				'sms_captcha_api' => array(
-					self::P_TLE => '短信验证码',
-					self::G_DC  => '给指定手机发送验证码，并返回当前验证码。每次发送的间隔1分钟',
+				'send_sms' => array(
+					self::P_TLE => '发送短信',
+					self::G_DC  => '给指定手机发送短信, 每次发送的间隔1分钟.',
 					self::P_ARGS => array(
-						'phone' => array(self::PA_REQ=>1, self::G_DC=>'手机号码'),
-						'ts'        => array(self::PA_REQ=>1, self::G_DC=>'请求的时间戳'),
-						'sign'      => array(self::PA_REQ=>1, self::G_DC=>'md5(phone+ts+APPKEY)')
+						'phone' => array(self::PA_REQ=>1, self::G_DC=>'手机号码*S*'),
+					    'type'  => array(self::PA_REQ=>1, self::G_DC=>'sms类型(值:captcha)'),
+					    'cap_group' => array(self::PA_REQ=>1, self::G_DC=>'验证码分组(值:USER_PWD),请求和验证需一致'),
+					    'for'  => array(self::PA_REQ=>0, self::G_DC=>'需要验证码的接口URL，将会检查phone的有效性'),
 					),
-					self::P_OUT => '{success:0/1, msg:"如果失败，输出错误信息", captcha_num:""}'
+				    //self::LD_FTR => array(array('common', 'ApiSignFtr', true),),
+					self::P_OUT => 'data:{}'
 				),
 				'img_captcha' => array(
 					self::P_TLE => '图形验证码',

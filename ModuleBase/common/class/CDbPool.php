@@ -149,7 +149,6 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc ��ȡCDbPool��ʵ��
 	 * @return instance of CDbPool
 	 */
 	public static function getInstance()
@@ -162,7 +161,6 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc ���õ�ǰ��PDO������Ĭ��Ϊ'pdo'
 	 * @param string $sClassName
 	 * @return null
 	 */
@@ -178,7 +176,6 @@ class CDbPool implements IDebugOutput
 	}
 	
 	/**
-	 * @desc �ж�ָ����host, prot, dbname�Ƿ�����б���
 	 * @param string $host
 	 * @param string $port
 	 * @param string $dbname
@@ -252,8 +249,9 @@ class CDbPool implements IDebugOutput
 			return $this->arrConn[$prekey];
 			
 		$conf = self::$arrConfig[$sKey];
-		$sDSN = sprintf('mysql:host=%s;port=%d;dbname=%s;', 
-			$sHost, $port, $sDbName);
+		$sDSN = sprintf('mysql:host=%s;port=%d;dbname=%s;%s', // Note: This only works as of PHP 5.3.6. 
+			$sHost, $port, $sDbName, 
+		    empty(self::$charset)?'':'charset='.str_replace('-', '',self::$charset));
 		$obj = null;
 		try
 		{
@@ -263,8 +261,8 @@ class CDbPool implements IDebugOutput
 			else
 				$obj = new PDO($sDSN, $conf['username'], $conf['pwd'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 				
-			if(!empty(self::$charset))
-				$obj->query('set names '.str_replace('-', '',self::$charset));
+			//if(!empty(self::$charset))
+			//	$obj->query('set names '.str_replace('-', '',self::$charset));
 		}
 		catch(PDOException $e)
 		{

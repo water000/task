@@ -24,10 +24,11 @@ $moddef = mbs_moddef($selected_mod);
 .right{float:left;width:720px;padding:8px 13px;margin:20px;background-color:#fff;box-shadow:0 2px 6px #313131}
 .right h2{color:#555;margin:0;text-align:center;}
 .right table , .right ul{background-color:#fff;}
-.right ul{float:left;width:110px;word-wrap:break-word;}
+.right ul{float:left;width:110px;word-wrap:break-word;padding:0;margin:0;}
 
 .right li.head{}
 .right .even{background-color:#eee}
+.table_title{margin: 0;}
 </style>
 </head>
 <body>

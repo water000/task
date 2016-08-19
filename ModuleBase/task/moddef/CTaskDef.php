@@ -13,7 +13,6 @@ class CTaskDef extends CModDef {
                     id          int unsigned auto_increment not null, 
                     name        varchar(16) not null, 
                     abstract    varchar(64) not null, 
-                    create_uid  int unsigned not null, 
                     leader_uid  int unsigned not null,
                     create_time int unsigned not null,
                     primary key(id)
@@ -25,7 +24,7 @@ class CTaskDef extends CModDef {
                     status     tinyint not null,
                     primary key(dep_id, member_uid)
                 )',
-                'task_dep_spec_user' => '(
+                /*'task_dep_spec_user' => '(
                     dep_id     int unsigned not null,
                     spec_uid   int unsigned not null,
                     join_time  int unsigned not null,
@@ -41,7 +40,7 @@ class CTaskDef extends CModDef {
                     status    tinyint not null,
                     primary key(dep_id, acnt_id),
                     key(acnt_id)
-                )',
+                )',*/
                 'task_category' => '(
                     id        int unsigned auto_increment not null, 
                     name      varchar(16) not null, 
@@ -61,7 +60,7 @@ class CTaskDef extends CModDef {
                     pub_ts               int unsigned not null,
                     edit_ts              int unsigned not null,
                     end_ts               int unsigned not null, -- default to 1 month later
-                    status               int unsigned not null, -- ST_OPENING=0, ST_CLOSED=1
+                    status               tinyint unsigned not null, -- ST_OPENING=0, ST_CLOSED=1
 					primary key(id),
                     key(pub_uid)
 				)',
@@ -102,7 +101,7 @@ class CTaskDef extends CModDef {
                     primary key(id),
                     key(submit_id)
                 )',
-                'task_submit_to_pay' => '(
+                /*'task_submit_to_pay' => '(
                     submit_id int unsigned not null,
                     acnt_id   int unsigned not null, 
                     total_fee int unsigned not null, 
@@ -111,15 +110,16 @@ class CTaskDef extends CModDef {
                     fault_msg varchar(32) not null,
                     primary key(submit_id),
                     key(acnt_id)
-                )',
+                )',*/
                 'task_submit_paid_history' => '(
                     submit_id   int unsigned not null,
-                    acnt_id     int unsigned not null, 
+                    task_id     int unsigned not null,
+                    pub_uid     int unsigned not null,
                     total_fee   int unsigned not null,
                     submit_ts   int unsigned not null, 
-                    success_ts  int unsigned not null,
+                    status      tinyint not null,
                     primary key(submit_id),
-                    key(acnt_id)
+                    key(pub_uid)
                 )',
             ),
             self::PAGES => array(

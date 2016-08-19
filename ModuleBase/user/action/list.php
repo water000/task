@@ -1,16 +1,11 @@
 <?php 
 
-mbs_import('', 'CUserInfoCtr', 'CUserClassControl');
+mbs_import('', 'CUserInfoCtr');
 
 $user_ins = CUserInfoCtr::getInstance($mbs_appenv,
 	CDbPool::getInstance(), CMemcachedPool::getInstance());
 
-$uclass_ctr = CUserClassControl::getInstance($mbs_appenv, 
-	CDbPool::getInstance(), CMemcachedPool::getInstance());
-$class_list = $uclass_ctr->getDB()->listAll();
-$class_list = $class_list->fetchAll(PDO::FETCH_ASSOC);
-
-$search_keys = array('name'=>'', 'phone'=>'', 'class_id'=>'');
+$search_keys = array('name'=>'', 'phone'=>'');
 $req_search_keys = array_intersect_key($_REQUEST, $search_keys);
 foreach($req_search_keys as $k=> &$v){
 	$v = trim($v);
@@ -18,20 +13,10 @@ foreach($req_search_keys as $k=> &$v){
 		unset($req_search_keys[$k]);
 	}
 }
-if(isset($req_search_keys['class_id']) && -1 == $req_search_keys['class_id']){
-	unset($req_search_keys['class_id']);
-}
 
-/*mbs_import('', 'CUserDepMemberControl', 'CUserSession');
-$udepmbr = CUserDepMemberControl::getInstance($mbs_appenv, 
-		CDbPool::getInstance(), CMemcachedPool::getInstance());
+mbs_import('', 'CUserSession');
 $usersess = new CUserSession();
 list($sess_uid, ) = $usersess->get();
-
-$udep_info = $udepmbr->getDB()->search(array('user_id'=>$sess_uid));
-if(!empty($udep_info) && ($udep_info = $udep_info->fetchAll(PDO::FETCH_ASSOC))){
-	$req_search_keys['class_id'] = $udep_info[0]['dep_id'];
-}*/
 
 $search_keys = array_merge($search_keys, $req_search_keys);
 
@@ -105,13 +90,6 @@ if($count > ROWS_OFFSET){
 		<input type="text" class="inp-keyWord" name="phone" 
 			placeholder="<?php echo $mbs_appenv->lang('please_input')?>" 
 			value="<?php echo htmlspecialchars($search_keys['phone'])?>" />
-		<label for="" class="label-word"><?php echo $mbs_appenv->lang(array('user', 'class'))?>&nbsp;:&nbsp;</label>
-		<select name="class_id" class="sel-format">
-       		<option value=-1><?php echo $mbs_appenv->lang('all')?></option>
-       		<?php foreach($class_list as $c){ ?>
-       		<option value="<?php echo $c['id']?>" <?php echo $search_keys['class_id']==$c['id']?' selected':''?>><?php echo $c['name']?></option>
-       		<?php } ?>
-       	</select>
 		<a href="javascript:;" class="btn-search" onclick="this.parentNode.parentNode.submit()"><?php echo $mbs_appenv->lang('search')?></a>
 	</div>
 	</form>
@@ -123,7 +101,6 @@ if($count > ROWS_OFFSET){
 		        <tr>
 		            <th class="first-col col-chbox"><input type="checkbox" onclick="_checkall(this, document.form_list)" /></th>
 		            <th class=col-name><?php echo $mbs_appenv->lang('name')?></th>
-		            <th class=col-org><?php echo $mbs_appenv->lang('organization')?></th>
 		            <th class=col-phone><?php echo $mbs_appenv->lang('phone')?></th>
 		            <th class=col-email><?php echo $mbs_appenv->lang('email')?></th>
 		            <th class=col-oper><?php echo $mbs_appenv->lang('operation')?></th>
@@ -136,7 +113,6 @@ if($count > ROWS_OFFSET){
 		        <tr>
 		            <td class=first-col><input type="checkbox" name="id[]" value="<?php echo $row['id']?>" /></td>
 		            <td class=name><?php echo CStrTools::txt2html($row['name'])?></td>
-		            <td><?php echo CStrTools::txt2html($row['organization'])?></td>
 		            <td><?php echo $row['phone']?></td>
 		            <td><?php echo $row['email']?></td>
 		            <td><a href="<?php echo $mbs_appenv->toURL('edit', '', array('id'=>$row['id']))?>"><?php echo $mbs_appenv->lang(array('edit', 'data'))?></a></td>
@@ -193,7 +169,7 @@ if(window.parent.on_user_selected){
 			chbox = tb.rows[i].cells[0].getElementsByTagName("input")[0];
 			if(chbox.checked){
 				arr.push([chbox.value, tb.rows[i].cells[1].innerHTML, 
-					tb.rows[i].cells[2].innerHTML,tb.rows[i].cells[3].innerHTML]);
+					tb.rows[i].cells[2].innerHTML]);
 			}
 		}
 		if(arr.length > 0){

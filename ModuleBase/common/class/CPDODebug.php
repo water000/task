@@ -23,6 +23,17 @@ class CPDODebug extends PDO
 		return $this->arrLog;
 	}
 	
+	function appendLog($pdos, $func, $stmt, $res)
+	{
+		$idx = array_search($pdos, $this->arrMap);
+		if(false === $idx)
+			return false;
+		$arr = isset($this->arrLog[$idx][3]) ? $this->arrLog[$idx][3] : array();
+		$arr[] = array($func, $stmt, $res);
+		$this->arrLog[$idx][3] = $arr;
+		return true;
+	}
+	
 	function getTotalExec()
 	{
 		return $this->totalExecTime;
@@ -117,15 +128,16 @@ class CPDODebug extends PDO
 		return new CPDOStatement($ret, $this);
 	}
 	
-	function appendLog($pdos, $func, $stmt, $res)
-	{
-		$idx = array_search($pdos, $this->arrMap);
-		if(false === $idx)
-			return false;
-		$arr = isset($this->arrLog[$idx][3]) ? $this->arrLog[$idx][3] : array();
-		$arr[] = array($func, $stmt, $res);
-		$this->arrLog[$idx][3] = $arr;
-		return true;
+	function beginTransaction(){
+	    return parent::beginTransaction();
+	}
+	
+	function commit(){
+	    return parent::commit();
+	}
+	
+	function rollBack(){
+	    return parent::rollBack();
 	}
 }
 ?>

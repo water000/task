@@ -104,6 +104,11 @@ class CMultiRowControl extends CUniqRowControl
 			throw $e;
 		}
 		unset($this->arrBuf[$this->bufkey]);
+		
+		$this->consume(__FUNCTION__, array(
+		    $this->getDB()->keyname()          => $this->primaryKey,
+		));
+		
 		return $ret;
 	}
 	
@@ -131,6 +136,9 @@ class CMultiRowControl extends CUniqRowControl
 		{
 			throw $e;
 		}
+		
+		$this->consume(__FUNCTION__, $param);
+		
 		return $ret;
 	}
 	
@@ -161,7 +169,7 @@ class CMultiRowControl extends CUniqRowControl
 					if($nid == $row[$nidkey])
 					{
 						$row = array_merge($row, $param);
-						$ret = $this->oCache->set($arr);
+						$this->oCache->set($arr);
 						break;
 					}
 				}
@@ -190,6 +198,8 @@ class CMultiRowControl extends CUniqRowControl
 		{
 			$this->arrBuf[$this->bufkey] = $arr;
 		}
+		
+		$this->consume(__FUNCTION__, $param);
 		
 		return $ret;
 	}
@@ -251,6 +261,11 @@ class CMultiRowControl extends CUniqRowControl
 		{
 			$this->arrBuf[$this->bufkey] = $arr;
 		}
+		
+		$this->consume(__FUNCTION__, array(
+		    $this->getDB()->keyname()          => $this->primaryKey,
+		    $this->getDB()->getSecondKeyName() => $this->getDB()->getSecondKey(),
+		));
 		
 		return $ret;
 	}

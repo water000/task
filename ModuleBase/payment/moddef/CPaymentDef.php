@@ -35,6 +35,50 @@ class CPaymentDef extends CModDef {
 			        acc_type, 
 			        acc_name,
 			    )',
+			    'payment_user_wallet' => '(
+			        uid            int unsigned not null,
+			        amount         int unsigned not null,
+			        history_amount int unsigned not null,
+			        last_change_ts int unsigned not null,
+			        status         tinyint not null, -- 0: normal, 1: banned(banned by sys if the user operate with some exceptions)
+			        primary key(uid)
+			    )',
+			    'payment_user_wallet_history' => '(
+			        id         int unsigned auto_increment not null,
+			        payer_uid  int unsigned not null,
+			        payee_uid  int unsigned not null,
+			        event_type tinyint unsigned not null, -- 0: get by submiting task, 1: withdraw
+			        fee        int unsigned not null,
+			        change_ts  int unsigned not null,
+			        primary key(id),
+			        key(payer_uid),
+			        key(payee_uid)
+			    )',
+			    // insert the record to 'user_wallet_withdraw_history' if successful and delete it after user visit
+			    'payment_user_wallet_withdraw_apply' => '(
+			        uid          int unsigned not null,
+			        fee          int unsigned not null,
+			        dest_account varchar(64) not null,
+			        account_name varchar(32) not null,
+			        account_type tinyint not null,
+			        submit_ts    int unsigned not null,
+			        status       tinyint not null, -- 0: user submit, 1: sys accepted, 2: successful, 3: failure
+			        fault_msg    varchar(16) not null, -- payment result, successful or failure
+			        attempt_num  tinyint not null,
+			        primary key(uid)
+			    )',
+			    'payment_user_wallet_withdraw_history' => '(
+			        id           int unsigned auto_increment not null,
+			        uid          int unsigned not null,
+			        fee          int unsigned not null,
+			        dest_account varchar(64) not null,
+			        account_name varchar(8) not null,
+			        account_type tinyint not null,
+			        submit_ts    int unsigned not null,
+			        success_ts   int unsigned not null,
+			        primary key(id),
+			        key(uid)
+			    )',
 			),
 			self::PAGES => array(
 				'unionpay_notify' => array(

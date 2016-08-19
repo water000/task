@@ -5,7 +5,7 @@ class CCoreDef extends CModDef{
 		return array(
 		    self::MOD => array(
 		    	self::G_NM=>'core', 
-		    	self::M_CS=>'gbk', 
+		    	self::M_CS=>'utf-8', 
 		    	self::G_TL=>'内核模块', 
 		    	self::G_DC=>'核心模块，定义了模块的组成部分，详细看class/CModDef.php'
 		   	),
@@ -41,11 +41,12 @@ class CCoreDef extends CModDef{
 				'api_log'   => array(
 					self::P_TLE => '接口日志',
 					self::G_DC  => '接口访问的日志，记录了输入、输出、、时间、以及其他相关信息',
-					self::P_MGR => true
+					self::P_MGR => true,
+				    self::P_DOF => true,
 				)
 			),
 		 	self::TBDEF => array(
-		  		'core_module_listenner' => "(
+		  		/*'core_module_listenner' => "(
 		  			class_path varchar(255) CHARACTER SET latin1 not null default '',
 		  			class_module varchar(255) CHARACTER SET latin1  not null default '',
 		  			class_name varchar(255) CHARACTER SET latin1  not null default '',
@@ -54,12 +55,12 @@ class CCoreDef extends CModDef{
 		  			primary key(class_name, action_module, action_name),
 		  			key(class_module),
 		  			key(action_module, action_name)
-		  		)",
+		  		)",*/
 		 		'core_api_log'  => '(
 		 			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-					`input` text,
-					`output` text,
-					`other` text,
+					`input` text NOT NULL,
+					`output` text NOT NULL,
+					`other` text NOT NULL,
 					`time` int(10) unsigned DEFAULT NULL,
 					PRIMARY KEY (`id`)
 		 		)',

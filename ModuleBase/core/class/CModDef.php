@@ -38,8 +38,8 @@ abstract class CModDef {
 	CONST P_NCD  = 'p_no_click_direct_on_mgr';
 	CONST P_MGNF = 'p_mgr_notification';// P_MGNF=>[true(system default interval)/integer(interval in second)], include(P_MGR,P_NCD)
 	//CONST P_LGC  = 'p_logo_class'; // <a href="..."><i class=P_LGC></i>P_TLE</a>
-	CONST PA_TYP = 'pa_type';    // the arg's type what appears in gettype(). default is 'string'
-	CONST PA_REQ = 'pa_required';// the arg MUST be required in the page. default is 1
+	CONST PA_TYP = 'pa_type';    // the arg's type what appears in gettype() and include 'file', 'files'. default is 'string'
+	CONST PA_REQ = 'pa_required';// the arg MUST be required in the page. default is 0
 	CONST PA_DEP = 'pa_depend'; // the arg which appears in the same page. default is null
 	CONST PA_EMP = 'pa_empty';  // allow empty on the arg(default is 0). NOTICE: the empty validation only check the length of the trimed arg
 	CONST PA_TRI = 'pa_trim';   // ignore triming on the arg if set to 0. default is 1(trim).
@@ -188,6 +188,45 @@ class #classname# extends CMultiRowControl {
 	}
 } ';
 	    
+	    static $mix =
+	    'mbs_import(\'common\', \'CMixRowControl\');
+	    
+class #classname# extends CMixRowControl {
+	private static $instance = null;
+	        
+    protected $pkey  = \'#keyname#\';
+	protected $mpkey = \'#mkeyname#\';
+	
+	protected function __construct($db, $cache, $primarykey = null, $secondKey = null){
+		parent::__construct($db, $cache, $primarykey, $secondKey);
+	}
+	    
+	/**
+	 *
+	 * @param CAppEnv $mbs_appenv
+	 * @param CDbPool $dbpool
+	 * @param CMemcachePool $mempool
+	 * @param string $primarykey
+	 */
+	static function getInstance($mbs_appenv, $dbpool, $mempool, $primarykey = null, $switch_key=false){
+		if(empty(self::$instance)){
+			try {
+				$memconn = $mempool->getConnection();
+				self::$instance = new #classname#(
+						new CMultiRowOfTable($dbpool->getDefaultConnection(),
+								mbs_tbname(\'#tbname#\'), $switch_key?\'#mkeyname#\':\'#keyname#\', $primarykey, \'#secondkeyname#\'),
+						$memconn ? new CMultiRowOfCache($memconn, $primarykey, \'#classname#\') : null
+				);
+			} catch (Exception $e) {
+				throw $e;
+			}
+		}
+		self::$instance->setPrimaryKey($primarykey);
+	    
+		return self::$instance;
+	}
+} ';
+	    
 	    $pos = strpos($tbdef, "\n");
 	    if($pos > 0){
 	        $def = substr($tbdef, 0, $pos);
@@ -201,7 +240,10 @@ class #classname# extends CMultiRowControl {
 	            }else{
 	                $two = explode('|', trim($keys[0]));
 	                if(2 == count($two)){
-	                    
+	                    file_put_contents($path, "<?php\r\n".
+	                        str_replace(array('#classname#', '#tbname#', '#keyname#', '#mkeyname#', '#secondkeyname#'),
+	                            array($class, $tbname, trim($two[0]), trim($two[1]), trim($keys[1])), $mix).
+	                        "\r\n?>");
 	                }else{
 	                    file_put_contents($path, "<?php\r\n".
 	                        str_replace(array('#classname#', '#tbname#', '#keyname#', '#secondkeyname#'),
@@ -234,6 +276,7 @@ class #classname# extends CMultiRowControl {
     	        foreach($this->desc[self::TBDEF] as $tbn => $tbdef){
     	            $class = self::tbname2class($tbn);
     	            $classpath = self::$appenv->getClassPath($class, $this->desc[self::MOD][self::G_NM]);
+    	            
     	            if(!file_exists($classpath)){
     	                self::_createClass($class, $tbn, $tbdef, $classpath);
     	            }
@@ -258,9 +301,11 @@ class #classname# extends CMultiRowControl {
 	        trigger_error(sprintf('[error]mkdir "%s" failed on "%s:%d".'), $config_dir, __FILE__, __LINE__);
 	    }else{
 	        $path = $config_dir.'/default.php';
-	        file_put_contents($path, "<?php\n\$default=array(\n);\n?>");
+	        if(!file_exists($path))
+	           file_put_contents($path, "<?php\n\$default=array(\n);\n?>");
 	        $path = $config_dir.'lang_'.self::$appenv->item('lang').'.php';
-	        file_put_contents($path, sprintf("<?php\n\$lang_%s=array(\n);\n?>", self::$appenv->item('lang')));
+	        if(!file_exists($path))
+	           file_put_contents($path, sprintf("<?php\n\$lang_%s=array(\n);\n?>", self::$appenv->item('lang')));
 	    }
 	}
 	
@@ -383,7 +428,7 @@ class #classname# extends CMultiRowControl {
 					$error[] = sprintf('invalid identifier "%s" on "%s" in "%s"', 
 						$mod[self::G_NM], self::G_NM, self::MOD);
 				else if(self::$appenv->item('cur_mod') != $mod[self::G_NM])
-					$error[] = sprintf('submited "%s" missmatch "%s" in G_NM mod def', $mod[self::G_NM], self::$appenv->item('cur_mod'));
+					$error[] = sprintf('submitted "%s" missmatch "%s" in G_NM mod def', $mod[self::G_NM], self::$appenv->item('cur_mod'));
 				else $modname = $mod[self::G_NM];
 			}else $error[] = sprintf('"%s" not def in "%s"', self::G_NM, self::MOD);
 			
@@ -455,7 +500,7 @@ class #classname# extends CMultiRowControl {
 							$error[] = sprintf('need ARRAY, "%s" was given at arg "%s" on page "%s" in "%s" def', 
 								gettype($opt), $arg, $script, self::P_ARGS);
 						else {
-							if(isset($opt[self::PA_TYP]) && 'file' != strtolower($opt[self::PA_TYP]) 
+							if(isset($opt[self::PA_TYP]) && strncmp(strtolower($opt[self::PA_TYP]), 'file', 4)!=0 
 								&& !settype($var, $opt[self::PA_TYP]))
 								$error[] = sprintf('unsupported type "%s" on arg "%s" in page "%s" of "%s" def', 
 									$opt[self::PA_TYP], $arg, $script, self::P_ARGS);
@@ -635,7 +680,7 @@ class #classname# extends CMultiRowControl {
  					$_REQUEST[$name] = trim($_REQUEST[$name]);
  				
  				if($opts[CModDef::PA_REQ]){
- 					if('file' == strtolower($opts[self::PA_TYP])){
+ 					if(strncmp(strtolower($opts[self::PA_TYP]), 'file', 4)==0){
  						if(!isset($_FILES[$name]) ){
 	 						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
 	 								(isset($opts[self::G_DC]) ? $opts[self::G_DC].'/-' : '').$name);
@@ -654,8 +699,9 @@ class #classname# extends CMultiRowControl {
  						$error[$name] = sprintf($error_desc['no_such_arg_appeared'], 
  								(isset($opts[self::G_DC]) ? $opts[self::G_DC].'/' : '').$name);
  						continue;
- 					}else{
- 						if(!$opts[CModDef::PA_EMP] && 0==strlen($_REQUEST[$name])){
+ 					}else if(!$opts[CModDef::PA_EMP]){
+ 						if((is_string($_REQUEST[$name]) && 0==strlen($_REQUEST[$name])) 
+ 						    || empty($_REQUEST[$name]) ){
  							$error[$name] = sprintf($error_desc['arg_cannot_be_empty'], $name);
  							continue;
  						}
@@ -663,7 +709,7 @@ class #classname# extends CMultiRowControl {
  				}
  				 				
 				if(!empty($opts[CModDef::PA_TYP]) 
-					&& strtolower($opts[CModDef::PA_TYP]) != 'file'
+					&& strncmp(strtolower($opts[self::PA_TYP]), 'file', 4)!=0
 					&& isset($_REQUEST[$name])
 					&& !settype($_REQUEST[$name], $opts[CModDef::PA_TYP]))
 				{

@@ -1,5 +1,4 @@
 <?php 
-
 define('REDIRECT_AFTER_LOGIN', isset($_REQUEST['redirect']) 
 	? urldecode($_REQUEST['redirect']) : $mbs_appenv->toURL('index', 'privilege'));
 
@@ -29,15 +28,12 @@ if(isset($_REQUEST['phone'])){
 		session_set_cookie_params(time()+15*24*3600);
 	}
 	
-	session_start();
-	
 	$us = new CUserSession();
 	$user_info = $us->get();
 	
 	if(!empty($user_info)){
 		//$mbs_appenv->echoex($mbs_appenv->lang('had_login'), 'HAD_LOGIN', REDIRECT_AFTER_LOGIN);
-		$mbs_appenv->echoex(array('user'=>$user_info[1], 'token'=>session_id(), 
-				'allow_comment'=>$user_info[1]['class_id']==3), '', REDIRECT_AFTER_LOGIN);
+		$mbs_appenv->echoex(array('user'=>$user_info[1], 'token'=>session_id()), '', REDIRECT_AFTER_LOGIN);
 		exit(0);
 	}
 	
@@ -53,17 +49,13 @@ if(isset($_REQUEST['phone'])){
 		$uc = CUserInfoCtr::getInstance($mbs_appenv, CDbPool::getInstance(), 
 		    CMemcachedPool::getInstance());
 		$rs = null;
-		try {
-			$rs = $uc->search(array('phone'=>$_REQUEST['phone']));
-		} catch (Exception $e) {
-			$error[] = $mbs_appenv->lang('db_exception', 'common');
-		}
+		
+		$rs = $uc->search(array('phone'=>$_REQUEST['phone']));
 		if(empty($rs) || !($rs = $rs->fetchAll(PDO::FETCH_ASSOC))){
 			$error[] = $mbs_appenv->lang('invalid_phone');
 		}
 		else{
 			$rs = $rs[0];
-			var_dump($_REQUEST['password'], $rs['password']);
 			if(!CUserInfoCtr::passwordVerify($_REQUEST['password'], $rs['password'])){
 				$error[] = $mbs_appenv->lang('invalid_password');
 			}
@@ -73,8 +65,7 @@ if(isset($_REQUEST['phone'])){
 				}
 				
 				$us->set($rs['id'], $rs);
-				$sid = session_id();
-				$mbs_appenv->echoex(array('user'=>$rs, 'token'=>$sid), '', REDIRECT_AFTER_LOGIN);
+				$mbs_appenv->echoex(array('user'=>$rs, 'token'=>session_id()), '', REDIRECT_AFTER_LOGIN);
 				
 				exit(0);
 			}
@@ -98,109 +89,51 @@ else{
 		$mbs_appenv->echoex($mbs_appenv->lang('had_login'), '', REDIRECT_AFTER_LOGIN);
 		exit(0);
 	}
-	
 }
 
 ?>
 <!doctype html>
 <html>
 <head>
-<title><?php mbs_title($mbs_appenv->lang('login'))?></title>
+<title><?php mbs_title()?></title>
 <link href="<?php echo $mbs_appenv->sURL('reset.css')?>" rel="stylesheet">
-<link href="<?php echo $mbs_appenv->sURL('global.css')?>" rel="stylesheet">
-<style type="text/css">
-img{vertical-align:bottom;margin: 0 6px;}
-body{
-            background: url("/static/images/curves-2.png") no-repeat top center #092d6a;
-            font-family: "Microsoft Yahei";
-        }
-        input::-webkit-input-placeholder{
-            color: #eeeeee;
-        }
-        input::-moz-input-placeholder{
-            color: #eeeeee;
-        }
-        input::-ms-input-placeholder{
-            color: #eeeeee;
-        }
-        .w760{
-            width: 760px;
-            margin: 100px auto 0;
-            text-align: center;
-        }
-        .title{
-            margin-top: 20px;
-        }
-        .title span{
-            font-size: 24px;
-            color: #ffffff;
-            line-height: 24px;
-        }
-        .login{
-            background: url("/static/images/field-box.png") no-repeat;
-            width: 333px;
-            /*height: 95px;*/
-            margin: 30px auto 0;
-        }
-        .login .inp{
-            width: 280px;
-            border: none;
-            background-color: transparent;
-            color: #eeeeee;
-            font-size: 16px;
-            font-family: "Microsoft Yahei";
-            height: 30px;
-            line-height: 30px;
-            padding:10px 0 7px 53px;
-            *padding:8px 0 7px 53px;
-        }
-        .text_l{ text-align: left; font-size: 14px; color: #eeeeee; margin-top: 10px; margin-left: 10px;}
-        .text_l input[type="checkbox"]{ position: relative; top: 2px;}
-        .login_btn input[type="submit"]{ background: url("/static/images/shape.png") no-repeat; width: 332px; height: 49px; border:none; cursor: pointer; margin-top: 15px;}
-       .captcha{width:170px;height:30px;line-height:30px;background-color: transparent;color: #eeeeee;
-       		border: 1px solid rgb(40,80,145);border-radius: 6px;padding-left: 6px; font-size:13px;}
-</style>
+<link href="<?php echo $mbs_appenv->sURL('style.css')?>" rel="stylesheet">
+<link href="<?php echo $mbs_appenv->sURL('iconfont.css')?>" rel="stylesheet">
 </head>
 <body>
-<div class="w760">
-    <div><img src="/static/images/logo.png" alt=""/></div>
-    <div class="title">
-        <img src="/static/images/line-copy-2.png" alt=""/>
-        <span><?php echo $mbs_appenv->lang('welcome')?></span>
-        <img src="/static/images/line-copy.png" alt=""/>
-    </div>
-    <?php if(isset($_REQUEST['phone'])){if(!empty($error)){ ?>
-		<div class=error style="background-color:transparent;color:rgb(184, 0, 0);font-size:12px;padding:0;"><?php  echo implode('&nbsp;;&nbsp;', $error)?>
-		<a href="#" class=close onclick="this.parentNode.parentNode.removeChild(this.parentNode)" >&times;</a>
-		</div>
-		<?php }}?>
-	<form action="" method="post">
-    <div class="login">
-        <div><input type="text" class="inp" name="phone" 
-        	placeholder="<?php echo $mbs_appenv->lang(array('please_input', 'phone'))?>" /></div>
-        <div><input type="password" class="inp" name="password" 
-        	placeholder="<?php echo $mbs_appenv->lang(array('please_input', 'password'))?>" /></div>
-        <?php if((isset($_REQUEST['phone']) && !empty($error) || isset($_SESSION['common_img_captcha']))){?>
-        <div style="margin-top: 20px;">
-        <input id="captcha" type="text" name="captcha" class="captcha" 
-        	placeholder="<?php echo $mbs_appenv->lang(array('please_input', 'captcha'))?>" />
-		<img alt="<?php echo $mbs_appenv->lang('captcha')?>"  src="<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>" 
-		/><a href="#"  style="vertical-align: bottom;" onclick="this.previousSibling.src='<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>?n='+Math.random();"><?php echo $mbs_appenv->lang('reload_on_unclear')?></a>
-		<br />
-		</div>
-	<?php } ?>	
-        <div class="text_l">
-            <label><input type="checkbox"/><?php echo $mbs_appenv->lang('auto_login_in_next')?></label>
-        </div>
-         <div class="login_btn">
-            <input type="submit" value="" />
-        </div>
-        
-    </div>
-    
-        
-   
-    </form>
-</div>
+<div class="login_div">
+		<div class="logo"></div>
+		<div class="logo_text"></div>
+		<form name=myform action="" method="post">
+    		<div class="logo_form">
+    			<div class="layer">
+    				<i class="iconfont">&#xe60f;</i>
+    				<input type="text" class="inp" name="phone" 
+            	       placeholder="<?php echo $mbs_appenv->lang(array('please_input', 'phone'))?>" />
+    			</div>
+    			<div class="layer">
+    				<i class="iconfont">&#xe603;</i>
+    				<input type="password" class="inp" name="password" 
+            	       placeholder="<?php echo $mbs_appenv->lang(array('please_input', 'password'))?>" />
+    			</div>
+    			<?php if((isset($_REQUEST['phone']) && !empty($error) || isset($_SESSION['common_img_captcha']))){?>
+                <div class="layer">
+                    <i class="iconfont">&#xe603;</i>
+                    <input id="captcha" type="text" name="captcha" class="inp" style="width: 135px;" 
+                    	placeholder="<?php echo $mbs_appenv->lang(array('please_input', 'captcha'))?>" />
+            		<img alt="<?php echo $mbs_appenv->lang('captcha')?>"  src="<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>" 
+            		/><a href="#"  style="vertical-align: bottom;font-size:12px;" onclick="this.previousSibling.src='<?php echo $mbs_appenv->toURL('img_captcha', 'common')?>?n='+Math.random();"><?php echo $mbs_appenv->lang('reload_on_unclear')?></a>
+        		</div>
+        	   <?php } ?>
+    			<div class="auto_login">
+    				<input type="checkbox" class="top2" name="remember_me" />
+    				<?php echo $mbs_appenv->lang('auto_login_in_next')?>
+    			</div>
+    			<a href="javascript:document.myform.submit();" class="logo_btn">
+    			 <span><?php echo $mbs_appenv->lang('login')?></span><i class="iconfont">&#xe60d;</i></a>
+    		</div>
+    	</form>
+	</div>
+	<footer><?php echo $mbs_appenv->lang('foot')?></footer>
 </body>
 </html>

@@ -49,7 +49,7 @@ if(isset($_REQUEST['id'])){
     }
 }
 
-if(isset($_FILES['image']['error']) && $task_id > 0){
+if(isset($_FILES['image']['error']) && $task_id > 0 && empty($error)){
     $img_count = count($_FILES['image']['error']);
     if($img_count > 0){
         $task_atch = CTaskAttachmentCtr::getInstance($mbs_appenv,
@@ -74,6 +74,14 @@ if(isset($_FILES['image']['error']) && $task_id > 0){
             }
         }
     }
+}else{
+    
+}
+
+if(empty($error)){
+    $mbs_appenv->echoex($task_id);
+}else{
+    $mbs_appenv->echoex(implode(';', $error), 'TASK_EDIT_ERR');
 }
 
 ?>

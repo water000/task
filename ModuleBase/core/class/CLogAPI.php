@@ -12,9 +12,23 @@ class CLogAPI{
 	static function _format($arr){
 		$ret = '';
 		foreach($arr as $k=>$v){
-			$ret .= $k.':'.$v."\n";
+			$ret .= $k.':'.(is_array($v)?var_export($v, true):$v)."\n";
 		}
 		return $ret;
+	}
+	
+	static function _files(){
+	    $ret = '';
+	    foreach ($_FILES as $name => $v){
+	        if(is_array($v['size'])){
+	            for($i=0, $j=count($v['size']); $i<$j; ++$i){
+	                $ret .= sprintf("%s:%s(%d)\n", $name.'['.$i.']', $v['name'][$i], $v['size'][$i]);
+	            }
+	        }else{
+	            $ret .= sprintf("%s:%s(%d)\n", $name, $v['name'], $v['size']);
+	        }
+	    }
+	    return $ret;
 	}
 
 	function write(array $output, $other=''){
@@ -30,7 +44,8 @@ class CLogAPI{
 		$this->elems = array(
 			'input'  => '[SERVER]'."\n".self::_format(array_intersect_key($_SERVER, $need))."\r\n"
 						.'[COOKIE]'."\n".self::_format($_COOKIE)."\r\n"
-						.'[POST]'."\n".self::_format($_POST),
+						.'[REQUEST]'."\n".self::_format($_REQUEST)."\r\n"
+		                .'[FILES]'."\n".self::_files(),
 			'output' => var_export($output, true)."\n[headers]\n".var_export(headers_list(), true),
 			'time'   => time(),
 			'other'  => $other,

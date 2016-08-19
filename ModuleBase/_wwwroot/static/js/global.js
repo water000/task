@@ -208,7 +208,7 @@ function popwin(title, body){
 	pw.style.display="none";
 	pw.innerHTML = "<div class=pwtitle>"+title+"<a href='javascript:;'>&times</a></div><div class=bd></div>";
 	pw.body=function(b){var bd=pw.childNodes[1];bd.innerHTML="";if("object" == typeof b) bd.appendChild(b); else bd.innerHTML = b;return pw;}
-	pw.show=function(){pw.style.display="";if(mask_win) mask_win.style.display="";return pw;}
+	pw.show=function(){pw.style.display="block";if(mask_win) mask_win.style.display="block";return pw;}
 	pw.hide=function(){pw.style.display="none";if(mask_win) mask_win.style.display="none";return pw;}
 	pw.remove=function(){pw.parentNode.removeChild(pw);mask_win.parentNode.removeChild(mask_win);}
 	pw.onclose=function(){pw.hide();}
@@ -217,6 +217,7 @@ function popwin(title, body){
 	pw.autoclose=function(){bind(document.body, 'click', function(e){var ev=e||event, en=ev.target||ev.srcElement; if(childof(en, pw))return; pw.hide();}); return pw;}
 	pw.around=function(node){var dd=document.documentElement, dw=dd.clientWidth-10, dh=dd.clientHeight-10, p=nodepos(node), x=p[1], y=p[0]; if(dw<x+pw.offsetWidth) x=dw-pw.offsetWidth;y=dh<y+node.offsetHeight+pw.offsetHeight?y-pw.offsetHeight:y+node.offsetHeight;pw.style.left=x+"px";pw.style.top=y+"px"; return pw;}
 	pw.noclose=function(){pw.childNodes[0].style.display="none";return pw;}
+	pw.note=function(node){pw.className += " popwin-note";pw.around(node).noclose().autoclose();return pw;}
 	pw.body(body);
 	pw.childNodes[0].getElementsByTagName("a")[0].onclick=function(e){pw.onclose();}
 	bind(window, 'resize', function(e){pw.bdheight();});

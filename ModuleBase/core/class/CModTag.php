@@ -11,7 +11,7 @@ abstract class CModTag {
 	 * @desc if errors occued, calling getError() to operate
 	 * @param array $params the params(start at 0) that the user passed
 	 * @param string $tag the tag name which matched in file content.
-	 * So, the param can be distinguished which tag submited
+	 * So, the param can be distinguished which tag submitted
 	 * @return string on success, false on error
 	 */
 	abstract function oper($params, $tag='');

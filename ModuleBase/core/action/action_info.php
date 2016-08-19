@@ -27,8 +27,48 @@ END;
             }
         }
     }
+    return $txt;
+}
+
+function _parse_list($txt, $mod){
+    global $mbs_appenv;
+    
+    static $TPL = <<<END
+    <a href="javascript:;" onclick="if(!this._pw) this._pw=popwin('', 'BODY').note(this); this._pw.show();event.cancelBubble=true;">TITLE</a>
+END;
+    if(preg_match_all('/@([^@]+)@/', $txt, $matches) > 0){
+        for($i=0; $i<count($matches[1]); ++$i){
+            if(0 == strncmp($matches[1][$i], 'code:', '5')){
+                $list = eval(substr($matches[1][$i], 5));
+                if(false === $list){
+                    trigger_error('invalid code: '.$matches[1][$i]);
+                    continue;
+                }
+                $body = '<div>';
+                $title = '';
+                $k = 0;
+                foreach($list as $v){
+                    $n =  addcslashes($v, "'").'('.addcslashes($mbs_appenv->lang($v, $mod), "'").')';
+                    $title = empty($title) ? $n : $title;
+                    $body .= '<div>'.str_pad(++$k, 2, ' ', STR_PAD_LEFT).')&nbsp;'.$n.'</div>';
+                }
+                $body .= '</div>';
+                $txt = str_replace($matches[0][$i], 
+                    str_replace(array('BODY', 'TITLE'), 
+                        array($body, $title), $TPL), 
+                    $txt);
+            }
+            else if(0 == strncmp($matches[1][$i], 'json:', '5')){
+            
+            }
+        }
+    }
     
     return $txt;
+}
+
+function _parse_tags($txt, $mod){
+    return _parse_list(_parse_tb($txt, $mod), $mod);
 }
 
 $output_type = array('html', 'not_html');
@@ -73,6 +113,7 @@ usort($all_actions, create_function('$a, $b',
 
 $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0', 
 		CModDef::PA_EMP=>1, CModDef::PA_RNG=>'');
+		
 ?>
 <!doctype html>
 <html>
@@ -80,30 +121,56 @@ $pageargs = array(CModDef::PA_TYP=>'string', CModDef::PA_REQ=>'0',
 <title><?php mbs_title()?></title>
 <link href="<?php echo $mbs_appenv->sURL('core.css')?>" rel="stylesheet">
 <style type="text/css">
-.left{width:290px;margin:30px 0 0;background-color:#fff;float:left;}
+.left{width:290px;margin:10px 0 0;background-color:#fff;float:left;}
 .left .action-item{font-size:12px;color:#333;position:relative;padding:3px 8px;border-bottom:1px solid #e0e0e0;cursor:pointer;}
 .left .action-item .title{font-weight:bold;}
 .left .action-item .date{float:right;}
 .left .action-item .desc{color:#888;padding:1px;}
-.right{position:fixed;width:690px;;min-height:500px;margin:30px 0 0 313px;background-color:#fff;box-shadow:0 2px 6px #313131}
+.right{position:fixed;width:690px;;min-height:500px;margin:10px 0 0 313px;background-color:#fff;box-shadow:0 2px 6px #313131}
 .datediff{width:130px;margin: 0 auto;color:#555;}
 .datediff span{width:26px;height:1px;background-color:#ccc;display:inline-block;margin:0 5px 3px;}
-.action{width:670px;background-color:#fff;margin:10px auto;cursor:default;}
+.action{width:670px;overflow:auto;background-color:#fff;margin:10px auto;cursor:default;}
 .action table{margin-bottom:20px;overflow-x:scroll;}
 td{word-wrap:break-word;word-break:break-all;}
-.filter select, .filter span{float:right;margin-left:10px;}
+.filter{text-align:right;}
+.filter form{display:inline-block;}
+.filter a{margin-right:10px;}
 .basic_info th{width:90px;}
 .even{background-color:#eee;}
 h2{text-align:center;}
+.bg-box{background-color:#fff;padding:5px;margin-top:10px;}
+.bg-box p{padding:3px 5px; margin:0;}
 </style>
-
 </head>
 <body style="background-color:#eee;">
 <div class="warpper" >
 	<div class=header></div>
 	<div class=content>
-		<h2>Actions Info</h2>
 		<div class=filter>
+		    <a href="javascript:;" onclick="if(!this._pw) this._pw=popwin('', this.nextSibling.innerHTML).note(this);this._pw.show();event.cancelBubble=true;">APP-DEV</a><div style="display: none;">
+    		  <dl style="margin-top:0;">
+    		      <dt>INPUT</dt>
+    		      <dd>_version: app version</dd>
+    		      <dd>_ts: unix timestamp</dd>
+    		      <dd>_sign: md5[APPKEY+_ts+...]</dd>
+    		      <dd>_imei: device IMEI </dd>
+    		      <dd>_json: add HTTP-HEADER "X-POST-JSON-FIELD: _json" </dd>
+    		      <dd>HTPP-HEADER: "X-LOGIN-TOKEN:token-returned-by-login-api"</dd>
+    		  </dl>
+    		  <dl>
+    		      <dt>OUTPUT</dt>
+    		      <dd>{retcode:"SUCCESS/ERROR_CODE", data:[], [error:"DETAIL_IF_ERROR"]}</dd>
+    		      <dd></dd>
+    		  </dl>
+    		  <dl>
+    		      <dt>APPKEY</dt>
+    		      <?php foreach($mbs_appenv->config('appkeys', 'common') as $v){?>
+    		      <dd><?php echo $v?></dd>
+    		      <?php } ?>
+    		      <dd></dd>
+    		  </dl>
+    		</div>
+		    <span>Filters: </span>
 			<form action="<?php echo $mbs_appenv->item('cur_action_url')?>" method="get">
 				<select name=mod onchange="this.form.submit();">
 					<option value="">--all module--</option>
@@ -117,7 +184,6 @@ h2{text-align:center;}
 				<input type="hidden" name="<?php echo $k?>" value="<?php echo $v?>" />
 				<?php }?>
 			</form>
-			<span>Filters: </span>
 		</div>
 		<div class="left vertical-menu" id=IDD_LEFT>
 			<p class=title>actions</p>
@@ -168,14 +234,80 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 							<?php next($pageargs); foreach($pageargs as $pa=>$defval){ ?>
 							<td><?php echo isset($args[$pa])?$args[$pa]:$defval?></td>
 							<?php } ?>
-							<td><?php echo CStrTools::txt2html($args[CModDef::G_DC])?></td>
+							<td><?php echo _parse_tags($args[CModDef::G_DC], $all_actions[$i]['_mod'])?></td>
 							</tr>
 							<?php }} ?>
 					</table>
 					<p class=table_title><?php echo $mbs_appenv->lang(CModDef::P_OUT)?></p>
 					<table><tr><td style="font-size: 13px;background-color:#fff9ea;">
-						<?php echo isset($def[CModDef::P_OUT]) ? _parse_tb(CStrTools::txt2html($def[CModDef::P_OUT]), $all_actions[$i]['_mod']) : 'NULL'?>
+						<?php echo isset($def[CModDef::P_OUT]) ? _parse_tags($def[CModDef::P_OUT], $all_actions[$i]['_mod']) : 'NULL'?>
 					</td></tr></table>
+					
+					<?php if(isset($def[CModDef::P_OUT])){ ?>
+					<p class=table_title><a href="javascript:;" onclick="open('','', 'width=600,height=400,left=100000,top=100000').document.write(this.parentNode.nextSibling.innerHTML);">Test</a></p><div style="display:none">
+					   <!doctype html>
+                        <html>
+                        <head>
+                        <style type="text/css">
+                        table{width:100%;}
+                        input{width:450px;height:28px;margin-left: 20px;}
+                        #IDD_FORM{overflow:auto;}
+                        iframe{border:0;border-top:1px solid #ddd;width:99%;height:18%;overflow:auto;position:fixed;bottom:5px;background-color:#fff;}
+                        ::-webkit-scrollbar{width:6px;height:6px}
+                        ::-webkit-scrollbar-thumb{-webkit-border-radius: 3px;webkit-border-radius: 3px;background-color: #c3c3c3;}
+					   </style>
+                        </head>
+                        <body>
+                        <h2><?php echo $mbs_appenv->toURL($all_actions[$i]['_name'], $all_actions[$i]['_mod']), '(',CStrTools::txt2html($def[CModDef::P_TLE]),')'?></h2>
+					   <form target=IFM_OUTPUT method=post action="<?php echo isset($_SERVER['HTTPS']) ?'HTTPS':'HTTP', '://',$_SERVER['HTTP_HOST'], $mbs_appenv->toURL($all_actions[$i]['_name'], $all_actions[$i]['_mod'])?>">
+					   <div id=IDD_FORM>
+					   <table style="width: 100%;">
+					   <?php $include_file=false; if(isset($def[CModDef::P_ARGS])){foreach($def[CModDef::P_ARGS] as $key => $args){ $required=isset($args[CModDef::PA_REQ]) && $args[CModDef::PA_REQ];?>
+					       <tr><td><?php echo $key?></td>
+					       <td>
+					       <?php if(isset($args[CModDef::PA_TYP]) && strncmp($args[CModDef::PA_TYP], 'file', 4) == 0){ $include_file = true;?>
+					           <?php if('files' == strtolower($args[CModDef::PA_TYP])){ ?>
+					           <input name="<?php echo $key?>[]" type="file" <?php echo $required?'required':'' ?> /><br/>
+					           <input name="<?php echo $key?>[]" type="file" /><br/>
+					           <input name="<?php echo $key?>[]" type="file" />
+					           <?php }else{ ?>
+					           <input name="<?php echo $key?>" type="file" <?php echo $required?'required':'' ?> />
+					           <?php } ?>
+					       <?php } else{ ?>
+					           <input type="text" placeholder="<?php echo isset($args[CModDef::G_DC])?$args[CModDef::G_DC]:''?>" name="<?php echo $key, isset($args[CModDef::PA_TYP]) && 'array'==$args[CModDef::PA_TYP] ?'[]':''?>" value="" <?php echo $required?'required':'' ?> />
+					       <?php }?>
+					       </td></tr>
+					   <?php }} ?>
+					   </table>
+					   <p><input value="submit" onclick="_scale_win();<?php if($include_file) echo 'this.form.enctype=\'multipart/form-data\';'; ?>" style="width:100%;margin:0;" type=submit /></p>
+					   </div>
+					   </form>
+					   <iframe id=IDD_FRM name=IFM_OUTPUT></iframe>
+					   <script type="text/javascript">
+					   var _form=document.getElementById("IDD_FORM"),
+					       _frm=document.getElementById("IDD_FRM");
+					   function _scale_win(){
+						   _frm.contentWindow.document.body.innerHTML = '';
+						   _frm.onmouseover=function(event){
+							   this.style.height = "50%";
+							   _form.onmouseover=function(event){
+								   _frm.style.height = "18%";
+							   }
+						   }
+					   }
+					   _frm.onload=function(event){
+						   var arr=this.contentWindow.document.getElementsByTagName("div");
+						   for(var i=0; i<arr.length; i++){
+							   if('success'==arr[i].className || 'error'==arr[i].className){
+								   arr[i].style.cssText = "width:auto;margin:0;";
+							   }
+						   }
+					   }
+					   </script>
+					   </body></html>
+					</div>
+					<?php } ?>
+					
 				</div>
 			</div>
 <?php } ?>
@@ -191,15 +323,11 @@ for($i=count($all_actions)-1; $i>=0; --$i){
 var g_tbwin = [];
 function _pwin(title, content, node){
 	if(!g_tbwin[title]){
-		var d = document.createElement("div");
-		d.style.cssText = "padding:8px 5px;background-color:#fff9ea;";
-		d.innerHTML = content;
-		g_tbwin[title] = popwin("", d);
-		g_tbwin[title].style.cssText = "width: auto;height:auto;";
-		g_tbwin[title].autoclose().noclose();
+		g_tbwin[title] = popwin("", content).note(node);
 	}
 	g_tbwin[title].show().around(node);
 }
+
 
 var g_curAction = null, defClass = null, 
 	g_rightAction=document.getElementById("IDD_RIGHT").childNodes[0];

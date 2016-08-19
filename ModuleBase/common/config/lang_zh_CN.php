@@ -1,29 +1,5 @@
 <?php 
 
-function __header(){
-	global $mbs_appenv;
-	
-	mbs_import('user', 'CUserSession');
-	$us = new CUserSession();
-	$info = $us->get();
-	$content = $welcome = '';
-	if(empty($info)){
-		$content = '<a href="'.$mbs_appenv->toURL('login', 'user').'" class="btn-quit">登录</a>';
-		$welcome = '请';
-	}else{
-		$welcome = $info[1]['name'];
-		$content = '<a href="'.$mbs_appenv->toURL('logout', 'user').'" class="btn-quit">退出</a>';
-	}
-	
-	return <<<EOT
-<h1 class="logo">快讯服务平台</h1>
-<p class="loginBar">欢迎您，$welcome
-	$content
-</p>
-EOT;
-}
-
-
 $_notice_frame = <<<EOT
 <!doctype html>
 <html>
@@ -39,9 +15,9 @@ $_notice_frame = <<<EOT
 EOT;
 
 $lang_zh_CN = array(
-	'site_name'              => '快讯服务平台',
+	'site_name'              => '国安守卫者',
 	'db_exception'           => '系统繁忙，请稍后再试(dbe)',
-	'header_html'            => __header(),
+	'header_html'            => '',
 	'notice_page'            => $_notice_frame, //%s: meta tag or empty, %s: error/success, %s: msg content
 	'click_if_not_redirect'  => '如果没有跳转，请点击链接',
 		
@@ -110,6 +86,23 @@ $lang_zh_CN = array(
 	UPLOAD_ERR_NO_FILE       => '没有文件被上传',
 	UPLOAD_ERR_NO_TMP_DIR    => '找不到临时文件夹',
 	UPLOAD_ERR_CANT_WRITE    => '文件写入失败',
+    
+    'SMSC_INVAID_GROUP'           => '无效的组名',
+    'SMSC_EXCEED_MAX_SEND_NUM'    => '已超过最大发送次数，请联系客服',
+    'SMSC_INVALID_SEND_INTERVAL'  => '请在允许的时间间隔内操作', 
+    'SMSC_NOT_FOUND'              => '未找到相应记录，请先获取验证码',
+    'SMSC_EXCEED_MAX_VERIFY_NUM'  => '已超过最大的验证次数，请注意仔细输入',
+    'SMSC_WRONG'                  => '验证码错误，请重试',
+    'SMSC_EXPIRED'                => '验证码已过期，请重新获取',
+    'SMSC_DB_EXCEPTION'           => '系统异常，请稍候再试',
+    
+    'captcha_title'        => '验证码',
+    'captcha_body'         => '验证码：%d请尽快使用该验证码，切勿泄露给他人！【国安守卫者】',
+    'incorrect_password'   => '密码有误',
+    'src_pwd_equal_new'    => '原密码和新密码相同',
+    'welcome'              => '欢迎您，',
+    'logout'               => '退出',
+    'foot'                 => 'Copyright © 2016  江苏省国家安全厅    All Rights Reserved  版权所有',
 );
 
 
